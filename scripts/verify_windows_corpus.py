@@ -72,6 +72,10 @@ class _Section:
     def executable(self) -> bool:
         return bool(self.characteristics & 0x20000000)
 
+    @property
+    def writable(self) -> bool:
+        return bool(self.characteristics & 0x80000000)
+
     def contains_rva(self, rva: int, size: int = 1) -> bool:
         if size < 0 or rva < self.virtual_address:
             return False
@@ -95,6 +99,7 @@ class _PEImage:
         self.imports: set[str] = set()
         self._directories: list[tuple[int, int]] = []
         self._size_of_headers = 0
+        self._image_base = 0
         self._is_pe32_plus = False
         self._parse()
 
@@ -136,9 +141,11 @@ class _PEImage:
             directory_count_offset = optional_offset + 108
             directory_offset = optional_offset + 112
             self._is_pe32_plus = True
+            (self._image_base,) = self._unpack("<Q", optional_offset + 24)
         elif magic == 0x10B:
             directory_count_offset = optional_offset + 92
             directory_offset = optional_offset + 96
+            (self._image_base,) = self._unpack("<I", optional_offset + 28)
         else:
             raise VerificationError("unsupported PE optional-header magic")
 
@@ -214,6 +221,46 @@ class _PEImage:
             return False
         self.rva_to_offset(rva, size)
         return True
+
+    def verify_security_cookie(self) -> None:
+        load_config_rva, load_config_size = self.directory(10)
+        pointer_size = 8 if self._is_pe32_plus else 4
+        cookie_field_offset = 88 if self._is_pe32_plus else 60
+        minimum_size = cookie_field_offset + pointer_size
+        if not load_config_rva or load_config_size < minimum_size:
+            raise VerificationError(
+                "PE load-config security cookie field is absent or truncated"
+            )
+
+        load_config_offset = self.rva_to_offset(load_config_rva, minimum_size)
+        (reported_size,) = self._unpack("<I", load_config_offset)
+        if reported_size < minimum_size:
+            raise VerificationError(
+                "PE load-config security cookie field is outside the structure"
+            )
+        (cookie_va,) = self._unpack(
+            "<Q" if self._is_pe32_plus else "<I",
+            load_config_offset + cookie_field_offset,
+        )
+        if cookie_va < self._image_base:
+            raise VerificationError("PE load-config security cookie VA is invalid")
+
+        cookie_rva = cookie_va - self._image_base
+        cookie_section = self.section_for_rva(cookie_rva, pointer_size)
+        if (
+            cookie_section is None
+            or cookie_section.executable
+            or not cookie_section.writable
+        ):
+            raise VerificationError(
+                "PE load-config security cookie is not backed by writable data"
+            )
+        cookie_offset = self.rva_to_offset(cookie_rva, pointer_size)
+        (cookie_value,) = self._unpack(
+            "<Q" if self._is_pe32_plus else "<I", cookie_offset
+        )
+        if cookie_value == 0:
+            raise VerificationError("PE load-config security cookie is zero")
 
     def _read_c_string(self, offset: int, limit: int = 4096) -> str:
         if offset < 0 or offset >= len(self._payload):
@@ -639,6 +686,8 @@ def _validate_evidence(
     *,
     image: _PEImage,
     architecture: str,
+    security_cookie: bool,
+    name: str,
     expected_personalities: tuple[str, ...],
     context: str,
 ) -> None:
@@ -682,6 +731,17 @@ def _validate_evidence(
         raise VerificationError(f"{context} exception directory is not file-backed")
     if require_unwind:
         image.verify_unwind_records()
+
+    require_security_cookie = _require_bool(
+        evidence, "require_security_cookie", context
+    )
+    expected_security_cookie = security_cookie and name.endswith("_probe")
+    if require_security_cookie != expected_security_cookie:
+        raise VerificationError(
+            f"{context} security cookie requirement is inconsistent"
+        )
+    if require_security_cookie:
+        image.verify_security_cookie()
 
 
 def _validate_artifact(
@@ -797,6 +857,8 @@ def _validate_artifact(
         artifact.get("evidence"),
         image=image,
         architecture=architecture,
+        security_cookie=security_cookie,
+        name=name,
         expected_personalities=expected_personalities,
         context=f"{context}.evidence",
     )

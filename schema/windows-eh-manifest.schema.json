@@ -261,7 +261,8 @@
         "required_sections",
         "required_imports_any",
         "require_exception_directory",
-        "require_unwind_records"
+        "require_unwind_records",
+        "require_security_cookie"
       ],
       "properties": {
         "required_sections": {
@@ -293,6 +294,9 @@
           "type": "boolean"
         },
         "require_unwind_records": {
+          "type": "boolean"
+        },
+        "require_security_cookie": {
           "type": "boolean"
         }
       }

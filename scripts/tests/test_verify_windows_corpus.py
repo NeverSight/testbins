@@ -56,32 +56,34 @@ def _write_minimal_pe(
     exception_size: int | None = None,
     unwind_section_name: bytes = b".xdata",
     xdata_raw_size: int = 0x300,
+    security_cookie: bool = False,
 ) -> None:
     machine, magic = _MACHINES[architecture]
     pe32_plus = magic == 0x20B
     optional_size = 0xF0 if pe32_plus else 0xE0
-    data = bytearray(0xA00)
+    image_base = 0x140000000 if pe32_plus else 0x400000
+    data = bytearray(0xE00)
     data[0:2] = b"MZ"
     struct.pack_into("<I", data, 0x3C, 0x80)
 
     pe = 0x80
     data[pe : pe + 4] = b"PE\0\0"
     struct.pack_into(
-        "<HHIIIHH", data, pe + 4, machine, 3, 0, 0, 0, optional_size, 0x0022
+        "<HHIIIHH", data, pe + 4, machine, 4, 0, 0, 0, optional_size, 0x0022
     )
     optional = pe + 24
     struct.pack_into("<H", data, optional, magic)
     struct.pack_into("<I", data, optional + 16, 0x1000)
     if pe32_plus:
-        struct.pack_into("<Q", data, optional + 24, 0x140000000)
+        struct.pack_into("<Q", data, optional + 24, image_base)
         directory_count_offset = optional + 108
         directory_offset = optional + 112
     else:
-        struct.pack_into("<I", data, optional + 28, 0x400000)
+        struct.pack_into("<I", data, optional + 28, image_base)
         directory_count_offset = optional + 92
         directory_offset = optional + 96
     struct.pack_into("<II", data, optional + 32, 0x1000, 0x200)
-    struct.pack_into("<II", data, optional + 56, 0x4000, 0x200)
+    struct.pack_into("<II", data, optional + 56, 0x5000, 0x400)
     struct.pack_into("<H", data, optional + 68, 3)
     struct.pack_into("<I", data, directory_count_offset, 16)
 
@@ -97,19 +99,25 @@ def _write_minimal_pe(
         )
     if import_names:
         struct.pack_into("<II", data, directory_offset + 8, 0x3000, 0x100)
+    if security_cookie:
+        load_config_size = 96 if pe32_plus else 64
+        struct.pack_into(
+            "<II", data, directory_offset + 10 * 8, 0x4000, load_config_size
+        )
 
     section_table = optional + optional_size
     sections = (
-        (b".text", 0x1000, 0x200, 0x200, 0x200, 0x60000020),
-        (b".pdata", 0x2000, 0x200, 0x200, 0x400, 0x40000040),
+        (b".text", 0x1000, 0x200, 0x200, 0x400, 0x60000020),
+        (b".pdata", 0x2000, 0x200, 0x200, 0x600, 0x40000040),
         (
             unwind_section_name,
             0x3000,
             xdata_raw_size,
             xdata_raw_size,
-            0x600,
+            0x800,
             0x40000040,
         ),
+        (b".data", 0x4000, 0x300, 0x200, 0xC00, 0xC0000040),
     )
     for index, (name, rva, virtual_size, raw_size, raw_offset, flags) in enumerate(
         sections
@@ -132,15 +140,15 @@ def _write_minimal_pe(
         )
 
     if architecture == "x86_64":
-        struct.pack_into("<III", data, 0x400, 0x1000, 0x1010, 0x3000)
+        struct.pack_into("<III", data, 0x600, 0x1000, 0x1010, 0x3000)
     elif architecture in ("arm", "aarch64"):
         packed = arm_unwind_word if arm_unwind_word is not None else ((4 << 2) | 1)
-        struct.pack_into("<II", data, 0x400, 0x1000, packed)
+        struct.pack_into("<II", data, 0x600, 0x1000, packed)
         for index, word in enumerate(arm_xdata_words):
-            struct.pack_into("<I", data, 0x600 + index * 4, word)
+            struct.pack_into("<I", data, 0x800 + index * 4, word)
 
     if import_names:
-        xdata = 0x600
+        xdata = 0x800
         descriptor_original_thunk = 0x3040
         descriptor_name = 0x3080
         descriptor_first_thunk = 0x3060
@@ -170,6 +178,23 @@ def _write_minimal_pe(
             encoded_name = import_name.encode("ascii") + b"\0"
             data[name_offset + 2 : name_offset + 2 + len(encoded_name)] = encoded_name
             name_offset += 2 + len(encoded_name)
+
+    if security_cookie:
+        load_config = 0xC00
+        cookie_field_offset = 88 if pe32_plus else 60
+        cookie_rva = 0x4100
+        cookie_offset = 0xD00
+        load_config_size = cookie_field_offset + (8 if pe32_plus else 4)
+        struct.pack_into("<I", data, load_config, load_config_size)
+        pointer_format = "<Q" if pe32_plus else "<I"
+        struct.pack_into(
+            pointer_format,
+            data,
+            load_config + cookie_field_offset,
+            image_base + cookie_rva,
+        )
+        cookie_value = 0x2B992DDFA232 if pe32_plus else 0xBB40E64E
+        struct.pack_into(pointer_format, data, cookie_offset, cookie_value)
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
@@ -302,6 +327,8 @@ def _valid_manifest(
                     "required_imports_any": required_imports,
                     "require_exception_directory": not is_x86,
                     "require_unwind_records": is_x64 or is_arm,
+                    "require_security_cookie": security_cookie
+                    and name.endswith("_probe"),
                 },
                 "neverd": {
                     "validation_level": validation_level,
@@ -462,7 +489,8 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             )
             _write_minimal_pe(
                 artifact,
-                import_names=("__C_specific_handler", "__security_check_cookie"),
+                import_names=("__C_specific_handler",),
+                security_cookie=True,
             )
             manifest = _valid_manifest(
                 root,
@@ -478,7 +506,6 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             personalities = ["__C_specific_handler", "__GSHandlerCheck_SEH"]
             record["evidence"]["required_imports_any"] = [
                 personalities,
-                ["__security_check_cookie"],
             ]
             record["neverd"].update(
                 {
@@ -492,6 +519,100 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
 
             result = VERIFY.verify_manifest(manifest_path, root)
             self.assertEqual(result.artifact_count, 1)
+
+    def test_accepts_pe32_load_config_security_cookie(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86",
+                cxx_format="native",
+                security_cookie=True,
+                optimization="o0",
+            )
+            _write_minimal_pe(artifact, "x86", security_cookie=True)
+            manifest_path = _write_manifest(
+                root,
+                _valid_manifest(
+                    root,
+                    artifact,
+                    architecture="x86",
+                    cxx_format="native",
+                    security_cookie=True,
+                ),
+            )
+
+            result = VERIFY.verify_manifest(manifest_path, root)
+            self.assertEqual(result.artifact_count, 1)
+
+    def test_rejects_required_security_cookie_without_load_config(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86_64",
+                cxx_format="fh3",
+                security_cookie=True,
+                optimization="o2",
+                name="seh_probe",
+            )
+            _write_minimal_pe(artifact, import_names=("__C_specific_handler",))
+            manifest = _valid_manifest(
+                root,
+                artifact,
+                architecture="x86_64",
+                cxx_format="fh3",
+                security_cookie=True,
+                optimization="o2",
+                name="seh_probe",
+            )
+            record = manifest["artifacts"][0]
+            record["build"]["compiler_flags"].remove("/d2FH4-")
+            personalities = ["__C_specific_handler", "__GSHandlerCheck_SEH"]
+            record["evidence"]["required_imports_any"] = [personalities]
+            record["neverd"].update(
+                {
+                    "personalities_any": personalities,
+                    "min_cxx_functions": 0,
+                    "min_try_blocks": 0,
+                    "min_seh_scopes": 1,
+                }
+            )
+            manifest_path = _write_manifest(root, manifest)
+
+            with self.assertRaisesRegex(VERIFY.VerificationError, "security cookie"):
+                VERIFY.verify_manifest(manifest_path, root)
+
+    def test_rejects_zero_load_config_security_cookie(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86",
+                cxx_format="native",
+                security_cookie=True,
+                optimization="o0",
+            )
+            _write_minimal_pe(artifact, "x86", security_cookie=True)
+            payload = bytearray(artifact.read_bytes())
+            struct.pack_into("<I", payload, 0xD00, 0)
+            artifact.write_bytes(payload)
+            manifest_path = _write_manifest(
+                root,
+                _valid_manifest(
+                    root,
+                    artifact,
+                    architecture="x86",
+                    cxx_format="native",
+                    security_cookie=True,
+                ),
+            )
+
+            with self.assertRaisesRegex(VERIFY.VerificationError, "cookie is zero"):
+                VERIFY.verify_manifest(manifest_path, root)
 
     def test_rejects_truncated_arm_runtime_function_table(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

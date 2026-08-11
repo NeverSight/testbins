@@ -36,7 +36,8 @@ and C++ EH artifacts. The capability-specific matrix is enforced by both the
 producer and the complete-matrix verifier.
 
 `/GS` and the C++ EH format are independent controls. The manifest records both
-axes and the focused probes provide personality and security-cookie evidence.
+axes. Focused `/GS` probes must expose a nonzero, writable security cookie via
+the PE Load Config directory; personality evidence is validated independently.
 
 ## Test inputs
 
@@ -89,7 +90,8 @@ publication. ARM32 and ARM64 are cross-built and are not claimed to have run
 natively; the producer instead verifies COFF machine values, exception
 directories, `.pdata` runtime-function entries, referenced unwind-data bodies
 (including payloads merged by the linker into `.rdata`),
-sections, imports, hashes, and manifest consistency. `llvm-readobj --unwind`
+Load Config security-cookie pointers, sections, imports, hashes, and manifest
+consistency. `llvm-readobj --unwind`
 provides an additional independent producer check for ARM artifacts.
 
 ## Repository layout

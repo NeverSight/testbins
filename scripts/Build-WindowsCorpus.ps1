@@ -118,12 +118,6 @@ $SEHPersonalities = if ($Toolchain -eq "msvc" -and $SecurityCookie -eq "on") {
 } else {
   @("__C_specific_handler")
 }
-$GSSecurityEvidence = @(
-  "__security_check_cookie",
-  "__GSHandlerCheck_SEH",
-  "__GSHandlerCheck_EH",
-  "__GSHandlerCheck_EH4"
-)
 
 $CommonCompilerFlags = @(
   "/nologo",
@@ -176,7 +170,6 @@ if ($ValidateConfigurationOnly) {
     xcpt4_compiler_flags = @($XcptCompilerFlags)
     xcpt4_additional_compiler_flags = @($XcptAdditionalCompilerFlags)
     seh_personalities = @($SEHPersonalities)
-    gs_security_evidence = @($GSSecurityEvidence)
     common_compiler_flags = @($CommonCompilerFlags)
     common_linker_flags = @($CommonLinkerFlags)
   } | ConvertTo-Json -Depth 5 -Compress
@@ -474,6 +467,7 @@ function Get-Evidence([string] $Name, [string] $Kind) {
       required_imports_any = @()
       require_exception_directory = $false
       require_unwind_records = $false
+      require_security_cookie = ($SecurityCookie -eq "on" -and $Name -match "_probe$")
     }
   }
   if ($Architecture -in @("arm", "aarch64")) {
@@ -482,6 +476,7 @@ function Get-Evidence([string] $Name, [string] $Kind) {
       required_imports_any = @()
       require_exception_directory = $true
       require_unwind_records = $true
+      require_security_cookie = ($SecurityCookie -eq "on" -and $Name -match "_probe$")
     }
   }
 
@@ -501,14 +496,12 @@ function Get-Evidence([string] $Name, [string] $Kind) {
   } else {
     $ImportGroups.Add(@("__C_specific_handler", "__GSHandlerCheck_SEH"))
   }
-  if ($SecurityCookie -eq "on" -and $Name -match "_probe$") {
-    $ImportGroups.Add(@($GSSecurityEvidence))
-  }
   return [ordered]@{
     required_sections = @(".pdata")
     required_imports_any = @($ImportGroups)
     require_exception_directory = $true
     require_unwind_records = $true
+    require_security_cookie = ($SecurityCookie -eq "on" -and $Name -match "_probe$")
   }
 }
 
