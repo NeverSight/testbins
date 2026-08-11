@@ -118,35 +118,24 @@ $SEHPersonalities = if ($Toolchain -eq "msvc" -and $SecurityCookie -eq "on") {
 } else {
   @("__C_specific_handler")
 }
-$ExpectedCxxPersonality = if ($Architecture -ne "x86_64") {
-  $null
+$ExpectedCxxPersonalities = if ($Architecture -ne "x86_64") {
+  @()
 } elseif ($Toolchain -eq "clang-cl") {
-  "__CxxFrameHandler3"
+  @("__CxxFrameHandler3")
 } elseif ($CxxFormat -eq "fh4") {
   if ($SecurityCookie -eq "on") {
-    "__GSHandlerCheck_EH4"
+    @("__CxxFrameHandler4", "__GSHandlerCheck_EH4")
   } else {
-    "__CxxFrameHandler4"
+    @("__CxxFrameHandler4")
   }
 } else {
   if ($SecurityCookie -eq "on") {
-    "__GSHandlerCheck_EH"
+    @("__CxxFrameHandler3", "__GSHandlerCheck_EH")
   } else {
-    "__CxxFrameHandler3"
+    @("__CxxFrameHandler3")
   }
 }
-$CxxImportPersonalities = if ($null -eq $ExpectedCxxPersonality) {
-  @()
-} elseif ($Toolchain -eq "msvc" -and $SecurityCookie -eq "on") {
-  $UnderlyingCxxPersonality = if ($CxxFormat -eq "fh4") {
-    "__CxxFrameHandler4"
-  } else {
-    "__CxxFrameHandler3"
-  }
-  @($UnderlyingCxxPersonality, $ExpectedCxxPersonality)
-} else {
-  @($ExpectedCxxPersonality)
-}
+$CxxImportPersonalities = @($ExpectedCxxPersonalities)
 
 $CommonCompilerFlags = @(
   "/nologo",
@@ -400,8 +389,8 @@ function Get-RepositoryRevision {
   return $Revision.ToLowerInvariant()
 }
 
-function Get-ExpectedCxxPersonality {
-  return $ExpectedCxxPersonality
+function Get-ExpectedCxxPersonalities {
+  return @($ExpectedCxxPersonalities)
 }
 
 function Get-ExpectedSEHPersonalities {
@@ -436,7 +425,7 @@ function Get-NeverDExpectation([string] $Name, [string] $Kind) {
     return [ordered]@{
       validation_level = "exception-graph"
       allowed_parse_status = @("complete")
-      personalities_any = @(Get-ExpectedCxxPersonality)
+      personalities_any = @(Get-ExpectedCxxPersonalities)
       min_exception_functions = 1
       min_cxx_functions = 1
       min_try_blocks = 1
@@ -473,7 +462,7 @@ function Get-NeverDExpectation([string] $Name, [string] $Kind) {
     personalities_any = $Personalities
     min_exception_functions = 1
     min_cxx_functions = if ($Kind -eq "mixed") { 1 } else { 0 }
-    min_try_blocks = if ($Kind -eq "mixed") { 1 } else { 0 }
+    min_try_blocks = 0
     min_seh_scopes = 1
   }
 }

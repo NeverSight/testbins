@@ -254,7 +254,15 @@ def _valid_manifest(
     is_x64 = architecture == "x86_64"
     is_x86 = architecture == "x86"
     is_arm = architecture in ("arm", "aarch64")
-    personality = "__CxxFrameHandler3" if is_x64 else None
+    personalities = ["__CxxFrameHandler3"] if is_x64 else []
+    if is_x64 and cxx_format == "fh4":
+        personalities = ["__CxxFrameHandler4"]
+    if is_x64 and toolchain == "msvc" and security_cookie:
+        personalities.append(
+            "__GSHandlerCheck_EH4"
+            if cxx_format == "fh4"
+            else "__GSHandlerCheck_EH"
+        )
     compiler_name = "cl.exe" if toolchain == "msvc" else "clang-cl.exe"
     linker_name = "link.exe" if toolchain == "msvc" else "lld-link.exe"
     execution = (
@@ -264,7 +272,7 @@ def _valid_manifest(
         "exception-graph" if is_x64 else "load-only" if is_x86 else "unwind-only"
     )
     required_sections = [".text"] if is_x86 else [".pdata"]
-    required_imports = [[personality]] if personality else []
+    required_imports = [personalities] if personalities else []
     compiler_flags = [
         "/Od" if optimization == "o0" else "/O2",
         "/GS" if security_cookie else "/GS-",
@@ -333,7 +341,7 @@ def _valid_manifest(
                 "neverd": {
                     "validation_level": validation_level,
                     "allowed_parse_status": ["complete"],
-                    "personalities_any": [personality] if personality else [],
+                    "personalities_any": personalities,
                     "min_exception_functions": 0 if is_x86 else 1,
                     "min_cxx_functions": 1 if is_x64 else 0,
                     "min_try_blocks": 1 if is_x64 else 0,
@@ -548,7 +556,10 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             record["evidence"]["required_imports_any"] = [
                 ["__CxxFrameHandler4", "__GSHandlerCheck_EH4"]
             ]
-            record["neverd"]["personalities_any"] = ["__GSHandlerCheck_EH4"]
+            record["neverd"]["personalities_any"] = [
+                "__CxxFrameHandler4",
+                "__GSHandlerCheck_EH4",
+            ]
             manifest_path = _write_manifest(root, manifest)
 
             result = VERIFY.verify_manifest(manifest_path, root)

@@ -539,10 +539,12 @@ def _expected_personalities(
         if toolchain == "clang-cl":
             return ("__CxxFrameHandler3",)
         if cxx_format == "fh4":
-            return (
-                "__GSHandlerCheck_EH4" if security_cookie else "__CxxFrameHandler4",
-            )
-        return ("__GSHandlerCheck_EH" if security_cookie else "__CxxFrameHandler3",)
+            if security_cookie:
+                return ("__CxxFrameHandler4", "__GSHandlerCheck_EH4")
+            return ("__CxxFrameHandler4",)
+        if security_cookie:
+            return ("__CxxFrameHandler3", "__GSHandlerCheck_EH")
+        return ("__CxxFrameHandler3",)
     if name == "seh_probe":
         if toolchain == "msvc" and security_cookie:
             return ("__C_specific_handler", "__GSHandlerCheck_SEH")

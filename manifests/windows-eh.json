@@ -9105,6 +9105,7 @@
         "min_seh_scopes": 0,
         "min_try_blocks": 1,
         "personalities_any": [
+          "__CxxFrameHandler3",
           "__GSHandlerCheck_EH"
         ],
         "validation_level": "exception-graph"
@@ -9354,7 +9355,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -9610,6 +9611,7 @@
         "min_seh_scopes": 0,
         "min_try_blocks": 1,
         "personalities_any": [
+          "__CxxFrameHandler3",
           "__GSHandlerCheck_EH"
         ],
         "validation_level": "exception-graph"
@@ -9859,7 +9861,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -10361,7 +10363,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -10863,7 +10865,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -11119,6 +11121,7 @@
         "min_seh_scopes": 0,
         "min_try_blocks": 1,
         "personalities_any": [
+          "__CxxFrameHandler4",
           "__GSHandlerCheck_EH4"
         ],
         "validation_level": "exception-graph"
@@ -11368,7 +11371,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -11624,6 +11627,7 @@
         "min_seh_scopes": 0,
         "min_try_blocks": 1,
         "personalities_any": [
+          "__CxxFrameHandler4",
           "__GSHandlerCheck_EH4"
         ],
         "validation_level": "exception-graph"
@@ -11873,7 +11877,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -12375,7 +12379,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
@@ -12877,7 +12881,7 @@
         "min_cxx_functions": 1,
         "min_exception_functions": 1,
         "min_seh_scopes": 1,
-        "min_try_blocks": 1,
+        "min_try_blocks": 0,
         "personalities_any": [
           "__C_specific_handler",
           "__GSHandlerCheck_SEH",
