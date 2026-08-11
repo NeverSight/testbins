@@ -63,6 +63,7 @@ def _write_minimal_pe(
     arm_unwind_word: int | None = None,
     arm_xdata_words: tuple[int, ...] = (),
     exception_size: int | None = None,
+    unwind_section_name: bytes = b".xdata",
     xdata_raw_size: int = 0x300,
 ) -> None:
     machine, magic = _MACHINES[architecture]
@@ -111,7 +112,7 @@ def _write_minimal_pe(
         (b".text", 0x1000, 0x200, 0x200, 0x200, 0x60000020),
         (b".pdata", 0x2000, 0x200, 0x200, 0x400, 0x40000040),
         (
-            b".xdata",
+            unwind_section_name,
             0x3000,
             xdata_raw_size,
             xdata_raw_size,
@@ -246,7 +247,7 @@ def _valid_manifest(
     validation_level = (
         "exception-graph" if is_x64 else "load-only" if is_x86 else "unwind-only"
     )
-    required_sections = [".text"] if is_x86 else [".pdata", ".xdata"]
+    required_sections = [".text"] if is_x86 else [".pdata"]
     required_imports = [[personality]] if personality else []
     compiler_flags = [
         "/Od" if optimization == "o0" else "/O2",
@@ -414,6 +415,43 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
                     manifest["artifacts"][0]["neverd"]["validation_level"],
                     validation_level,
                 )
+                manifest_path = _write_manifest(root, manifest)
+
+                result = VERIFY.verify_manifest(manifest_path, root)
+                self.assertEqual(result.artifact_count, 1)
+
+    def test_accepts_linker_merged_unwind_data_sections(self) -> None:
+        combinations = (
+            ("x86_64", "fh3", ("__CxxFrameHandler3",)),
+            ("aarch64", "native", ()),
+        )
+        for architecture, cxx_format, imports in combinations:
+            with (
+                self.subTest(architecture=architecture),
+                tempfile.TemporaryDirectory() as temp_dir,
+            ):
+                root = Path(temp_dir)
+                artifact = _artifact_path(
+                    root,
+                    toolchain="msvc",
+                    architecture=architecture,
+                    cxx_format=cxx_format,
+                    security_cookie=False,
+                    optimization="o0",
+                )
+                _write_minimal_pe(
+                    artifact,
+                    architecture,
+                    imports,
+                    unwind_section_name=b".rdata",
+                )
+                manifest = _valid_manifest(
+                    root,
+                    artifact,
+                    architecture=architecture,
+                    cxx_format=cxx_format,
+                )
+                manifest["artifacts"][0]["evidence"]["required_sections"] = [".pdata"]
                 manifest_path = _write_manifest(root, manifest)
 
                 result = VERIFY.verify_manifest(manifest_path, root)

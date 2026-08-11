@@ -179,7 +179,33 @@ function Import-VisualStudioEnvironment {
     throw "VsDevCmd.bat was not found in $Installation"
   }
 
-  $EnvironmentLines = & $env:ComSpec /s /c "`"$VsDevCmd`" -no_logo -arch=$($Target.vs_arch) -host_arch=x64 && set"
+  $VsDevCmdArguments = @(
+    "-no_logo",
+    "-arch=$($Target.vs_arch)",
+    "-host_arch=x64"
+  )
+  $SdkLibraryDirectories = @()
+  if ($Architecture -eq "arm") {
+    $KitsLibraryRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits/10/Lib"
+    $ArmSdk = Get-ChildItem -LiteralPath $KitsLibraryRoot -Directory |
+      Where-Object {
+        (Test-Path -LiteralPath (Join-Path $_.FullName "um/arm/kernel32.lib") -PathType Leaf) -and
+        (Test-Path -LiteralPath (Join-Path $_.FullName "ucrt/arm/libucrt.lib") -PathType Leaf)
+      } |
+      Sort-Object { [version]$_.Name } -Descending |
+      Select-Object -First 1
+    if ($null -eq $ArmSdk) {
+      throw "no installed Windows SDK contains ARM32 user-mode libraries"
+    }
+    $VsDevCmdArguments += "-winsdk=$($ArmSdk.Name)"
+    $SdkLibraryDirectories = @(
+      (Join-Path $ArmSdk.FullName "ucrt/arm"),
+      (Join-Path $ArmSdk.FullName "um/arm")
+    )
+  }
+
+  $EnvironmentCommand = "`"$VsDevCmd`" $($VsDevCmdArguments -join ' ') && set"
+  $EnvironmentLines = & $env:ComSpec /s /c $EnvironmentCommand
   if ($LASTEXITCODE -ne 0) {
     throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"
   }
@@ -187,6 +213,10 @@ function Import-VisualStudioEnvironment {
     if ($Line -match '^([^=]+)=(.*)$') {
       [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2], "Process")
     }
+  }
+  if ($SdkLibraryDirectories.Count -ne 0) {
+    $ExistingLibraries = if ($env:LIB) { @($env:LIB) } else { @() }
+    $env:LIB = ($SdkLibraryDirectories + $ExistingLibraries) -join ";"
   }
   if ($env:VSCMD_ARG_TGT_ARCH -ne $Target.vs_arch) {
     throw "Visual Studio target architecture is '$env:VSCMD_ARG_TGT_ARCH', expected '$($Target.vs_arch)'"
@@ -196,6 +226,18 @@ function Import-VisualStudioEnvironment {
   if ($Architecture -in @("arm", "aarch64")) {
     [void](Get-Command "llvm-readobj.exe" -CommandType Application -ErrorAction Stop)
   }
+}
+
+function Resolve-BuildTool([string] $CommandName) {
+  if ($Toolchain -eq "clang-cl") {
+    $StandaloneLLVM = Join-Path $env:ProgramFiles "LLVM/bin/$CommandName"
+    if (Test-Path -LiteralPath $StandaloneLLVM -PathType Leaf) {
+      return (Resolve-Path -LiteralPath $StandaloneLLVM).Path
+    }
+  }
+  $Command = Get-Command $CommandName -CommandType Application -ErrorAction Stop |
+    Select-Object -First 1
+  return $Command.Source
 }
 
 function Invoke-Tool([string] $Tool, [string[]] $Arguments) {
@@ -253,14 +295,27 @@ function Invoke-Probe([string] $Executable, [string] $WorkingDirectory) {
   }
 }
 
-function Get-ToolIdentity([string] $CommandName) {
-  $Command = Get-Command $CommandName -CommandType Application -ErrorAction Stop |
+function Get-ToolIdentity([string] $CommandPath) {
+  $Command = Get-Command $CommandPath -CommandType Application -ErrorAction Stop |
     Select-Object -First 1
   $Version = [Diagnostics.FileVersionInfo]::GetVersionInfo($Command.Source)
+  $ProductVersion = [string]$Version.ProductVersion
+  $FileVersion = [string]$Version.FileVersion
+  if ([string]::IsNullOrWhiteSpace($ProductVersion)) {
+    $ProductVersion = $FileVersion
+  }
+  if ([string]::IsNullOrWhiteSpace($FileVersion)) {
+    $FileVersion = $ProductVersion
+  }
+  if ([string]::IsNullOrWhiteSpace($ProductVersion)) {
+    throw "cannot determine the version of $($Command.Source)"
+  }
+  $Name = [IO.Path]::GetFileName($Command.Source)
+  Write-Host "Using $Name $ProductVersion from $($Command.Source)"
   return [ordered]@{
-    name = $CommandName
-    product_version = [string]$Version.ProductVersion
-    file_version = [string]$Version.FileVersion
+    name = $Name
+    product_version = $ProductVersion
+    file_version = $FileVersion
   }
 }
 
@@ -382,7 +437,7 @@ function Get-Evidence([string] $Name, [string] $Kind) {
   }
   if ($Architecture -in @("arm", "aarch64")) {
     return [ordered]@{
-      required_sections = @(".pdata", ".xdata")
+      required_sections = @(".pdata")
       required_imports_any = @()
       require_exception_directory = $true
       require_unwind_records = $true
@@ -409,7 +464,7 @@ function Get-Evidence([string] $Name, [string] $Kind) {
     $ImportGroups.Add(@("__security_check_cookie"))
   }
   return [ordered]@{
-    required_sections = @(".pdata", ".xdata")
+    required_sections = @(".pdata")
     required_imports_any = @($ImportGroups)
     require_exception_directory = $true
     require_unwind_records = $true
@@ -463,13 +518,15 @@ $script:CommonLinkerFlags = $CommonLinkerFlags
 
 try {
   Import-VisualStudioEnvironment
+  $script:Compiler = Resolve-BuildTool $Compiler
+  $script:Linker = Resolve-BuildTool $Linker
   New-Directory $BuildRoot
   New-Directory $OfficialOutputRoot
   New-Directory $ProbeOutputRoot
   New-Directory $FragmentRoot
 
-  $script:CompilerIdentity = Get-ToolIdentity $Compiler
-  $script:LinkerIdentity = Get-ToolIdentity $Linker
+  $script:CompilerIdentity = Get-ToolIdentity $script:Compiler
+  $script:LinkerIdentity = Get-ToolIdentity $script:Linker
   $Artifacts = [Collections.Generic.List[object]]::new()
   $CxxControlFlags = if ($null -ne $CxxFormatFlag) { @($CxxFormatFlag) } else { @() }
 

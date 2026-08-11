@@ -74,7 +74,8 @@ level.
 x86 and x86-64 executables run on the hosted x64 Windows runner before
 publication. ARM32 and ARM64 are cross-built and are not claimed to have run
 natively; the producer instead verifies COFF machine values, exception
-directories, `.pdata` runtime-function entries, referenced `.xdata` bodies,
+directories, `.pdata` runtime-function entries, referenced unwind-data bodies
+(including payloads merged by the linker into `.rdata`),
 sections, imports, hashes, and manifest consistency. `llvm-readobj --unwind`
 provides an additional independent producer check for ARM artifacts.
 

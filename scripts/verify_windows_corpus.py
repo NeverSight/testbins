@@ -298,8 +298,10 @@ class _PEImage:
                     "x64 runtime-function code range is not executable"
                 )
             unwind_section = self.section_for_rva(unwind_rva, 4)
-            if unwind_section is None or unwind_section.name != ".xdata":
-                raise VerificationError("x64 unwind RVA is not backed by .xdata")
+            if unwind_section is None or unwind_section.executable:
+                raise VerificationError(
+                    "x64 unwind RVA is not backed by non-executable data"
+                )
             verified += 1
         if verified == 0:
             raise VerificationError("x64 runtime-function table is empty")
@@ -347,8 +349,10 @@ class _PEImage:
 
     def _verify_arm_xdata(self, xdata_rva: int) -> int:
         section = self.section_for_rva(xdata_rva, 4)
-        if section is None or section.name != ".xdata":
-            raise VerificationError("ARM xdata RVA is not backed by .xdata")
+        if section is None or section.executable:
+            raise VerificationError(
+                "ARM xdata RVA is not backed by non-executable data"
+            )
         offset = self.rva_to_offset(xdata_rva, 4)
         (first_word,) = self._unpack("<I", offset)
         if ((first_word >> 18) & 0x3) != 0:
@@ -386,7 +390,7 @@ class _PEImage:
             raise VerificationError("ARM xdata structural size is invalid")
         total_bytes = total_words * 4
         body_section = self.section_for_rva(xdata_rva, total_bytes)
-        if body_section is None or body_section.name != ".xdata":
+        if body_section is None or body_section.executable:
             raise VerificationError("ARM xdata body is truncated")
         self.rva_to_offset(xdata_rva, total_bytes)
         return function_length
