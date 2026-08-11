@@ -70,22 +70,23 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
             self.assertEqual(configuration["cxx_format_flag"], expected_flag)
 
     def test_clang_cl_uses_explicit_target_and_lld_link(self) -> None:
-        cell = MATRIX.validate_cell("clang-cl", "arm", "native", "o2", "on")
+        cell = MATRIX.validate_cell("clang-cl", "aarch64", "native", "o2", "on")
         configuration = self._configuration(cell)
 
         self.assertEqual(configuration["compiler"], "clang-cl.exe")
         self.assertEqual(configuration["linker"], "lld-link.exe")
         self.assertIn(
-            "--target=thumbv7-pc-windows-msvc",
+            "--target=aarch64-pc-windows-msvc",
             configuration["common_compiler_flags"],
         )
-        self.assertIn("/MACHINE:ARM", configuration["common_linker_flags"])
+        self.assertIn("/MACHINE:ARM64", configuration["common_linker_flags"])
         self.assertIsNone(configuration["cxx_format_flag"])
 
     def test_configuration_advertises_only_buildable_artifacts(self) -> None:
         for cell in (
             MATRIX.validate_cell("msvc", "arm", "native", "o0", "off"),
-            MATRIX.validate_cell("clang-cl", "arm", "native", "o0", "off"),
+            MATRIX.validate_cell("clang-cl", "x86", "native", "o0", "off"),
+            MATRIX.validate_cell("clang-cl", "aarch64", "native", "o0", "off"),
         ):
             with self.subTest(cell=cell.key):
                 configuration = self._configuration(cell)
@@ -103,6 +104,10 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
 
         self.assertEqual(msvc["xcpt4_compiler_flags"], ["/DBAIL_IN_FINALLY"])
         self.assertEqual(clang_cl["xcpt4_compiler_flags"], [])
+        self.assertEqual(
+            msvc["xcpt4_additional_compiler_flags"],
+            ["/DBAIL_IN_FINALLY", "/EHa", "/d2FH4-"],
+        )
 
     def test_msvc_gs_seh_contract_accepts_both_valid_handlers(self) -> None:
         configuration = self._configuration(
@@ -132,6 +137,35 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
                     "off",
                     "-CxxFormat",
                     "fh4",
+                    "-OutputRoot",
+                    temp_dir,
+                    "-ValidateConfigurationOnly",
+                ],
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unsupported C++ EH format", result.stderr)
+
+    def test_rejects_clang_cl_arm32_before_importing_visual_studio(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = subprocess.run(
+                [
+                    "pwsh",
+                    "-NoProfile",
+                    "-File",
+                    str(BUILD_SCRIPT),
+                    "-Toolchain",
+                    "clang-cl",
+                    "-Architecture",
+                    "arm",
+                    "-Optimization",
+                    "o0",
+                    "-SecurityCookie",
+                    "off",
+                    "-CxxFormat",
+                    "native",
                     "-OutputRoot",
                     temp_dir,
                     "-ValidateConfigurationOnly",

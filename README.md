@@ -16,11 +16,10 @@ two toolchains and four canonical PE architectures:
 | clang-cl | x86-64 | EH3 | `/GS-`, `/GS` | `/Od`, `/O2` | 4 |
 | MSVC | x86, ARM32, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 12 |
 | clang-cl | x86, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
-| clang-cl | ARM32 | native C++ EH | `/GS-`, `/GS` | `/Od`, `/O2` | 4 |
 
-The complete matrix contains 36 cells. Thirty-two full-capability cells contain
-six PE files each. The four clang-cl ARM32 cells contain the C++ EH probe, for a
-canonical total of 196 artifacts.
+The complete matrix contains 32 cells. Twenty-four full-capability cells contain
+six PE files each. The eight native clang-cl x86/x86-64 cells contain five PE
+files each, for a canonical total of 184 artifacts.
 
 `x86` is the canonical name for the 32-bit i386 target; the corpus does not
 duplicate it under two names. EH4 is the compressed Microsoft x64 C++ EH
@@ -31,9 +30,9 @@ triple for every architecture. Non-x64 targets use their native Windows
 exception ABI and are not mislabeled as EH3 or EH4.
 
 Official clang-cl supports SEH `__try` on Windows x86, x86-64, and ARM64, but
-not ARM32. The ARM32 clang-cl cells therefore exercise C++ EH only; they do not
-claim SEH coverage that the compiler cannot emit. MSVC supplies the ARM32 SEH
-artifacts. The capability-specific artifact inventory is enforced by both the
+not ARM32; its ARM32 backend also rejects C++ funclet EH. The producer therefore
+does not advertise an ARM32 clang-cl exception cell. MSVC supplies the ARM32 SEH
+and C++ EH artifacts. The capability-specific matrix is enforced by both the
 producer and the complete-matrix verifier.
 
 `/GS` and the C++ EH format are independent controls. The manifest records both
@@ -50,7 +49,10 @@ Every full-capability cell builds:
 - `cxx_eh_probe`, which exercises typed and base catches, cleanup actions,
   nested regions, rethrow, and a buffer-protected catch.
 
-The clang-cl ARM32 cells build only `cxx_eh_probe`.
+The host-native clang-cl x86 and x86-64 cells omit `xcpt4`: that executable builds
+but does not pass its own runtime test under clang-cl. The remaining official
+SEH tests and both focused probes are still built and executed. Cross-target
+clang-cl ARM64 retains the structurally validated `xcpt4` image.
 
 The imported source snapshot is pinned by full commit and per-file SHA-256 in
 `sources/windows-seh-tests/UPSTREAM.json`. Its license is retained in the
@@ -64,8 +66,8 @@ Both the directory and filename repeat every build axis. For example:
 corpus/windows-eh/msvc/x86_64/fh4/gs/o2/abi-probe/
   cxx_eh_probe-msvc-x86_64-fh4-gs-o2.exe
 
-corpus/windows-eh/clang-cl/arm/native/no-gs/o0/abi-probe/
-  cxx_eh_probe-clang-cl-arm-native-no-gs-o0.exe
+corpus/windows-eh/clang-cl/aarch64/native/no-gs/o0/abi-probe/
+  cxx_eh_probe-clang-cl-aarch64-native-no-gs-o0.exe
 ```
 
 The canonical manifest is `manifests/windows-eh.json`. Schema version 2 records

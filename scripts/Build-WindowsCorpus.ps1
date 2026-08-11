@@ -64,7 +64,9 @@ $ArchitectureMap = @{
 }
 
 $Target = $ArchitectureMap[$Architecture]
-$SupportedFormats = if ($Architecture -ne "x86_64") {
+$SupportedFormats = if ($Toolchain -eq "clang-cl" -and $Architecture -eq "arm") {
+  @()
+} elseif ($Architecture -ne "x86_64") {
   @("native")
 } elseif ($Toolchain -eq "msvc") {
   @("fh3", "fh4")
@@ -85,8 +87,14 @@ $CxxFormatFlag = $null
 if ($Toolchain -eq "msvc" -and $Architecture -eq "x86_64") {
   $CxxFormatFlag = if ($CxxFormat -eq "fh4") { "/d2FH4" } else { "/d2FH4-" }
 }
-$ArtifactNames = if ($Toolchain -eq "clang-cl" -and $Architecture -eq "arm") {
-  @("cxx_eh_probe")
+$ArtifactNames = if ($Toolchain -eq "clang-cl" -and $Architecture -in @("x86", "x86_64")) {
+  @(
+    "nested_collided",
+    "xframe_eh_dll",
+    "xframe_eh_exe",
+    "seh_probe",
+    "cxx_eh_probe"
+  )
 } else {
   @(
     "xcpt4",
@@ -102,6 +110,11 @@ $XcptCompilerFlags = if ($Toolchain -eq "msvc") {
 } else {
   @()
 }
+$XcptCxxFlags = @("/EHa")
+if ($null -ne $CxxFormatFlag) {
+  $XcptCxxFlags += $CxxFormatFlag
+}
+$XcptAdditionalCompilerFlags = @($XcptCompilerFlags) + @($XcptCxxFlags)
 $SEHPersonalities = if ($Toolchain -eq "msvc" -and $SecurityCookie -eq "on") {
   @("__C_specific_handler", "__GSHandlerCheck_SEH")
 } else {
@@ -157,6 +170,7 @@ if ($ValidateConfigurationOnly) {
     cxx_format_flag = $CxxFormatFlag
     artifact_names = @($ArtifactNames)
     xcpt4_compiler_flags = @($XcptCompilerFlags)
+    xcpt4_additional_compiler_flags = @($XcptAdditionalCompilerFlags)
     seh_personalities = @($SEHPersonalities)
     common_compiler_flags = @($CommonCompilerFlags)
     common_linker_flags = @($CommonLinkerFlags)
@@ -551,9 +565,9 @@ try {
   $script:LinkerIdentity = Get-ToolIdentity $script:Linker
   $Artifacts = [Collections.Generic.List[object]]::new()
   $CxxControlFlags = if ($null -ne $CxxFormatFlag) { @($CxxFormatFlag) } else { @() }
-  $BuildFullInventory = $ArtifactNames -contains "xcpt4"
+  $BuildXcpt4 = $ArtifactNames -contains "xcpt4"
 
-  if ($BuildFullInventory) {
+  if ($BuildXcpt4) {
     $XcptObjects = @()
     foreach ($SourceName in @("xcpt4u.c", "xcpt4pg.c", "xcpt4ex.c")) {
       $Object = Join-Path $BuildRoot ($SourceName + ".obj")
@@ -561,42 +575,41 @@ try {
       $XcptObjects += $Object
     }
     $XcptCxxObject = Join-Path $BuildRoot "xcpt4cxx.obj"
-    $XcptCxxFlags = @("/EHa") + $CxxControlFlags
     Compile-Object (Join-Path $OfficialSourceRoot "xcpt4/xcpt4cxx.cpp") $XcptCxxObject $XcptCxxFlags
     $XcptObjects += $XcptCxxObject
     $XcptOutput = Get-ArtifactPath $OfficialOutputRoot "xcpt4" ".exe"
     Link-Image $XcptOutput $XcptObjects @("/SUBSYSTEM:CONSOLE")
-
-    $NestedObject = Join-Path $BuildRoot "nested_collided.obj"
-    Compile-Object (Join-Path $OfficialSourceRoot "nested_collided/nestcol.c") $NestedObject @()
-    $NestedOutput = Get-ArtifactPath $OfficialOutputRoot "nested_collided" ".exe"
-    Link-Image $NestedOutput @($NestedObject) @("/SUBSYSTEM:CONSOLE")
-
-    $XframeDllObject = Join-Path $BuildRoot "xframe_eh_dll.obj"
-    $XframeDllSource = Join-Path $OfficialSourceRoot "xframe_eh_dll/xframe_eh_dll.c"
-    $XframeDllCompilerFlags = @("/DWOWxframeEHDLL_EXPORTS", "/D_WINDOWS", "/D_USRDLL")
-    Compile-Object $XframeDllSource $XframeDllObject $XframeDllCompilerFlags
-    $XframeDllOutput = Get-ArtifactPath $OfficialOutputRoot "xframe_eh_dll" ".dll"
-    $XframeDllImportLibrary = Join-Path $BuildRoot "xframe_eh_dll.lib"
-    $DefinitionFile = Join-Path $OfficialSourceRoot "xframe_eh_dll/xframe_eh_dll.DEF"
-    $XframeDllLinkerFlags = @(
-      "/DLL",
-      "/SUBSYSTEM:WINDOWS",
-      "/DEF:$DefinitionFile",
-      "/IMPLIB:$XframeDllImportLibrary"
-    )
-    Link-Image $XframeDllOutput @($XframeDllObject) $XframeDllLinkerFlags
-
-    $XframeExeObject = Join-Path $BuildRoot "xframe_eh_exe.obj"
-    Compile-Object (Join-Path $OfficialSourceRoot "xframe_eh_exe/xframe_eh_exe.c") $XframeExeObject @()
-    $XframeExeOutput = Get-ArtifactPath $OfficialOutputRoot "xframe_eh_exe" ".exe"
-    Link-Image $XframeExeOutput @($XframeExeObject) @("/SUBSYSTEM:CONSOLE")
-
-    $SehProbeObject = Join-Path $BuildRoot "seh_probe.obj"
-    Compile-Object (Join-Path $ProbeSourceRoot "seh_probe.c") $SehProbeObject @()
-    $SehProbeOutput = Get-ArtifactPath $ProbeOutputRoot "seh_probe" ".exe"
-    Link-Image $SehProbeOutput @($SehProbeObject) @("/SUBSYSTEM:CONSOLE")
   }
+
+  $NestedObject = Join-Path $BuildRoot "nested_collided.obj"
+  Compile-Object (Join-Path $OfficialSourceRoot "nested_collided/nestcol.c") $NestedObject @()
+  $NestedOutput = Get-ArtifactPath $OfficialOutputRoot "nested_collided" ".exe"
+  Link-Image $NestedOutput @($NestedObject) @("/SUBSYSTEM:CONSOLE")
+
+  $XframeDllObject = Join-Path $BuildRoot "xframe_eh_dll.obj"
+  $XframeDllSource = Join-Path $OfficialSourceRoot "xframe_eh_dll/xframe_eh_dll.c"
+  $XframeDllCompilerFlags = @("/DWOWxframeEHDLL_EXPORTS", "/D_WINDOWS", "/D_USRDLL")
+  Compile-Object $XframeDllSource $XframeDllObject $XframeDllCompilerFlags
+  $XframeDllOutput = Get-ArtifactPath $OfficialOutputRoot "xframe_eh_dll" ".dll"
+  $XframeDllImportLibrary = Join-Path $BuildRoot "xframe_eh_dll.lib"
+  $DefinitionFile = Join-Path $OfficialSourceRoot "xframe_eh_dll/xframe_eh_dll.DEF"
+  $XframeDllLinkerFlags = @(
+    "/DLL",
+    "/SUBSYSTEM:WINDOWS",
+    "/DEF:$DefinitionFile",
+    "/IMPLIB:$XframeDllImportLibrary"
+  )
+  Link-Image $XframeDllOutput @($XframeDllObject) $XframeDllLinkerFlags
+
+  $XframeExeObject = Join-Path $BuildRoot "xframe_eh_exe.obj"
+  Compile-Object (Join-Path $OfficialSourceRoot "xframe_eh_exe/xframe_eh_exe.c") $XframeExeObject @()
+  $XframeExeOutput = Get-ArtifactPath $OfficialOutputRoot "xframe_eh_exe" ".exe"
+  Link-Image $XframeExeOutput @($XframeExeObject) @("/SUBSYSTEM:CONSOLE")
+
+  $SehProbeObject = Join-Path $BuildRoot "seh_probe.obj"
+  Compile-Object (Join-Path $ProbeSourceRoot "seh_probe.c") $SehProbeObject @()
+  $SehProbeOutput = Get-ArtifactPath $ProbeOutputRoot "seh_probe" ".exe"
+  Link-Image $SehProbeOutput @($SehProbeObject) @("/SUBSYSTEM:CONSOLE")
 
   $CxxProbeObject = Join-Path $BuildRoot "cxx_eh_probe.obj"
   $CxxProbeFlags = @("/EHsc") + $CxxControlFlags
@@ -605,79 +618,79 @@ try {
   Link-Image $CxxProbeOutput @($CxxProbeObject) @("/SUBSYSTEM:CONSOLE")
 
   if ($Target.execute) {
-    if ($BuildFullInventory) {
+    if ($BuildXcpt4) {
       Invoke-Probe $XcptOutput $OfficialOutputRoot
-      Invoke-Probe $NestedOutput $OfficialOutputRoot
-      $RuntimeDllAlias = Join-Path $OfficialOutputRoot "xframe_eh_dll.dll"
-      Copy-Item -LiteralPath $XframeDllOutput -Destination $RuntimeDllAlias
-      try {
-        Invoke-Probe $XframeExeOutput $OfficialOutputRoot
-      } finally {
-        Remove-Item -LiteralPath $RuntimeDllAlias -Force -ErrorAction SilentlyContinue
-      }
-      Invoke-Probe $SehProbeOutput $ProbeOutputRoot
     }
+    Invoke-Probe $NestedOutput $OfficialOutputRoot
+    $RuntimeDllAlias = Join-Path $OfficialOutputRoot "xframe_eh_dll.dll"
+    Copy-Item -LiteralPath $XframeDllOutput -Destination $RuntimeDllAlias
+    try {
+      Invoke-Probe $XframeExeOutput $OfficialOutputRoot
+    } finally {
+      Remove-Item -LiteralPath $RuntimeDllAlias -Force -ErrorAction SilentlyContinue
+    }
+    Invoke-Probe $SehProbeOutput $ProbeOutputRoot
     Invoke-Probe $CxxProbeOutput $ProbeOutputRoot
   } else {
     $InspectionTargets = [Collections.Generic.List[string]]::new()
-    if ($BuildFullInventory) {
-      foreach ($ArtifactPath in @(
-        $XcptOutput,
-        $NestedOutput,
-        $XframeDllOutput,
-        $XframeExeOutput,
-        $SehProbeOutput
-      )) {
-        $InspectionTargets.Add($ArtifactPath)
-      }
+    if ($BuildXcpt4) {
+      $InspectionTargets.Add($XcptOutput)
     }
-    $InspectionTargets.Add($CxxProbeOutput)
+    foreach ($ArtifactPath in @(
+      $NestedOutput,
+      $XframeDllOutput,
+      $XframeExeOutput,
+      $SehProbeOutput,
+      $CxxProbeOutput
+    )) {
+      $InspectionTargets.Add($ArtifactPath)
+    }
     foreach ($ArtifactPath in $InspectionTargets) {
       Invoke-Tool "llvm-readobj.exe" @("--unwind", $ArtifactPath)
     }
   }
 
-  if ($BuildFullInventory) {
+  if ($BuildXcpt4) {
     $Artifacts.Add((New-ArtifactRecord `
       -Path $XcptOutput `
       -Suite "windows-seh-tests" `
       -Name "xcpt4" `
       -Kind "mixed" `
-      -AdditionalCompilerFlags ($XcptCompilerFlags + $XcptCxxFlags) `
-      -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
-    $Artifacts.Add((New-ArtifactRecord `
-      -Path $NestedOutput `
-      -Suite "windows-seh-tests" `
-      -Name "nested_collided" `
-      -Kind "seh" `
-      -AdditionalCompilerFlags @() `
-      -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
-    $Artifacts.Add((New-ArtifactRecord `
-      -Path $XframeDllOutput `
-      -Suite "windows-seh-tests" `
-      -Name "xframe_eh_dll" `
-      -Kind "seh" `
-      -AdditionalCompilerFlags $XframeDllCompilerFlags `
-      -AdditionalLinkerFlags @(
-        "/DLL",
-        "/SUBSYSTEM:WINDOWS",
-        "/DEF:sources/windows-seh-tests/src/xframe_eh_dll/xframe_eh_dll.DEF"
-      )))
-    $Artifacts.Add((New-ArtifactRecord `
-      -Path $XframeExeOutput `
-      -Suite "windows-seh-tests" `
-      -Name "xframe_eh_exe" `
-      -Kind "seh" `
-      -AdditionalCompilerFlags @() `
-      -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
-    $Artifacts.Add((New-ArtifactRecord `
-      -Path $SehProbeOutput `
-      -Suite "abi-probe" `
-      -Name "seh_probe" `
-      -Kind "seh" `
-      -AdditionalCompilerFlags @() `
+      -AdditionalCompilerFlags $XcptAdditionalCompilerFlags `
       -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
   }
+  $Artifacts.Add((New-ArtifactRecord `
+    -Path $NestedOutput `
+    -Suite "windows-seh-tests" `
+    -Name "nested_collided" `
+    -Kind "seh" `
+    -AdditionalCompilerFlags @() `
+    -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
+  $Artifacts.Add((New-ArtifactRecord `
+    -Path $XframeDllOutput `
+    -Suite "windows-seh-tests" `
+    -Name "xframe_eh_dll" `
+    -Kind "seh" `
+    -AdditionalCompilerFlags $XframeDllCompilerFlags `
+    -AdditionalLinkerFlags @(
+      "/DLL",
+      "/SUBSYSTEM:WINDOWS",
+      "/DEF:sources/windows-seh-tests/src/xframe_eh_dll/xframe_eh_dll.DEF"
+    )))
+  $Artifacts.Add((New-ArtifactRecord `
+    -Path $XframeExeOutput `
+    -Suite "windows-seh-tests" `
+    -Name "xframe_eh_exe" `
+    -Kind "seh" `
+    -AdditionalCompilerFlags @() `
+    -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
+  $Artifacts.Add((New-ArtifactRecord `
+    -Path $SehProbeOutput `
+    -Suite "abi-probe" `
+    -Name "seh_probe" `
+    -Kind "seh" `
+    -AdditionalCompilerFlags @() `
+    -AdditionalLinkerFlags @("/SUBSYSTEM:CONSOLE")))
   $Artifacts.Add((New-ArtifactRecord `
     -Path $CxxProbeOutput `
     -Suite "abi-probe" `

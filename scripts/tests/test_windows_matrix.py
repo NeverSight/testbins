@@ -32,15 +32,15 @@ class WindowsMatrixTests(unittest.TestCase):
     def test_matrix_contains_exact_supported_capabilities(self) -> None:
         cells = self.matrix.expected_cells()
 
-        self.assertEqual(len(cells), 36)
-        self.assertEqual(len({cell.key for cell in cells}), 36)
+        self.assertEqual(len(cells), 32)
+        self.assertEqual(len({cell.key for cell in cells}), 32)
         self.assertEqual(
             Counter(cell.toolchain for cell in cells),
-            Counter({"msvc": 20, "clang-cl": 16}),
+            Counter({"msvc": 20, "clang-cl": 12}),
         )
         self.assertEqual(
             Counter(cell.architecture for cell in cells),
-            Counter({"x86": 8, "x86_64": 12, "arm": 8, "aarch64": 8}),
+            Counter({"x86": 8, "x86_64": 12, "arm": 4, "aarch64": 8}),
         )
 
         msvc_x64 = {
@@ -89,15 +89,17 @@ class WindowsMatrixTests(unittest.TestCase):
         )
         for cell in self.matrix.expected_cells():
             with self.subTest(cell=cell.key):
-                expected = (
-                    ("cxx_eh_probe",)
-                    if cell.toolchain == "clang-cl" and cell.architecture == "arm"
-                    else full_inventory
-                )
+                expected = full_inventory
+                if cell.toolchain == "clang-cl" and cell.architecture in (
+                    "x86",
+                    "x86_64",
+                ):
+                    expected = tuple(name for name in full_inventory if name != "xcpt4")
                 self.assertEqual(cell.artifact_names, expected)
 
     def test_rejects_unsupported_format_combinations(self) -> None:
         invalid = (
+            ("clang-cl", "arm", "native"),
             ("clang-cl", "x86_64", "fh4"),
             ("msvc", "x86", "fh3"),
             ("msvc", "arm", "fh4"),
@@ -130,10 +132,16 @@ class WindowsMatrixTests(unittest.TestCase):
         name, payload = line.split("=", 1)
         self.assertEqual(name, "matrix")
         matrix = json.loads(payload)
-        self.assertEqual(len(matrix["include"]), 36)
-        self.assertEqual(len({entry["cell_name"] for entry in matrix["include"]}), 36)
+        self.assertEqual(len(matrix["include"]), 32)
+        self.assertEqual(len({entry["cell_name"] for entry in matrix["include"]}), 32)
         self.assertTrue(
             all(entry["architecture"] != "i386" for entry in matrix["include"])
+        )
+        self.assertFalse(
+            any(
+                entry["toolchain"] == "clang-cl" and entry["architecture"] == "arm"
+                for entry in matrix["include"]
+            )
         )
 
 

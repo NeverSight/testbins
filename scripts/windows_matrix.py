@@ -71,6 +71,8 @@ def normalize_architecture(value: str) -> str:
 
 
 def _supported_formats(toolchain: str, architecture: str) -> tuple[str, ...]:
+    if toolchain == "clang-cl" and architecture == "arm":
+        return ()
     if architecture != "x86_64":
         return ("native",)
     if toolchain == "msvc":
@@ -110,8 +112,8 @@ class MatrixCell:
     def artifact_names(self) -> tuple[str, ...]:
         """Return artifacts the selected compiler can produce for this target."""
 
-        if self.toolchain == "clang-cl" and self.architecture == "arm":
-            return ("cxx_eh_probe",)
+        if self.toolchain == "clang-cl" and self.architecture in ("x86", "x86_64"):
+            return tuple(name for name in _FULL_ARTIFACT_INVENTORY if name != "xcpt4")
         return _FULL_ARTIFACT_INVENTORY
 
     @property

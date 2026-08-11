@@ -498,7 +498,7 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             root = Path(temp_dir)
             artifact = _artifact_path(
                 root,
-                toolchain="clang-cl",
+                toolchain="msvc",
                 architecture="arm",
                 cxx_format="native",
                 security_cookie=False,
@@ -508,7 +508,7 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             manifest = _valid_manifest(
                 root,
                 artifact,
-                toolchain="clang-cl",
+                toolchain="msvc",
                 architecture="arm",
                 cxx_format="native",
             )
@@ -685,13 +685,13 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             with self.assertRaisesRegex(VERIFY.VerificationError, "SHA-256 mismatch"):
                 VERIFY.verify_manifest(manifest_path, root)
 
-    def test_complete_matrix_accepts_36_cells_and_196_capability_artifacts(
+    def test_complete_matrix_accepts_32_cells_and_184_capability_artifacts(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             manifest = _complete_inventory()
-            self.assertEqual(len(manifest["artifacts"]), 196)
+            self.assertEqual(len(manifest["artifacts"]), 184)
             manifest_path = _write_manifest(root, manifest)
 
             VERIFY.verify_complete_matrix(manifest_path)
