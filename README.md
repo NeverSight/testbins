@@ -18,8 +18,8 @@ two toolchains and four canonical PE architectures:
 | clang-cl | x86, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
 
 The complete matrix contains 32 cells. Twenty-four full-capability cells contain
-six PE files each. The eight native clang-cl x86/x86-64 cells contain five PE
-files each, for a canonical total of 184 artifacts.
+six PE files each. The eight host-native clang-cl x86/x86-64 cells contain three
+PE files each, for a canonical total of 168 artifacts.
 
 `x86` is the canonical name for the 32-bit i386 target; the corpus does not
 duplicate it under two names. EH4 is the compressed Microsoft x64 C++ EH
@@ -49,10 +49,10 @@ Every full-capability cell builds:
 - `cxx_eh_probe`, which exercises typed and base catches, cleanup actions,
   nested regions, rethrow, and a buffer-protected catch.
 
-The host-native clang-cl x86 and x86-64 cells omit `xcpt4`: that executable builds
-but does not pass its own runtime test under clang-cl. The remaining official
-SEH tests and both focused probes are still built and executed. Cross-target
-clang-cl ARM64 retains the structurally validated `xcpt4` image.
+The host-native clang-cl x86 and x86-64 cells omit `xcpt4` and the `xframe` DLL/
+EXE pair because those executables do not pass their own runtime tests under
+clang-cl. `nested_collided` and both focused probes are still built and
+executed. Cross-target clang-cl ARM64 retains all structurally validated images.
 
 The imported source snapshot is pinned by full commit and per-file SHA-256 in
 `sources/windows-seh-tests/UPSTREAM.json`. Its license is retained in the

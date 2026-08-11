@@ -118,6 +118,15 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
             configuration["seh_personalities"],
             ["__C_specific_handler", "__GSHandlerCheck_SEH"],
         )
+        self.assertEqual(
+            configuration["gs_security_evidence"],
+            [
+                "__security_check_cookie",
+                "__GSHandlerCheck_SEH",
+                "__GSHandlerCheck_EH",
+                "__GSHandlerCheck_EH4",
+            ],
+        )
 
     def test_rejects_clang_cl_fh4_before_importing_visual_studio(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -113,7 +113,11 @@ class MatrixCell:
         """Return artifacts the selected compiler can produce for this target."""
 
         if self.toolchain == "clang-cl" and self.architecture in ("x86", "x86_64"):
-            return tuple(name for name in _FULL_ARTIFACT_INVENTORY if name != "xcpt4")
+            return tuple(
+                name
+                for name in _FULL_ARTIFACT_INVENTORY
+                if name not in {"xcpt4", "xframe_eh_dll", "xframe_eh_exe"}
+            )
         return _FULL_ARTIFACT_INVENTORY
 
     @property

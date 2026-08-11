@@ -94,7 +94,11 @@ class WindowsMatrixTests(unittest.TestCase):
                     "x86",
                     "x86_64",
                 ):
-                    expected = tuple(name for name in full_inventory if name != "xcpt4")
+                    expected = tuple(
+                        name
+                        for name in full_inventory
+                        if name not in {"xcpt4", "xframe_eh_dll", "xframe_eh_exe"}
+                    )
                 self.assertEqual(cell.artifact_names, expected)
 
     def test_rejects_unsupported_format_combinations(self) -> None:
