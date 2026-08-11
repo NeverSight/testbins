@@ -118,6 +118,35 @@ $SEHPersonalities = if ($Toolchain -eq "msvc" -and $SecurityCookie -eq "on") {
 } else {
   @("__C_specific_handler")
 }
+$ExpectedCxxPersonality = if ($Architecture -ne "x86_64") {
+  $null
+} elseif ($Toolchain -eq "clang-cl") {
+  "__CxxFrameHandler3"
+} elseif ($CxxFormat -eq "fh4") {
+  if ($SecurityCookie -eq "on") {
+    "__GSHandlerCheck_EH4"
+  } else {
+    "__CxxFrameHandler4"
+  }
+} else {
+  if ($SecurityCookie -eq "on") {
+    "__GSHandlerCheck_EH"
+  } else {
+    "__CxxFrameHandler3"
+  }
+}
+$CxxImportPersonalities = if ($null -eq $ExpectedCxxPersonality) {
+  @()
+} elseif ($Toolchain -eq "msvc" -and $SecurityCookie -eq "on") {
+  $UnderlyingCxxPersonality = if ($CxxFormat -eq "fh4") {
+    "__CxxFrameHandler4"
+  } else {
+    "__CxxFrameHandler3"
+  }
+  @($UnderlyingCxxPersonality, $ExpectedCxxPersonality)
+} else {
+  @($ExpectedCxxPersonality)
+}
 
 $CommonCompilerFlags = @(
   "/nologo",
@@ -170,6 +199,7 @@ if ($ValidateConfigurationOnly) {
     xcpt4_compiler_flags = @($XcptCompilerFlags)
     xcpt4_additional_compiler_flags = @($XcptAdditionalCompilerFlags)
     seh_personalities = @($SEHPersonalities)
+    cxx_import_personalities = @($CxxImportPersonalities)
     common_compiler_flags = @($CommonCompilerFlags)
     common_linker_flags = @($CommonLinkerFlags)
   } | ConvertTo-Json -Depth 5 -Compress
@@ -371,19 +401,7 @@ function Get-RepositoryRevision {
 }
 
 function Get-ExpectedCxxPersonality {
-  if ($Toolchain -eq "clang-cl") {
-    return "__CxxFrameHandler3"
-  }
-  if ($CxxFormat -eq "fh4") {
-    if ($SecurityCookie -eq "on") {
-      return "__GSHandlerCheck_EH4"
-    }
-    return "__CxxFrameHandler4"
-  }
-  if ($SecurityCookie -eq "on") {
-    return "__GSHandlerCheck_EH"
-  }
-  return "__CxxFrameHandler3"
+  return $ExpectedCxxPersonality
 }
 
 function Get-ExpectedSEHPersonalities {
@@ -482,7 +500,7 @@ function Get-Evidence([string] $Name, [string] $Kind) {
 
   $ImportGroups = [Collections.Generic.List[object]]::new()
   if ($Name -eq "cxx_eh_probe") {
-    $ImportGroups.Add(@(Get-ExpectedCxxPersonality))
+    $ImportGroups.Add(@($CxxImportPersonalities))
   } elseif ($Name -eq "seh_probe") {
     $ImportGroups.Add(@(Get-ExpectedSEHPersonalities))
   } elseif ($Kind -eq "mixed") {

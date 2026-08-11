@@ -118,6 +118,10 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
             configuration["seh_personalities"],
             ["__C_specific_handler", "__GSHandlerCheck_SEH"],
         )
+        self.assertEqual(
+            configuration["cxx_import_personalities"],
+            ["__CxxFrameHandler4", "__GSHandlerCheck_EH4"],
+        )
         self.assertNotIn("gs_security_evidence", configuration)
 
     def test_rejects_clang_cl_fh4_before_importing_visual_studio(self) -> None:

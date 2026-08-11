@@ -520,6 +520,40 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             result = VERIFY.verify_manifest(manifest_path, root)
             self.assertEqual(result.artifact_count, 1)
 
+    def test_accepts_static_gs_cxx_wrapper_with_imported_base_handler(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86_64",
+                cxx_format="fh4",
+                security_cookie=True,
+                optimization="o0",
+            )
+            _write_minimal_pe(
+                artifact,
+                import_names=("__CxxFrameHandler4",),
+                security_cookie=True,
+            )
+            manifest = _valid_manifest(
+                root,
+                artifact,
+                architecture="x86_64",
+                cxx_format="fh4",
+                security_cookie=True,
+                optimization="o0",
+            )
+            record = manifest["artifacts"][0]
+            record["evidence"]["required_imports_any"] = [
+                ["__CxxFrameHandler4", "__GSHandlerCheck_EH4"]
+            ]
+            record["neverd"]["personalities_any"] = ["__GSHandlerCheck_EH4"]
+            manifest_path = _write_manifest(root, manifest)
+
+            result = VERIFY.verify_manifest(manifest_path, root)
+            self.assertEqual(result.artifact_count, 1)
+
     def test_accepts_pe32_load_config_security_cookie(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
