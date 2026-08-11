@@ -254,7 +254,8 @@ function Invoke-Probe([string] $Executable, [string] $WorkingDirectory) {
 }
 
 function Get-ToolIdentity([string] $CommandName) {
-  $Command = Get-Command $CommandName -CommandType Application -ErrorAction Stop
+  $Command = Get-Command $CommandName -CommandType Application -ErrorAction Stop |
+    Select-Object -First 1
   $Version = [Diagnostics.FileVersionInfo]::GetVersionInfo($Command.Source)
   return [ordered]@{
     name = $CommandName
