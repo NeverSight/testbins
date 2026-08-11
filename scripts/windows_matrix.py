@@ -50,6 +50,14 @@ _ARCHITECTURE_ALIASES = {
 _TOOLCHAINS = ("msvc", "clang-cl")
 _OPTIMIZATIONS = ("o0", "o2")
 _SECURITY_COOKIE_MODES = ("off", "on")
+_FULL_ARTIFACT_INVENTORY = (
+    "xcpt4",
+    "nested_collided",
+    "xframe_eh_dll",
+    "xframe_eh_exe",
+    "seh_probe",
+    "cxx_eh_probe",
+)
 
 
 def normalize_architecture(value: str) -> str:
@@ -97,6 +105,14 @@ class MatrixCell:
     @property
     def cookie_label(self) -> str:
         return "gs" if self.security_cookie == "on" else "no-gs"
+
+    @property
+    def artifact_names(self) -> tuple[str, ...]:
+        """Return artifacts the selected compiler can produce for this target."""
+
+        if self.toolchain == "clang-cl" and self.architecture == "arm":
+            return ("cxx_eh_probe",)
+        return _FULL_ARTIFACT_INVENTORY
 
     @property
     def key(self) -> str:

@@ -485,20 +485,22 @@ def _validate_tool_identity(value: Any, context: str, *, expected_name: str) -> 
     _require_string(identity, "file_version", context)
 
 
-def _expected_personality(
+def _expected_personalities(
     *, toolchain: str, cxx_format: str, security_cookie: bool, name: str
-) -> str | None:
+) -> tuple[str, ...]:
     if name == "cxx_eh_probe":
         if toolchain == "clang-cl":
-            return "__CxxFrameHandler3"
+            return ("__CxxFrameHandler3",)
         if cxx_format == "fh4":
-            return "__GSHandlerCheck_EH4" if security_cookie else "__CxxFrameHandler4"
-        return "__GSHandlerCheck_EH" if security_cookie else "__CxxFrameHandler3"
+            return (
+                "__GSHandlerCheck_EH4" if security_cookie else "__CxxFrameHandler4",
+            )
+        return ("__GSHandlerCheck_EH" if security_cookie else "__CxxFrameHandler3",)
     if name == "seh_probe":
         if toolchain == "msvc" and security_cookie:
-            return "__GSHandlerCheck_SEH"
-        return "__C_specific_handler"
-    return None
+            return ("__C_specific_handler", "__GSHandlerCheck_SEH")
+        return ("__C_specific_handler",)
+    return ()
 
 
 def _validate_build(
@@ -579,7 +581,7 @@ def _validate_neverd(
     *,
     architecture: str,
     name: str,
-    expected_personality: str | None,
+    expected_personalities: tuple[str, ...],
     context: str,
 ) -> None:
     neverd = _require_object(value, context)
@@ -619,8 +621,8 @@ def _validate_neverd(
     elif level == "unwind-only":
         if personalities or min_functions < 1 or any((min_cxx, min_try, min_seh)):
             raise VerificationError(f"{context} unwind-only contract is inconsistent")
-    elif expected_personality is not None:
-        if personalities != [expected_personality]:
+    elif expected_personalities:
+        if personalities != list(expected_personalities):
             raise VerificationError(
                 f"{context} probe personality contract is inconsistent"
             )
@@ -637,7 +639,7 @@ def _validate_evidence(
     *,
     image: _PEImage,
     architecture: str,
-    expected_personality: str | None,
+    expected_personalities: tuple[str, ...],
     context: str,
 ) -> None:
     evidence = _require_object(value, context)
@@ -665,8 +667,9 @@ def _validate_evidence(
             raise VerificationError(
                 f"{context} required import alternative is absent: {group}"
             )
-    if expected_personality is not None and not any(
-        expected_personality in group for group in normalized_groups
+    if expected_personalities and not any(
+        all(personality in group for personality in expected_personalities)
+        for group in normalized_groups
     ):
         raise VerificationError(f"{context} omits required personality evidence")
 
@@ -744,9 +747,9 @@ def _validate_artifact(
             f"{context} artifact layout disagrees with build axes: {relative_text}"
         )
 
-    expected_personality = None
+    expected_personalities: tuple[str, ...] = ()
     if architecture == "x86_64":
-        expected_personality = _expected_personality(
+        expected_personalities = _expected_personalities(
             toolchain=toolchain,
             cxx_format=cxx_format,
             security_cookie=security_cookie,
@@ -756,7 +759,7 @@ def _validate_artifact(
         artifact.get("neverd"),
         architecture=architecture,
         name=name,
-        expected_personality=expected_personality,
+        expected_personalities=expected_personalities,
         context=f"{context}.neverd",
     )
 
@@ -794,7 +797,7 @@ def _validate_artifact(
         artifact.get("evidence"),
         image=image,
         architecture=architecture,
-        expected_personality=expected_personality,
+        expected_personalities=expected_personalities,
         context=f"{context}.evidence",
     )
     return relative_text, len(payload)
@@ -824,7 +827,6 @@ def verify_complete_matrix(path: Path) -> None:
     manifest = _load_manifest(path)
     _validate_manifest_identity(manifest)
     artifacts = _require_array(manifest.get("artifacts"), "artifacts")
-    expected_names = set(_ARTIFACT_LAYOUT)
     names_by_cell: dict[str, set[str]] = {}
     paths: set[str] = set()
     for index, raw_artifact in enumerate(artifacts):
@@ -845,7 +847,10 @@ def verify_complete_matrix(path: Path) -> None:
             raise VerificationError(f"duplicate artifact name {name!r} in cell {key}")
         cell_names.add(name)
 
-    expected_keys = {cell.key for cell in expected_cells()}
+    expected_names_by_cell = {
+        cell.key: set(cell.artifact_names) for cell in expected_cells()
+    }
+    expected_keys = set(expected_names_by_cell)
     if set(names_by_cell) != expected_keys:
         missing = sorted(expected_keys - set(names_by_cell))
         extra = sorted(set(names_by_cell) - expected_keys)
@@ -853,13 +858,14 @@ def verify_complete_matrix(path: Path) -> None:
             f"incomplete Windows EH matrix; missing={missing}, extra={extra}"
         )
     for key, names in names_by_cell.items():
+        expected_names = expected_names_by_cell[key]
         if names != expected_names:
             raise VerificationError(
                 f"matrix cell {key} artifact set differs: "
                 f"missing={sorted(expected_names - names)}, "
                 f"extra={sorted(names - expected_names)}"
             )
-    expected_count = len(expected_keys) * len(expected_names)
+    expected_count = sum(len(names) for names in expected_names_by_cell.values())
     if len(artifacts) != expected_count:
         raise VerificationError(
             f"matrix contains {len(artifacts)} artifacts, expected {expected_count}"

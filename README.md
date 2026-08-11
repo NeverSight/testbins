@@ -14,10 +14,13 @@ two toolchains and four canonical PE architectures:
 |---|---|---|---|---|---:|
 | MSVC | x86-64 | EH3, EH4 | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
 | clang-cl | x86-64 | EH3 | `/GS-`, `/GS` | `/Od`, `/O2` | 4 |
-| MSVC, clang-cl | x86, ARM32, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 24 |
+| MSVC | x86, ARM32, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 12 |
+| clang-cl | x86, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
+| clang-cl | ARM32 | native C++ EH | `/GS-`, `/GS` | `/Od`, `/O2` | 4 |
 
-The complete matrix contains 36 cells. Each cell contains six PE files, for a
-canonical total of 216 artifacts.
+The complete matrix contains 36 cells. Thirty-two full-capability cells contain
+six PE files each. The four clang-cl ARM32 cells contain the C++ EH probe, for a
+canonical total of 196 artifacts.
 
 `x86` is the canonical name for the 32-bit i386 target; the corpus does not
 duplicate it under two names. EH4 is the compressed Microsoft x64 C++ EH
@@ -27,12 +30,18 @@ clang-cl emits EH3 for the x64 Microsoft ABI and receives an explicit target
 triple for every architecture. Non-x64 targets use their native Windows
 exception ABI and are not mislabeled as EH3 or EH4.
 
+Official clang-cl supports SEH `__try` on Windows x86, x86-64, and ARM64, but
+not ARM32. The ARM32 clang-cl cells therefore exercise C++ EH only; they do not
+claim SEH coverage that the compiler cannot emit. MSVC supplies the ARM32 SEH
+artifacts. The capability-specific artifact inventory is enforced by both the
+producer and the complete-matrix verifier.
+
 `/GS` and the C++ EH format are independent controls. The manifest records both
 axes and the focused probes provide personality and security-cookie evidence.
 
 ## Test inputs
 
-Every cell builds:
+Every full-capability cell builds:
 
 - `xcpt4`, `nested_collided`, `xframe_eh_exe`, and `xframe_eh_dll` from the
   pinned [Microsoft Windows SEH tests](https://github.com/microsoft/windows_seh_tests);
@@ -40,6 +49,8 @@ Every cell builds:
   buffer-protected function;
 - `cxx_eh_probe`, which exercises typed and base catches, cleanup actions,
   nested regions, rethrow, and a buffer-protected catch.
+
+The clang-cl ARM32 cells build only `cxx_eh_probe`.
 
 The imported source snapshot is pinned by full commit and per-file SHA-256 in
 `sources/windows-seh-tests/UPSTREAM.json`. Its license is retained in the
@@ -54,7 +65,7 @@ corpus/windows-eh/msvc/x86_64/fh4/gs/o2/abi-probe/
   cxx_eh_probe-msvc-x86_64-fh4-gs-o2.exe
 
 corpus/windows-eh/clang-cl/arm/native/no-gs/o0/abi-probe/
-  seh_probe-clang-cl-arm-native-no-gs-o0.exe
+  cxx_eh_probe-clang-cl-arm-native-no-gs-o0.exe
 ```
 
 The canonical manifest is `manifests/windows-eh.json`. Schema version 2 records

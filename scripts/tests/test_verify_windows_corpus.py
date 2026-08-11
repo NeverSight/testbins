@@ -45,15 +45,6 @@ _LINKER_MACHINES = {
     "aarch64": "ARM64",
 }
 
-_ARTIFACT_NAMES = (
-    "xcpt4",
-    "nested_collided",
-    "xframe_eh_dll",
-    "xframe_eh_exe",
-    "seh_probe",
-    "cxx_eh_probe",
-)
-
 
 def _write_minimal_pe(
     path: Path,
@@ -336,7 +327,7 @@ def _write_manifest(root: Path, manifest: dict) -> Path:
 def _complete_inventory() -> dict:
     artifacts = []
     for cell in MATRIX.expected_cells():
-        for name in _ARTIFACT_NAMES:
+        for name in cell.artifact_names:
             security_cookie = cell.security_cookie == "on"
             artifacts.append(
                 {
@@ -456,6 +447,51 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
 
                 result = VERIFY.verify_manifest(manifest_path, root)
                 self.assertEqual(result.artifact_count, 1)
+
+    def test_accepts_valid_gs_seh_personality_alternatives(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86_64",
+                cxx_format="fh3",
+                security_cookie=True,
+                optimization="o2",
+                name="seh_probe",
+            )
+            _write_minimal_pe(
+                artifact,
+                import_names=("__C_specific_handler", "__security_check_cookie"),
+            )
+            manifest = _valid_manifest(
+                root,
+                artifact,
+                architecture="x86_64",
+                cxx_format="fh3",
+                security_cookie=True,
+                optimization="o2",
+                name="seh_probe",
+            )
+            record = manifest["artifacts"][0]
+            record["build"]["compiler_flags"].remove("/d2FH4-")
+            personalities = ["__C_specific_handler", "__GSHandlerCheck_SEH"]
+            record["evidence"]["required_imports_any"] = [
+                personalities,
+                ["__security_check_cookie"],
+            ]
+            record["neverd"].update(
+                {
+                    "personalities_any": personalities,
+                    "min_cxx_functions": 0,
+                    "min_try_blocks": 0,
+                    "min_seh_scopes": 1,
+                }
+            )
+            manifest_path = _write_manifest(root, manifest)
+
+            result = VERIFY.verify_manifest(manifest_path, root)
+            self.assertEqual(result.artifact_count, 1)
 
     def test_rejects_truncated_arm_runtime_function_table(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -649,10 +685,14 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             with self.assertRaisesRegex(VERIFY.VerificationError, "SHA-256 mismatch"):
                 VERIFY.verify_manifest(manifest_path, root)
 
-    def test_complete_matrix_accepts_36_cells_and_216_artifacts(self) -> None:
+    def test_complete_matrix_accepts_36_cells_and_196_capability_artifacts(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
-            manifest_path = _write_manifest(root, _complete_inventory())
+            manifest = _complete_inventory()
+            self.assertEqual(len(manifest["artifacts"]), 196)
+            manifest_path = _write_manifest(root, manifest)
 
             VERIFY.verify_complete_matrix(manifest_path)
 

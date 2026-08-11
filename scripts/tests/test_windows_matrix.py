@@ -78,6 +78,24 @@ class WindowsMatrixTests(unittest.TestCase):
                 self.assertEqual(cell.target_triple, triple)
                 self.assertEqual(cell.execute, execute)
 
+    def test_artifact_inventory_matches_toolchain_target_capabilities(self) -> None:
+        full_inventory = (
+            "xcpt4",
+            "nested_collided",
+            "xframe_eh_dll",
+            "xframe_eh_exe",
+            "seh_probe",
+            "cxx_eh_probe",
+        )
+        for cell in self.matrix.expected_cells():
+            with self.subTest(cell=cell.key):
+                expected = (
+                    ("cxx_eh_probe",)
+                    if cell.toolchain == "clang-cl" and cell.architecture == "arm"
+                    else full_inventory
+                )
+                self.assertEqual(cell.artifact_names, expected)
+
     def test_rejects_unsupported_format_combinations(self) -> None:
         invalid = (
             ("clang-cl", "x86_64", "fh4"),

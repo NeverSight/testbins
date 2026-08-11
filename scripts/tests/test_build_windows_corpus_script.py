@@ -82,6 +82,38 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
         self.assertIn("/MACHINE:ARM", configuration["common_linker_flags"])
         self.assertIsNone(configuration["cxx_format_flag"])
 
+    def test_configuration_advertises_only_buildable_artifacts(self) -> None:
+        for cell in (
+            MATRIX.validate_cell("msvc", "arm", "native", "o0", "off"),
+            MATRIX.validate_cell("clang-cl", "arm", "native", "o0", "off"),
+        ):
+            with self.subTest(cell=cell.key):
+                configuration = self._configuration(cell)
+                self.assertEqual(
+                    configuration["artifact_names"], list(cell.artifact_names)
+                )
+
+    def test_clang_cl_uses_upstream_xcpt4_skip_profile(self) -> None:
+        msvc = self._configuration(
+            MATRIX.validate_cell("msvc", "x86_64", "fh3", "o0", "off")
+        )
+        clang_cl = self._configuration(
+            MATRIX.validate_cell("clang-cl", "x86_64", "fh3", "o0", "off")
+        )
+
+        self.assertEqual(msvc["xcpt4_compiler_flags"], ["/DBAIL_IN_FINALLY"])
+        self.assertEqual(clang_cl["xcpt4_compiler_flags"], [])
+
+    def test_msvc_gs_seh_contract_accepts_both_valid_handlers(self) -> None:
+        configuration = self._configuration(
+            MATRIX.validate_cell("msvc", "x86_64", "fh4", "o2", "on")
+        )
+
+        self.assertEqual(
+            configuration["seh_personalities"],
+            ["__C_specific_handler", "__GSHandlerCheck_SEH"],
+        )
+
     def test_rejects_clang_cl_fh4_before_importing_visual_studio(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             result = subprocess.run(
