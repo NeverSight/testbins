@@ -1,0 +1,11 @@
+__pycache__/
+.ruff_cache/
+*.py[cod]
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+.vs/
+out/
+staging/

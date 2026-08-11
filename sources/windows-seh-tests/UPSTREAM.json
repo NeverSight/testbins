@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "name": "Windows C/C++ Structured Exception Handling Validation Test Suite",
+  "repository": "https://github.com/microsoft/windows_seh_tests.git",
+  "revision": "2e8b7bb654d9aebf03f28801c4b1400489ba6a0c",
+  "license": "MIT",
+  "files": {
+    ".gitignore": "7a67f576b78384397450b91f2139c1ab237bd07c9849db7a8a336105b6e96e8f",
+    "LICENSE": "27ebda9d51f0a56b7e281ccd8230a27236dcb51c05f64b07869ecf6e965d68b0",
+    "README.md": "bc4cad12b12097817bf921a7370990e4b1b3a21df4a3f91c5411cf762a10d19e",
+    "SECURITY.md": "430987b8c5f30c366ecd501bc344c8b29b6280e8a10174376a769f7443a187cd",
+    "src/nested_collided/nestcol.c": "1078ea1a079fa011c428eedbda230400faad02ba40c78bc4cc0d94c7b7f8ceb2",
+    "src/nested_collided/nested_collided.vcxproj": "cf91adc7b42f0c3d73599405a9d427b66c57c0ea4e2c00074561036012fb34d2",
+    "src/seh_tests.sln": "e699ffacaab1ce348dc0bdc8e1136c8e785cca14416d5754304586b6de928fc4",
+    "src/xcpt4/xcpt4.vcxproj": "2b332a092d86d5335e2caa5d62e46b9c0123bc8ef5208d1a2363cfdfeedbd17a",
+    "src/xcpt4/xcpt4cxx.cpp": "5a2c4f044dff551b2d45611540b9c3ebc4216e0ad1b40bb1d912b2375d8e5bb4",
+    "src/xcpt4/xcpt4ex.c": "01d67d053ae48fdad194dfc8d31669eb1b688d4e42134fff2ddb434ac996036e",
+    "src/xcpt4/xcpt4pg.c": "2b264d317a9f1237c4da45ee5ff6a894b7175a3d56546b42f62923c253b43c7b",
+    "src/xcpt4/xcpt4u.c": "4383813e2acc298b84db1c8682bd52825f11d1eb6e48debe1431dd4f8018d6f3",
+    "src/xframe_eh_dll/xframe_eh_dll.DEF": "b1d7719b358ed011e993fb4fa891471dc4623a35009bf6dd422c1c4c5ffc40fd",
+    "src/xframe_eh_dll/xframe_eh_dll.c": "946809ef952ed70f2b46e782bcfe768643d25235a4aef3002eb5909b65006622",
+    "src/xframe_eh_dll/xframe_eh_dll.vcxproj": "bfb49a654cb9904e8fbe1e610ade0a488a0d81fb0c02f8421136bbca29cf7fa6",
+    "src/xframe_eh_exe/xframe_eh_exe.c": "785119aa1cec68afe3792400ce2ae18a164e2cda77219f37a5ec265d219f9ccf",
+    "src/xframe_eh_exe/xframe_eh_exe.vcxproj": "e964871f27524b4ca39fc762e121af3cabad0eaeef070492501ea68ebcbd0978"
+  }
+}

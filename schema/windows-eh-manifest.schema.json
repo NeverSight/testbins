@@ -1,0 +1,599 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NeverSight/testbins/schema/windows-eh-manifest.schema.json",
+  "title": "Windows multi-toolchain exception corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus",
+    "source",
+    "producer",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "corpus": {
+      "const": "windows-eh"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitRevision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "toolIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "product_version",
+        "file_version"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "product_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "file_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "windows_seh_tests"
+      ],
+      "properties": {
+        "windows_seh_tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repository",
+            "revision",
+            "license"
+          ],
+          "properties": {
+            "repository": {
+              "const": "https://github.com/microsoft/windows_seh_tests.git"
+            },
+            "revision": {
+              "$ref": "#/$defs/gitRevision"
+            },
+            "license": {
+              "const": "MIT"
+            }
+          }
+        }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_revision",
+        "runner_image",
+        "runner_arch"
+      ],
+      "properties": {
+        "repository_revision": {
+          "$ref": "#/$defs/gitRevision"
+        },
+        "runner_image": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runner_arch": {
+          "const": "x64"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "toolchain",
+        "compiler",
+        "linker",
+        "target_triple",
+        "optimization",
+        "security_cookie",
+        "cxx_format",
+        "execution",
+        "compiler_flags",
+        "linker_flags"
+      ],
+      "properties": {
+        "toolchain": {
+          "enum": [
+            "msvc",
+            "clang-cl"
+          ]
+        },
+        "compiler": {
+          "$ref": "#/$defs/toolIdentity"
+        },
+        "linker": {
+          "$ref": "#/$defs/toolIdentity"
+        },
+        "target_triple": {
+          "enum": [
+            "i686-pc-windows-msvc",
+            "x86_64-pc-windows-msvc",
+            "thumbv7-pc-windows-msvc",
+            "aarch64-pc-windows-msvc"
+          ]
+        },
+        "optimization": {
+          "enum": [
+            "o0",
+            "o2"
+          ]
+        },
+        "security_cookie": {
+          "type": "boolean"
+        },
+        "cxx_format": {
+          "enum": [
+            "native",
+            "fh3",
+            "fh4"
+          ]
+        },
+        "execution": {
+          "enum": [
+            "passed",
+            "not-run-cross-target"
+          ]
+        },
+        "compiler_flags": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "linker_flags": {
+          "$ref": "#/$defs/stringArray"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "toolchain": {
+                "const": "msvc"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "compiler": {
+                "properties": {
+                  "name": {
+                    "const": "cl.exe"
+                  }
+                }
+              },
+              "linker": {
+                "properties": {
+                  "name": {
+                    "const": "link.exe"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "compiler": {
+                "properties": {
+                  "name": {
+                    "const": "clang-cl.exe"
+                  }
+                }
+              },
+              "linker": {
+                "properties": {
+                  "name": {
+                    "const": "lld-link.exe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "toolchain": {
+                "const": "clang-cl"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "properties": {
+                "cxx_format": {
+                  "const": "fh4"
+                }
+              },
+              "required": [
+                "cxx_format"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_sections",
+        "required_imports_any",
+        "require_exception_directory",
+        "require_unwind_records"
+      ],
+      "properties": {
+        "required_sections": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/stringArray"
+            },
+            {
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          ]
+        },
+        "required_imports_any": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/stringArray"
+              },
+              {
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            ]
+          }
+        },
+        "require_exception_directory": {
+          "type": "boolean"
+        },
+        "require_unwind_records": {
+          "type": "boolean"
+        }
+      }
+    },
+    "neverd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation_level",
+        "allowed_parse_status",
+        "personalities_any",
+        "min_exception_functions",
+        "min_cxx_functions",
+        "min_try_blocks",
+        "min_seh_scopes"
+      ],
+      "properties": {
+        "validation_level": {
+          "enum": [
+            "exception-graph",
+            "unwind-only",
+            "load-only"
+          ]
+        },
+        "allowed_parse_status": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "complete",
+              "partial"
+            ]
+          }
+        },
+        "personalities_any": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "min_exception_functions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_cxx_functions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_try_blocks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_seh_scopes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size",
+        "architecture",
+        "suite",
+        "name",
+        "kind",
+        "build",
+        "evidence",
+        "neverd"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^corpus/windows-eh/(msvc|clang-cl)/(x86|x86_64|arm|aarch64)/(native|fh3|fh4)/(no-gs|gs)/(o0|o2)/(windows-seh-tests|abi-probe)/[A-Za-z0-9_.-]+\\.(exe|dll)$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "architecture": {
+          "enum": [
+            "x86",
+            "x86_64",
+            "arm",
+            "aarch64"
+          ]
+        },
+        "suite": {
+          "enum": [
+            "windows-seh-tests",
+            "abi-probe"
+          ]
+        },
+        "name": {
+          "enum": [
+            "xcpt4",
+            "nested_collided",
+            "xframe_eh_dll",
+            "xframe_eh_exe",
+            "seh_probe",
+            "cxx_eh_probe"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "seh",
+            "cxx",
+            "mixed"
+          ]
+        },
+        "build": {
+          "$ref": "#/$defs/build"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "neverd": {
+          "$ref": "#/$defs/neverd"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "architecture": {
+                "const": "x86"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "target_triple": {
+                    "const": "i686-pc-windows-msvc"
+                  },
+                  "cxx_format": {
+                    "const": "native"
+                  },
+                  "execution": {
+                    "const": "passed"
+                  }
+                }
+              },
+              "evidence": {
+                "properties": {
+                  "require_exception_directory": {
+                    "const": false
+                  },
+                  "require_unwind_records": {
+                    "const": false
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "load-only"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "architecture": {
+                "const": "x86_64"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "target_triple": {
+                    "const": "x86_64-pc-windows-msvc"
+                  },
+                  "cxx_format": {
+                    "enum": [
+                      "fh3",
+                      "fh4"
+                    ]
+                  },
+                  "execution": {
+                    "const": "passed"
+                  }
+                }
+              },
+              "evidence": {
+                "properties": {
+                  "require_exception_directory": {
+                    "const": true
+                  },
+                  "require_unwind_records": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "exception-graph"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "architecture": {
+                "const": "arm"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "target_triple": {
+                    "const": "thumbv7-pc-windows-msvc"
+                  },
+                  "cxx_format": {
+                    "const": "native"
+                  },
+                  "execution": {
+                    "const": "not-run-cross-target"
+                  }
+                }
+              },
+              "evidence": {
+                "properties": {
+                  "require_exception_directory": {
+                    "const": true
+                  },
+                  "require_unwind_records": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "unwind-only"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "architecture": {
+                "const": "aarch64"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "target_triple": {
+                    "const": "aarch64-pc-windows-msvc"
+                  },
+                  "cxx_format": {
+                    "const": "native"
+                  },
+                  "execution": {
+                    "const": "not-run-cross-target"
+                  }
+                }
+              },
+              "evidence": {
+                "properties": {
+                  "require_exception_directory": {
+                    "const": true
+                  },
+                  "require_unwind_records": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "unwind-only"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
