@@ -63,7 +63,14 @@ _GO_ENV_KEYS = (
 #: eleven recover sites and ten heap-defer sites before the runtime is linked
 #: in -- because the point is to catch a decoder that recovered nothing, not to
 #: pin a number that shifts with every Go release.
-_MIN_GO_FUNCTIONS = 800
+#: Counted against the frames NeverD records, which is not the same as the
+#: `pclntab` function count: it records a frame only where one has exceptional
+#: control flow, on the grounds that carrying pointer maps for the other three
+#: quarters of the image would grow the result by the size of the image and
+#: say nothing about most of it.  The smallest image here has 1881 functions in
+#: its table and 475 with a defer, panic or recover, so this floor sits well
+#: under the latter rather than under the former.
+_MIN_GO_FUNCTIONS = 200
 _MIN_DEFER_SITES = 5
 _MIN_RECOVER_SITES = 8
 _MIN_PANIC_SITES = 20
