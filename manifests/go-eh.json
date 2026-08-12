@@ -1,0 +1,1502 @@
+{
+  "artifacts": [
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "darwin",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": "go.func.*",
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1349,
+        "pclntab_magic": 4294967291,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": "__gopclntab",
+        "required_sections": [
+          "__gopclntab",
+          "__noptrdata",
+          "__text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.15.15",
+      "goarch": "amd64",
+      "goos": "darwin",
+      "neverd": {
+        "allowed_parse_status": [
+          "partial"
+        ],
+        "expected_pclntab_version": "go1.2",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "table-only"
+      },
+      "object_format": "macho",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.15.15/darwin-amd64/exe/cgo0/stripped/opt/eh_probe-go1.15.15-darwin-amd64-exe-cgo0-stripped-opt",
+      "sha256": "f6c0faef66150b569eee5c5db483dfd9857421695c5b728ab809507d4e8bf2b4",
+      "size": 1124456,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1213,
+        "pclntab_magic": 4294967291,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.15.15",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "partial"
+        ],
+        "expected_pclntab_version": "go1.2",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "table-only"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.15.15/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.15.15-linux-amd64-exe-cgo0-stripped-opt",
+      "sha256": "4023193d91063bfc9ec8d45e1d69535c767f833696654e9c94af109ab3d5b471",
+      "size": 942080,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": "go.func.*",
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1213,
+        "pclntab_magic": 4294967291,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.15.15",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "partial"
+        ],
+        "expected_pclntab_version": "go1.2",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "table-only"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.15.15/linux-amd64/exe/cgo0/symtab/opt/eh_probe-go1.15.15-linux-amd64-exe-cgo0-symtab-opt",
+      "sha256": "8b51e4df84e96ba9db53cf5ea85a1d7903aabcc8a7a77745551091f805096588",
+      "size": 1405445,
+      "stripped": false
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "arm64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1172,
+        "pclntab_magic": 4294967291,
+        "pclntab_min_lc": 4,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.15.15",
+      "goarch": "arm64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "partial"
+        ],
+        "expected_pclntab_version": "go1.2",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "table-only"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.15.15/linux-arm64/exe/cgo0/stripped/opt/eh_probe-go1.15.15-linux-arm64-exe-cgo0-stripped-opt",
+      "sha256": "bf6e3eb6cf0bbe8ed7db5f1ec73d3cedb062dd2168bf31d12ca0c10ede02af17",
+      "size": 1048576,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "windows",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": false,
+        "pclntab_function_count": 1231,
+        "pclntab_magic": 4294967291,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".rdata",
+        "required_sections": [
+          ".data",
+          ".rdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.15.15",
+      "goarch": "amd64",
+      "goos": "windows",
+      "neverd": {
+        "allowed_parse_status": [
+          "partial"
+        ],
+        "expected_pclntab_version": "go1.2",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "table-only"
+      },
+      "object_format": "pe",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.15.15/windows-amd64/exe/cgo0/stripped/opt/eh_probe-go1.15.15-windows-amd64-exe-cgo0-stripped-opt.exe",
+      "sha256": "1409a04430bc97e95e1dd97c4746a4ca2afcbab407420fb01a411d76806045c7",
+      "size": 1017344,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "arm64",
+          "GOFLAGS": "",
+          "GOOS": "darwin",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": "go.func.*",
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1249,
+        "pclntab_magic": 4294967290,
+        "pclntab_min_lc": 4,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": "__gopclntab",
+        "required_sections": [
+          "__gopclntab",
+          "__noptrdata",
+          "__text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.16.15",
+      "goarch": "arm64",
+      "goos": "darwin",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.16",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "macho",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.16.15/darwin-arm64/exe/cgo0/stripped/opt/eh_probe-go1.16.15-darwin-arm64-exe-cgo0-stripped-opt",
+      "sha256": "0a1ef6c4ab4784264d0be3e87bfda76dc0fe7ba59e48d83640f213e81e50f2e5",
+      "size": 1162802,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1173,
+        "pclntab_magic": 4294967290,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.16.15",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.16",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": false,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.16.15/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.16.15-linux-amd64-exe-cgo0-stripped-opt",
+      "sha256": "d2ec237620e1df4442e50aa006c3c3508f2c879435804f924699a87f0e3fc3d9",
+      "size": 946176,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1206,
+        "pclntab_magic": 4294967280,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.18.10",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.18",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.18.10/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.18.10-linux-amd64-exe-cgo0-stripped-opt",
+      "sha256": "467a7276475950fa2703be4e7c1188a628469f15038ccee8033e870faf95ec2e",
+      "size": 872448,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "windows",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": false,
+        "pclntab_function_count": 1214,
+        "pclntab_magic": 4294967280,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".rdata",
+        "required_sections": [
+          ".data",
+          ".rdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.18.10",
+      "goarch": "amd64",
+      "goos": "windows",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.18",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "pe",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.18.10/windows-amd64/exe/cgo0/stripped/opt/eh_probe-go1.18.10-windows-amd64-exe-cgo0-stripped-opt.exe",
+      "sha256": "026553bbef1a96e8f48ae85160898d9583e42cd5a3abd4950adb6d7e63d8ed8d",
+      "size": 955392,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1277,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.20.14",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.20.14/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.20.14-linux-amd64-exe-cgo0-stripped-opt",
+      "sha256": "8aa1663cd7b5d5aad2a5c3ef17eaa1ce55652f2f57674e2e040e5daa5062cb3b",
+      "size": 921600,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "darwin",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1958,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": "__gopclntab",
+        "required_sections": [
+          "__gopclntab",
+          "__noptrdata",
+          "__text"
+        ],
+        "symbol_table": "loader-only"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "darwin",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "macho",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/darwin-amd64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-darwin-amd64-exe-cgo0-stripped-opt",
+      "sha256": "aaddbff3e75fc45b9f734c368fd2d91112d20f55e6cdebeb0894b714dcb97c3c",
+      "size": 1488912,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "arm64",
+          "GOFLAGS": "",
+          "GOOS": "darwin",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1925,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 4,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": "__gopclntab",
+        "required_sections": [
+          "__gopclntab",
+          "__noptrdata",
+          "__text"
+        ],
+        "symbol_table": "loader-only"
+      },
+      "go_version": "1.26.5",
+      "goarch": "arm64",
+      "goos": "darwin",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "macho",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/darwin-arm64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-darwin-arm64-exe-cgo0-stripped-opt",
+      "sha256": "32e89c1f4a9cc7e10cc154d18f35d36909d3024b1506eda1f316bf650e56bb98",
+      "size": 1488002,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "arm64",
+          "GOFLAGS": "",
+          "GOOS": "darwin",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": "go:func.*",
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1925,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 4,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": "__gopclntab",
+        "required_sections": [
+          "__gopclntab",
+          "__noptrdata",
+          "__text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.26.5",
+      "goarch": "arm64",
+      "goos": "darwin",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "macho",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/darwin-arm64/exe/cgo0/symtab/opt/eh_probe-go1.26.5-darwin-arm64-exe-cgo0-symtab-opt",
+      "sha256": "3ccdf4b0b1e317162d693348d7cd35f3595c2599be39d2b3274214c7b7978c57",
+      "size": 2250978,
+      "stripped": false
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "1",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-shared-object",
+        "flags": [
+          "-trimpath",
+          "-buildmode=c-shared",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "c-shared",
+      "cgo_enabled": true,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [
+          ".eh_frame",
+          ".eh_frame_hdr"
+        ],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1876,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "loader-only"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-amd64/c-shared/cgo1/stripped/opt/eh_probe-go1.26.5-linux-amd64-c-shared-cgo1-stripped-opt.so",
+      "sha256": "6e2adce26c224a8cfeec7e1f09a80405b3242512c5e8e5a8ccc1a0cd6e9c1d34",
+      "size": 1591936,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-gcflags=all=-N -l",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 2811,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 0,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "none",
+      "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo0/stripped/noopt/eh_probe-go1.26.5-linux-amd64-exe-cgo0-stripped-noopt",
+      "sha256": "c81cd5a80d693a034499b8b2198756bd2ba00d29493501193801181c73c0d785",
+      "size": 1421474,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1850,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-linux-amd64-exe-cgo0-stripped-opt",
+      "sha256": "d5f47c0633c35a54a7e12d7caf4666b737b30f56afa471b356e6ba982b652c91",
+      "size": 1417378,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": "go:func.*",
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1850,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo0/symtab/opt/eh_probe-go1.26.5-linux-amd64-exe-cgo0-symtab-opt",
+      "sha256": "83d4d6c8c009a19cf0fcf2c76f83c2974e5d2bb82de1af5f11fc151186eb1fd9",
+      "size": 2154687,
+      "stripped": false
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "1",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": true,
+      "evidence": {
+        "gofunc_symbol": "go:func.*",
+        "native_unwind_sections": [
+          ".eh_frame",
+          ".eh_frame_hdr"
+        ],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1870,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo1/symtab/opt/eh_probe-go1.26.5-linux-amd64-exe-cgo1-symtab-opt",
+      "sha256": "513e2ae645d22f1b51f019a2ac98efacee934f0234c851c4aad9bea12b00fdcd",
+      "size": 2154304,
+      "stripped": false
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "passed",
+        "flags": [
+          "-trimpath",
+          "-buildmode=pie",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "pie",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1850,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-amd64/pie/cgo0/stripped/opt/eh_probe-go1.26.5-linux-amd64-pie-cgo0-stripped-opt",
+      "sha256": "2b4c4c3a9e456da37be255a4eb154717009353e4ee31d23edb8de481eabdf91e",
+      "size": 1573166,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "arm64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1813,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 4,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.26.5",
+      "goarch": "arm64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-arm64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-linux-arm64-exe-cgo0-stripped-opt",
+      "sha256": "c353fb74f42558be845f8266d77994ab1c138f3f7058bb6d9917acf48615add2",
+      "size": 1441954,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "arm64",
+          "GOFLAGS": "",
+          "GOOS": "linux",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=pie",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "pie",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [],
+        "pclntab_at_section_start": true,
+        "pclntab_function_count": 1813,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 4,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".gopclntab",
+        "required_sections": [
+          ".gopclntab",
+          ".noptrdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.26.5",
+      "goarch": "arm64",
+      "goos": "linux",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "elf",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/linux-arm64/pie/cgo0/stripped/opt/eh_probe-go1.26.5-linux-arm64-pie-cgo0-stripped-opt",
+      "sha256": "f2a39bcf9104ce525f4ad3aba5a56a51a6ec3ce95d7523d71d460867161411a4",
+      "size": 1638702,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "windows",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe",
+          "-ldflags=-s -w"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": null,
+        "native_unwind_sections": [
+          ".pdata",
+          ".xdata"
+        ],
+        "pclntab_at_section_start": false,
+        "pclntab_function_count": 1881,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".rdata",
+        "required_sections": [
+          ".data",
+          ".rdata",
+          ".text"
+        ],
+        "symbol_table": "absent"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "windows",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "pe",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/windows-amd64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-windows-amd64-exe-cgo0-stripped-opt.exe",
+      "sha256": "2343532a4fd2e2aa53f4bf49588b2acb6ace4ae4f1adbbf2a0baac647ac1621b",
+      "size": 1502208,
+      "stripped": true
+    },
+    {
+      "build": {
+        "env": {
+          "CGO_ENABLED": "0",
+          "GO111MODULE": "on",
+          "GOARCH": "amd64",
+          "GOFLAGS": "",
+          "GOOS": "windows",
+          "GOPROXY": "off",
+          "GOTOOLCHAIN": "local",
+          "GOWORK": "off"
+        },
+        "execution": "not-run-cross-target",
+        "flags": [
+          "-trimpath",
+          "-buildmode=exe"
+        ],
+        "package": "./cmd/eh_probe"
+      },
+      "buildmode": "exe",
+      "cgo_enabled": false,
+      "evidence": {
+        "gofunc_symbol": "go:func.*",
+        "native_unwind_sections": [
+          ".pdata",
+          ".xdata"
+        ],
+        "pclntab_at_section_start": false,
+        "pclntab_function_count": 1881,
+        "pclntab_magic": 4294967281,
+        "pclntab_min_lc": 1,
+        "pclntab_ptr_size": 8,
+        "pclntab_section": ".rdata",
+        "required_sections": [
+          ".data",
+          ".rdata",
+          ".text"
+        ],
+        "symbol_table": "go-names"
+      },
+      "go_version": "1.26.5",
+      "goarch": "amd64",
+      "goos": "windows",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expected_pclntab_version": "go1.20",
+        "min_defer_sites": 5,
+        "min_go_functions": 800,
+        "min_open_coded_defer_funcs": 12,
+        "min_panic_sites": 20,
+        "min_recover_sites": 8,
+        "requires_moduledata": true,
+        "validation_level": "runtime-graph"
+      },
+      "object_format": "pe",
+      "optimization": "default",
+      "path": "corpus/go-eh/go1.26.5/windows-amd64/exe/cgo0/symtab/opt/eh_probe-go1.26.5-windows-amd64-exe-cgo0-symtab-opt.exe",
+      "sha256": "4b79b359ee0c614c42b53cc482e2ad3baa5dea16924eb2ed9e34d41bf6edf179",
+      "size": 2230272,
+      "stripped": false
+    }
+  ],
+  "corpus": "go-eh",
+  "producer": {
+    "module_go_directive": "1.15",
+    "module_path": "neversight.dev/goeh",
+    "package": "./cmd/eh_probe",
+    "repository_revision": "23b98513af627bb721ed04d95c23b1f69421fde2",
+    "runner_arch": "x64",
+    "runner_os": "linux",
+    "toolchains": [
+      {
+        "go_env": {
+          "GOAMD64": "",
+          "GOARM64": "",
+          "GOEXPERIMENT": "",
+          "GOFLAGS": "",
+          "GOHOSTARCH": "amd64",
+          "GOHOSTOS": "linux",
+          "GOTOOLCHAIN": "",
+          "GOVERSION": ""
+        },
+        "go_version": "1.15.15",
+        "go_version_string": "go version go1.15.15 linux/amd64",
+        "runner_image": "ubuntu24-20260720.247.2"
+      },
+      {
+        "go_env": {
+          "GOAMD64": "",
+          "GOARM64": "",
+          "GOEXPERIMENT": "",
+          "GOFLAGS": "",
+          "GOHOSTARCH": "amd64",
+          "GOHOSTOS": "linux",
+          "GOTOOLCHAIN": "",
+          "GOVERSION": "go1.16.15"
+        },
+        "go_version": "1.16.15",
+        "go_version_string": "go version go1.16.15 linux/amd64",
+        "runner_image": "ubuntu24-20260720.247.2"
+      },
+      {
+        "go_env": {
+          "GOAMD64": "v1",
+          "GOARM64": "",
+          "GOEXPERIMENT": "",
+          "GOFLAGS": "",
+          "GOHOSTARCH": "amd64",
+          "GOHOSTOS": "linux",
+          "GOTOOLCHAIN": "",
+          "GOVERSION": "go1.18.10"
+        },
+        "go_version": "1.18.10",
+        "go_version_string": "go version go1.18.10 linux/amd64",
+        "runner_image": "ubuntu24-20260720.247.2"
+      },
+      {
+        "go_env": {
+          "GOAMD64": "v1",
+          "GOARM64": "",
+          "GOEXPERIMENT": "",
+          "GOFLAGS": "",
+          "GOHOSTARCH": "amd64",
+          "GOHOSTOS": "linux",
+          "GOTOOLCHAIN": "",
+          "GOVERSION": "go1.20.14"
+        },
+        "go_version": "1.20.14",
+        "go_version_string": "go version go1.20.14 linux/amd64",
+        "runner_image": "ubuntu24-20260720.247.2"
+      },
+      {
+        "go_env": {
+          "GOAMD64": "v1",
+          "GOARM64": "",
+          "GOEXPERIMENT": "",
+          "GOFLAGS": "",
+          "GOHOSTARCH": "amd64",
+          "GOHOSTOS": "linux",
+          "GOTOOLCHAIN": "local",
+          "GOVERSION": "go1.26.5"
+        },
+        "go_version": "1.26.5",
+        "go_version_string": "go version go1.26.5 linux/amd64",
+        "runner_image": "ubuntu24-20260810.271.1"
+      }
+    ]
+  },
+  "schema_version": 1
+}
