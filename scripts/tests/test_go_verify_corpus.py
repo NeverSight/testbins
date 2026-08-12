@@ -71,14 +71,26 @@ def _sections_for(variant, *, function_count: int) -> list:
     return sections
 
 
+def _symbols_for(variant) -> list[str]:
+    """The names a real link leaves in the image.
+
+    `-ldflags=-s -w` empties the symbol table on ELF and PE, but the Mach-O
+    link still emits an `LC_SYMTAB` carrying `_go.func.*`.  A fixture that
+    strips darwin as thoroughly as linux would let a schema or verifier rule
+    that only holds for ELF pass unnoticed.
+    """
+
+    if not variant.stripped:
+        return ["runtime.gopanic", variant.release.gofunc_symbol, "main.main"]
+    if variant.target.object_format == "macho":
+        return [variant.release.gofunc_symbol]
+    return []
+
+
 def _materialize(root: Path, variant, *, function_count: int = 1500) -> Path:
     spec = FIXTURES.ImageSpec(
         sections=_sections_for(variant, function_count=function_count),
-        symbols=(
-            []
-            if variant.stripped
-            else ["runtime.gopanic", variant.release.gofunc_symbol, "main.main"]
-        ),
+        symbols=_symbols_for(variant),
     )
     payload = FIXTURES.BUILDERS[variant.target.object_format](spec)
     path = root / Path(*variant.path.split("/"))

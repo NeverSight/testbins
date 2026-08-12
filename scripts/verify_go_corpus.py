@@ -797,7 +797,15 @@ def _validate_evidence(
             f"{context}.symbol_table is {symbol_table!r}, image is "
             f"{observed_symbol_table!r}"
         )
-    if variant.stripped and symbol_table == "go-names":
+    # `-ldflags=-s -w` empties the symbol table on ELF and PE.  Mach-O is the
+    # exception: the link still emits an `LC_SYMTAB` naming `_go.func.*`, so a
+    # stripped darwin image legitimately keeps Go names, and demanding
+    # otherwise would reject an artifact the toolchain cannot produce.
+    if (
+        variant.stripped
+        and symbol_table == "go-names"
+        and variant.target.object_format != "macho"
+    ):
         raise VerificationError(
             f"{context} claims a stripped artifact that still names Go functions"
         )

@@ -70,7 +70,14 @@ class RustMatrixShapeTests(unittest.TestCase):
             with self.subTest(cell=cell.key):
                 if cell.target == "aarch64-unknown-linux-gnu":
                     self.assertEqual(cell.linker, "aarch64-linux-gnu-gcc")
-                    self.assertEqual(cell.apt_packages, ("gcc-aarch64-linux-gnu",))
+                    # The compiler alone cannot complete a link: `Scrt1.o` and
+                    # `crti.o` live in the cross libc, which the compiler
+                    # package only recommends and the installer does not take
+                    # recommendations.  Both have to be named.
+                    self.assertEqual(
+                        cell.apt_packages,
+                        ("gcc-aarch64-linux-gnu", "libc6-dev-arm64-cross"),
+                    )
                 else:
                     self.assertEqual(cell.linker, "rustc-default")
                     self.assertEqual(cell.apt_packages, ())

@@ -74,15 +74,18 @@ class BuildScriptConfigurationTests(unittest.TestCase):
                         rust_matrix.rustc_flags(cell, crate_name, "/checkout"),
                     )
 
-    def test_the_cross_linux_cell_names_the_package_that_supplies_its_linker(
-        self,
-    ) -> None:
+    def test_the_cross_linux_cell_names_everything_its_link_needs(self) -> None:
         cell = rust_matrix.validate_cell("aarch64-unknown-linux-gnu", "unwind", "o0")
 
         configuration = _describe(cell)
 
         self.assertEqual(configuration["linker"], "aarch64-linux-gnu-gcc")
-        self.assertEqual(configuration["apt_packages"], ["gcc-aarch64-linux-gnu"])
+        # The cross libc is as load-bearing as the compiler: without it the
+        # link stops at a missing `Scrt1.o`.
+        self.assertEqual(
+            configuration["apt_packages"],
+            ["gcc-aarch64-linux-gnu", "libc6-dev-arm64-cross"],
+        )
         self.assertFalse(configuration["native"])
 
     def test_rejects_an_unsupported_target_before_touching_a_toolchain(self) -> None:

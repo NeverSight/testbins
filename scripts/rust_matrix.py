@@ -39,7 +39,12 @@ _TARGETS: dict[str, dict[str, object]] = {
         "runs_on": "ubuntu-24.04",
         "native": False,
         "linker": "aarch64-linux-gnu-gcc",
-        "apt_packages": ("gcc-aarch64-linux-gnu",),
+        # `libc6-dev-arm64-cross` carries `Scrt1.o` and `crti.o`, which the
+        # link needs and which the compiler package only *recommends*.  The
+        # installer runs with `--no-install-recommends` for reproducibility, so
+        # naming it here is what keeps the cross link from failing on a missing
+        # C runtime.
+        "apt_packages": ("gcc-aarch64-linux-gnu", "libc6-dev-arm64-cross"),
     },
     "x86_64-pc-windows-msvc": {
         "architecture": "x86_64",

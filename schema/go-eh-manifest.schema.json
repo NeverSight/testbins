@@ -976,7 +976,7 @@
           }
         },
         {
-          "$comment": "Stripping removes every Go name, which is what forces structural discovery.",
+          "$comment": "Every stripped artifact is linked the same way, whatever survives it.",
           "if": {
             "properties": {
               "stripped": {
@@ -985,6 +985,42 @@
             },
             "required": [
               "stripped"
+            ]
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "flags": {
+                    "contains": {
+                      "const": "-ldflags=-s -w"
+                    }
+                  }
+                },
+                "required": [
+                  "flags"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "On ELF and PE, -s -w removes every Go name, which is what forces structural discovery.",
+          "if": {
+            "properties": {
+              "stripped": {
+                "const": true
+              },
+              "object_format": {
+                "enum": [
+                  "elf",
+                  "pe"
+                ]
+              }
+            },
+            "required": [
+              "stripped",
+              "object_format"
             ]
           },
           "then": {
@@ -1005,22 +1041,58 @@
                   "symbol_table",
                   "gofunc_symbol"
                 ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "Mach-O is the exception: -s -w drops the DWARF and the Go symbol table, but the link still emits a LC_SYMTAB naming _go.func.*, so a stripped darwin image keeps the one symbol that lets a reader skip the moduledata search. Asserting the ELF rule here would reject a correct artifact.",
+          "if": {
+            "properties": {
+              "stripped": {
+                "const": true
               },
-              "build": {
+              "object_format": {
+                "const": "macho"
+              }
+            },
+            "required": [
+              "stripped",
+              "object_format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
                 "properties": {
-                  "flags": {
-                    "contains": {
-                      "const": "-ldflags=-s -w"
-                    }
+                  "symbol_table": {
+                    "const": "go-names"
+                  },
+                  "gofunc_symbol": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "flags"
+                  "symbol_table",
+                  "gofunc_symbol"
                 ]
               }
             }
+          }
+        },
+        {
+          "$comment": "An unstripped artifact names its functions on every container.",
+          "if": {
+            "properties": {
+              "stripped": {
+                "const": false
+              }
+            },
+            "required": [
+              "stripped"
+            ]
           },
-          "else": {
+          "then": {
             "properties": {
               "evidence": {
                 "properties": {
