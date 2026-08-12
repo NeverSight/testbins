@@ -1,0 +1,3572 @@
+{
+  "artifacts": [
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/abort/o0/bin/rust_eh_probe-aarch64-apple-darwin-abort-o0",
+      "sha256": "cbb1885e8c04d0401f74ad83b7304113ea832930eeb5ed554545b252ecdbf204",
+      "size": 490392,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/abort/o0/cdylib/rust_eh_cdylib-aarch64-apple-darwin-abort-o0.dylib",
+      "sha256": "b8e7db874534ad1de8cfdddda7b58afcb2c4c5d46453337d6a94a0d2dbd19bec",
+      "size": 418480,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/abort/o2/bin/rust_eh_probe-aarch64-apple-darwin-abort-o2",
+      "sha256": "ba1533d90ac6d97a4df29d1032f428f47874cff44190e06646a5bb0e9bec2de2",
+      "size": 467768,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/abort/o2/cdylib/rust_eh_cdylib-aarch64-apple-darwin-abort-o2.dylib",
+      "sha256": "395d8ef0dd6a962a3e783616b85e502de4c0d08f235939aef86708dc6735b008",
+      "size": 415552,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/unwind/o0/bin/rust_eh_probe-aarch64-apple-darwin-unwind-o0",
+      "sha256": "d7a3be2efed58acf48fd06068e59b984ee6d09246cd0e55c97f5df28ba4ca175",
+      "size": 519792,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/unwind/o0/cdylib/rust_eh_cdylib-aarch64-apple-darwin-unwind-o0.dylib",
+      "sha256": "c4f6100d5f6f6dd6bebcbdd92cf7cd11655ccebab6776ec3356537cff6df4b3a",
+      "size": 420512,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/unwind/o2/bin/rust_eh_probe-aarch64-apple-darwin-unwind-o2",
+      "sha256": "3cd8e79eb43c54098be266e82973b9eb36f439f8e253abd31d3a8d9be34ea3d2",
+      "size": 489296,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-apple-darwin/unwind/o2/cdylib/rust_eh_cdylib-aarch64-apple-darwin-unwind-o2.dylib",
+      "sha256": "84fd5a25fc5c9447b3800fef43ad3e7d08d7d54f7db25dc596d9650ef13ff096",
+      "size": 417376,
+      "target_triple": "aarch64-apple-darwin"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/abort/o0/bin/rust_eh_probe-aarch64-unknown-linux-gnu-abort-o0",
+      "sha256": "8d81cd09ab1339776858f083c0da5a6ddf4b8d8335ee2e129b787cb0d1885a26",
+      "size": 4394192,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/abort/o0/cdylib/rust_eh_cdylib-aarch64-unknown-linux-gnu-abort-o0.so",
+      "sha256": "857391a2590f855f9b7aff07151e18979e4a55a6ab5dbed303ee2b8c4a610bf0",
+      "size": 4372584,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/abort/o2/bin/rust_eh_probe-aarch64-unknown-linux-gnu-abort-o2",
+      "sha256": "094a9a6bc03ac921aadf159e3fbc366f7f1973eddc171a50b2ebf6c9203363a3",
+      "size": 4385512,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/abort/o2/cdylib/rust_eh_cdylib-aarch64-unknown-linux-gnu-abort-o2.so",
+      "sha256": "5c98fbde231b8802dd6a392231453ba90ef4c3effb369682f7918dcd22837edf",
+      "size": 4367840,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/unwind/o0/bin/rust_eh_probe-aarch64-unknown-linux-gnu-unwind-o0",
+      "sha256": "11d273bb6c50ffffc07349949db761f4b048e70dc7e186716947f3e77e95330c",
+      "size": 4479712,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/unwind/o0/cdylib/rust_eh_cdylib-aarch64-unknown-linux-gnu-unwind-o0.so",
+      "sha256": "3995373750d8ceb750071180703175f2bf64188b479388e8d35152a70fb101de",
+      "size": 4379816,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/unwind/o2/bin/rust_eh_probe-aarch64-unknown-linux-gnu-unwind-o2",
+      "sha256": "d383083e27d97060ca9741c984dc34c09b041857ec8eef0e15a928cc9b4ee358",
+      "size": 4394784,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "edition": "2024",
+        "linker": "aarch64-linux-gnu-gcc",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins",
+          "-C",
+          "linker=aarch64-linux-gnu-gcc"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/aarch64-unknown-linux-gnu/unwind/o2/cdylib/rust_eh_cdylib-aarch64-unknown-linux-gnu-unwind-o2.so",
+      "sha256": "d07dc8606c8a22f6d964aeace5177748eaf31cf1e0accaf452165d008ecc3859",
+      "size": 4374600,
+      "target_triple": "aarch64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/abort/o0/bin/rust_eh_probe-x86_64-apple-darwin-abort-o0",
+      "sha256": "cf355180864538c276fad5f3263fa553eab964c5fc97ff9ea0f8eb366238fe7f",
+      "size": 467408,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/abort/o0/cdylib/rust_eh_cdylib-x86_64-apple-darwin-abort-o0.dylib",
+      "sha256": "d5b8addb320cb402c8e4665268e06d65742199b239c8cbfc3d0b3dba97617c25",
+      "size": 399032,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/abort/o2/bin/rust_eh_probe-x86_64-apple-darwin-abort-o2",
+      "sha256": "c9c8a51e38b383d22192031e733d7d8ba07992437614031a9ea6297a5969ea5b",
+      "size": 457184,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/abort/o2/cdylib/rust_eh_cdylib-x86_64-apple-darwin-abort-o2.dylib",
+      "sha256": "c229506ecd6fc318dce69befab1da013b0d79b467d3f710f0c0e3f18e0a3fdb8",
+      "size": 392016,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/unwind/o0/bin/rust_eh_probe-x86_64-apple-darwin-unwind-o0",
+      "sha256": "7e7cf6d443bb65ffbb5423ecb1b1f8f2e9269ce15648cbb82209c417cdf1e9cd",
+      "size": 496600,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/unwind/o0/cdylib/rust_eh_cdylib-x86_64-apple-darwin-unwind-o0.dylib",
+      "sha256": "081e79abb7c42a1381d0269e6137ada6b06e1ff28adb0e2b093b18d149dc03ad",
+      "size": 401072,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/unwind/o2/bin/rust_eh_probe-x86_64-apple-darwin-unwind-o2",
+      "sha256": "119f5c53a3efa9e4b8b759e5fb7de3d9581f29cc915dfa006c7873d204db3f1e",
+      "size": 470368,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-apple-darwin",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/Users/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "aarch64-apple-darwin"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__text",
+          "__eh_frame",
+          "__gcc_except_tab",
+          "__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-apple-darwin/unwind/o2/cdylib/rust_eh_cdylib-x86_64-apple-darwin-unwind-o2.dylib",
+      "sha256": "67bd9c0c2bccb1d54392253b7bcab13ce16abe4f7fd9845b3099549824fdbc70",
+      "size": 397912,
+      "target_triple": "x86_64-apple-darwin"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [],
+        "required_symbols": [],
+        "symbol_names_expected": false
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "pe",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o0.exe",
+      "sha256": "caac621290f52720df290e68c126219d3f13c3278470324795fe9e773a389699",
+      "size": 139264,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "pe",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o0.dll",
+      "sha256": "08f7377b0dbebf9fdd889629594c7b025b0c478abdd7f95b6744520c1b52d894",
+      "size": 112128,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [],
+        "required_symbols": [],
+        "symbol_names_expected": false
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "pe",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o2.exe",
+      "sha256": "953e1d48996a4708df93fea9b3626034e64087c8333a9541f482537a725f2d8d",
+      "size": 129536,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "pe",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o2.dll",
+      "sha256": "991de011c8bb5691c070df61be67e088a95fd19b6e82d904b538ee83dab84221",
+      "size": 107008,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [
+          "rust_panic"
+        ],
+        "required_symbols": [],
+        "symbol_names_expected": false
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 1,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "pe",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o0.exe",
+      "sha256": "cb94d8c9c3dd8cc247379a60a1817ec23829423c683aaaac95c0190254e66d54",
+      "size": 160768,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [
+          "rust_panic"
+        ],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 1,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "pe",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o0.dll",
+      "sha256": "06868e09a4e60e1740d0a56a3941f8de64ef7c5371a12e19b6daadedc1e71881",
+      "size": 118272,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [
+          "rust_panic"
+        ],
+        "required_symbols": [],
+        "symbol_names_expected": false
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 1,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "pe",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o2.exe",
+      "sha256": "df8a1b9c143c67f0608a1d13067f1dba4c69416966db1b53fc726fa04ec9a312",
+      "size": 144384,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "win22-20260802.262.1",
+        "runner_os": "windows",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "D:\\a\\testbins\\testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".pdata",
+          ".rdata"
+        ],
+        "required_strings": [
+          "rust_panic"
+        ],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 1,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "__CxxFrameHandler3"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "pe",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o2.dll",
+      "sha256": "9a1f211f81e7de036d0bd088982758e29c8cb85ff59f4b9cb1a596401dab7494",
+      "size": 111616,
+      "target_triple": "x86_64-pc-windows-msvc"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/abort/o0/bin/rust_eh_probe-x86_64-unknown-linux-gnu-abort-o0",
+      "sha256": "d83fba3204c5248a469d68593daed560ad8456008741b21d2dfe1e8bddee7286",
+      "size": 4367256,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/abort/o0/cdylib/rust_eh_cdylib-x86_64-unknown-linux-gnu-abort-o0.so",
+      "sha256": "7b518e4f3a71449bd7cfd82172a4433e44fa709d912a449634adc702a0a7220f",
+      "size": 4314568,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/abort/o2/bin/rust_eh_probe-x86_64-unknown-linux-gnu-abort-o2",
+      "sha256": "f473ad999f8eb8c04dbf2d113ba0f204b779376f7f5875f1956aa28dc9ac90ff",
+      "size": 4354992,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=abort",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [
+          "_Unwind_RaiseException"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete",
+          "partial"
+        ],
+        "expect_no_landing_pads": true,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order"
+        ],
+        "min_catch_unwind_pads": 0,
+        "min_drop_glue_pads": 0,
+        "min_landing_pads": 0,
+        "min_nounwind_guard_pads": 0,
+        "min_panic_sites": 0,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "unwind-only"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "abort",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/abort/o2/cdylib/rust_eh_cdylib-x86_64-unknown-linux-gnu-abort-o2.so",
+      "sha256": "f585c371394dfa46f51ee4c880836205d38a4befd69f9d34c472e2380599ebbe",
+      "size": 4308248,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/unwind/o0/bin/rust_eh_probe-x86_64-unknown-linux-gnu-unwind-o0",
+      "sha256": "cf304e30e9520d42dca5588c2f2ad18addbfe33c976151694e50824f197c75c0",
+      "size": 4402656,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=0",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/unwind/o0/cdylib/rust_eh_cdylib-x86_64-unknown-linux-gnu-unwind-o0.so",
+      "sha256": "6f13ea3c565aa8cf8fae12e461734fd0a679aa369d7cad95ea12ecbaac0ad931",
+      "size": 4323960,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_probe",
+          "--crate-type",
+          "bin",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_probe",
+      "crate_type": "bin",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_c_abort_boundary",
+          "rust_eh_c_leaf_nounwind",
+          "rust_eh_c_unwind_boundary",
+          "rust_eh_catch_unwind_boundary",
+          "rust_eh_drop_across_panic",
+          "rust_eh_explicit_panic",
+          "rust_eh_index_panic",
+          "rust_eh_nested_drop_order",
+          "rust_eh_overflow_panic",
+          "rust_eh_personality",
+          "rust_eh_slice_range_panic",
+          "rust_eh_unwrap_none_panic"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "passed",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 4,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 3,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/unwind/o2/bin/rust_eh_probe-x86_64-unknown-linux-gnu-unwind-o2",
+      "sha256": "ff7b02957d3c10e9e6d409c62312d0ddcc261a9f69e3807be089ec319a53e538",
+      "size": 4372168,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "edition": "2024",
+        "linker": "rustc-default",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_os": "linux",
+        "rustc_flags": [
+          "--edition",
+          "2024",
+          "--crate-name",
+          "rust_eh_cdylib",
+          "--crate-type",
+          "cdylib",
+          "--target",
+          "x86_64-unknown-linux-gnu",
+          "-C",
+          "opt-level=2",
+          "-C",
+          "panic=unwind",
+          "-C",
+          "overflow-checks=on",
+          "-C",
+          "debuginfo=0",
+          "-C",
+          "strip=none",
+          "--remap-path-prefix",
+          "/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "crate_name": "rust_eh_cdylib",
+      "crate_type": "cdylib",
+      "evidence": {
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".text",
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "_Unwind_RaiseException",
+          "rust_eh_dylib_c_abort_boundary",
+          "rust_eh_dylib_c_leaf_nounwind",
+          "rust_eh_dylib_c_unwind_boundary",
+          "rust_eh_dylib_catch_unwind_boundary",
+          "rust_eh_dylib_drop_log",
+          "rust_eh_dylib_index_panic",
+          "rust_eh_dylib_nested_drop_order",
+          "rust_eh_personality"
+        ],
+        "symbol_names_expected": true
+      },
+      "execution": "not-run-library",
+      "neverd": {
+        "allowed_parse_status": [
+          "complete"
+        ],
+        "expect_no_landing_pads": false,
+        "landing_pad_free_symbols": [
+          "rust_eh_dylib_c_leaf_nounwind"
+        ],
+        "min_catch_unwind_pads": 1,
+        "min_drop_glue_pads": 2,
+        "min_landing_pads": 3,
+        "min_nounwind_guard_pads": 1,
+        "min_panic_sites": 2,
+        "personalities_any": [
+          "rust_eh_personality"
+        ],
+        "validation_level": "panic-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "panic_strategy": "unwind",
+      "path": "corpus/rust-eh/x86_64-unknown-linux-gnu/unwind/o2/cdylib/rust_eh_cdylib-x86_64-unknown-linux-gnu-unwind-o2.so",
+      "sha256": "77226d6fe21a10416ee931740c9c9b1b015af3fefc083d03b0f8c76408d18ad0",
+      "size": 4316736,
+      "target_triple": "x86_64-unknown-linux-gnu"
+    }
+  ],
+  "corpus": "rust-eh",
+  "producer": {
+    "repository_revision": "751beef362b6d129b605a849cff511032237cdd0",
+    "rustc": {
+      "commit_date": "2026-07-14",
+      "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+      "llvm_version": "22.1.6",
+      "release": "1.97.1"
+    },
+    "toolchain_channel": "1.97.1"
+  },
+  "schema_version": 1
+}
