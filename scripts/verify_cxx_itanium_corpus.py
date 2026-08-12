@@ -45,7 +45,10 @@ _SCHEMA_PATH = (
 
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _REVISION_RE = re.compile(r"[0-9a-f]{40}")
-_VERSION_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
+# Wide enough for Debian's mingw GCC, which calls itself `13-posix` because the
+# thread model is part of which compiler it is.  Kept in step with the schema's
+# `releaseVersion` and with the builder's own check.
+_VERSION_RE = re.compile(r"[0-9]+(\.[0-9]+){0,2}(-[a-z0-9]+)?")
 _FILE_PREFIX_MAP = "-ffile-prefix-map="
 _REMAP_SUFFIX = "=/testbins"
 # A remapped prefix shorter than this is too generic to search for safely.
@@ -154,7 +157,9 @@ def _validate_producer(manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
             )
         version = _require_string(record, "version", context)
         if not _VERSION_RE.fullmatch(version):
-            raise VerificationError(f"{context}.version is not an x.y.z release")
+            raise VerificationError(
+                f"{context}.version is not a version this corpus can record"
+            )
         if not version.startswith(cell.version_prefix):
             raise VerificationError(
                 f"{context} built with {version!r}, but the matrix pins "

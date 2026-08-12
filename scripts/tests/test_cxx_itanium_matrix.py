@@ -168,9 +168,21 @@ class MatrixShapeTests(unittest.TestCase):
 
 class ToolsetTests(unittest.TestCase):
     def test_every_cell_pins_a_release_series(self) -> None:
+        # A pin ending in a dot names a major release and lets the distribution
+        # pick the point release; one ending in a word is the whole version a
+        # compiler that carries no minor number reports, and pins that word too.
         for cell in matrix.expected_cells():
             with self.subTest(cell=cell.key):
-                self.assertRegex(cell.version_prefix, r"^[0-9]+\.$")
+                self.assertRegex(cell.version_prefix, r"^[0-9]+(\.|-[a-z0-9]+)$")
+
+    def test_the_mingw_pin_names_the_thread_model(self) -> None:
+        # posix and win32 are two GCCs, not two modes of one, and they reach
+        # the unwinder through different libstdc++ builds.  The driver spells
+        # that in its version, so the pin can hold it.
+        cell = matrix.validate_cell("gcc", "x86_64-w64-mingw32")
+        self.assertEqual(cell.version_prefix, "13-posix")
+        self.assertTrue(cell.cxx_driver.endswith("-posix"))
+        self.assertTrue(cell.c_driver.endswith("-posix"))
 
     def test_cross_cells_name_the_libraries_their_link_needs(self) -> None:
         for toolchain in ("gcc", "clang"):

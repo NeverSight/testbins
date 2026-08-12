@@ -42,8 +42,9 @@
       "pattern": "^[0-9a-f]{40}$"
     },
     "releaseVersion": {
+      "description": "The version a driver reports for itself. Usually a three-part release, but Debian's mingw GCC reports `13-posix`, because the thread model is part of which compiler it is rather than of how it was invoked.",
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      "pattern": "^[0-9]+(\\.[0-9]+){0,2}(-[a-z0-9]+)?$"
     },
     "stringArray": {
       "type": "array",
@@ -115,9 +116,9 @@
           "$ref": "#/$defs/nonEmptyString"
         },
         "version_prefix": {
-          "description": "The release series the cell is pinned to. On Linux the versioned apt packages enforce it; on macOS the workflow's Xcode selection does.",
+          "description": "The release series the cell is pinned to, as a prefix of what the driver reports. On Linux the versioned apt packages enforce it; on macOS the workflow's Xcode selection does. A cell whose compiler carries no minor version pins the whole string instead, which for mingw pins the thread model with it.",
           "type": "string",
-          "pattern": "^[0-9]+\\.$"
+          "pattern": "^[0-9]+(\\.|-[a-z0-9]+)$"
         },
         "version": {
           "$ref": "#/$defs/releaseVersion"

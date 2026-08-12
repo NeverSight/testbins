@@ -223,11 +223,18 @@ _TOOLSETS: dict[tuple[str, str], Toolset] = {
     # `x86_64-w64-mingw32-g++` itself is an update-alternatives link that the
     # posix and win32 packages fight over, so the cell names the concrete
     # posix-threads driver and never depends on which one won.
+    #
+    # That driver is a whole second GCC rather than a mode of the first, and
+    # Debian spells the distinction in the version itself: it reports
+    # `13-posix`, with no minor or patch to report.  Pinning the string it
+    # actually says pins the thread model too, which for an exception corpus is
+    # the more important half -- posix and win32 reach the unwinder through
+    # different libstdc++ builds.
     ("gcc", "x86_64-w64-mingw32"): Toolset(
         cxx_driver="x86_64-w64-mingw32-g++-posix",
         c_driver="x86_64-w64-mingw32-gcc-posix",
         strip_tool="x86_64-w64-mingw32-strip",
-        version_prefix="13.",
+        version_prefix="13-posix",
         apt_packages=("g++-mingw-w64-x86-64",),
         target_flags=(),
     ),

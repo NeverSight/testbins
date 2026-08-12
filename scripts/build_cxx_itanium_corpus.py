@@ -32,7 +32,11 @@ from verify_cxx_itanium_corpus import VerificationError, verify_manifest
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 _REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
-_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
+# Most drivers answer with a three-part release, but Debian's mingw GCC answers
+# `13-posix`, because the thread model is part of which compiler it is rather
+# than of how it was invoked.  What the pin needs is the string the driver says,
+# not a spelling every driver was assumed to share.
+_VERSION_RE = re.compile(r"^[0-9]+(\.[0-9]+){0,2}(-[a-z0-9]+)?$")
 _RUN_TIMEOUT_SECONDS = 300
 
 
@@ -76,10 +80,14 @@ def _run(
 def read_toolchain_identity(cell: matrix.MatrixCell) -> dict[str, str]:
     """Read the compiler's own version and check it against the cell's pin.
 
-    GCC reports a three-part release only for `-dumpfullversion`; clang has no
-    such option and answers `-dumpversion` with the full release.  Both are
+    GCC reports its full version only for `-dumpfullversion`; clang has no such
+    option and answers `-dumpversion` with the full release.  Both are
     cross-checked against the first line of `--version`, which is what a human
     reading the manifest will recognize.
+
+    What counts as a full version is the driver's business, not this function's:
+    the cell pins a prefix of whatever the driver says, so a compiler that
+    numbers itself unusually is recorded rather than rejected.
     """
 
     for driver in (cell.cxx_driver, cell.c_driver):
@@ -91,7 +99,8 @@ def read_toolchain_identity(cell: matrix.MatrixCell) -> dict[str, str]:
     version = _run([cell.cxx_driver, option], cwd=_REPOSITORY_ROOT).stdout.strip()
     if not _VERSION_RE.fullmatch(version):
         raise BuildError(
-            f"{cell.cxx_driver} {option} reported {version!r}, not an x.y.z release"
+            f"{cell.cxx_driver} {option} reported {version!r}, "
+            "which is not a version this corpus can record"
         )
     if not version.startswith(cell.version_prefix):
         raise BuildError(

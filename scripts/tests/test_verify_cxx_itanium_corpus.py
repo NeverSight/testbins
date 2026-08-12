@@ -29,7 +29,15 @@ PE_CELL = ("gcc", "x86_64-w64-mingw32")
 
 
 def _version(cell: matrix.MatrixCell) -> str:
-    return f"{cell.version_prefix}2.1"
+    """A version the cell would accept, whichever way its compiler numbers itself.
+
+    A prefix ending in a dot names a series and leaves the rest to the release;
+    one that does not is already the whole version the driver reports.
+    """
+
+    if cell.version_prefix.endswith("."):
+        return f"{cell.version_prefix}2.1"
+    return cell.version_prefix
 
 
 def _synthetic_object(

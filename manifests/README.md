@@ -45,6 +45,13 @@ reported; the verifier recomputes the first two and rejects a version outside
 the third. That per-cell shape is what lets fragments from nine jobs merge into
 one envelope.
 
+The pin is a prefix of what the driver says about itself rather than a release
+number, because not every driver numbers itself the same way. Debian's mingw
+GCC reports `13-posix` and has no minor version to report, the thread model
+being part of which compiler it is; pinning the whole string there pins the
+model with it, which matters because posix and win32 reach the unwinder
+through different `libstdc++` builds.
+
 Each artifact carries the exact driver, flag vector, and pinned environment it
 was built with, the corpus paths its link consumed, the structural evidence the
 verifier re-derives from the file, and a `neverd` block stating the weakest
