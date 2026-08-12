@@ -447,9 +447,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -531,9 +529,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -619,9 +615,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -703,9 +697,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -730,7 +722,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -830,7 +822,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1114,7 +1106,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1176,9 +1168,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -1203,7 +1193,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1261,9 +1251,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -1350,9 +1338,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -1435,9 +1421,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -1903,9 +1887,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -1987,9 +1969,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -2075,9 +2055,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -2159,9 +2137,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -2260,7 +2236,7 @@
       "optimization": "o0",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o0.exe",
-      "sha256": "e4c1426fcde65de9f9d78b125b2dea49c9de589d75a31ba2ca8a978cdc7da1f6",
+      "sha256": "77d6e856fd854ea0ec0f59dfc31d86c589a0f776d0d6862ac2ad308bc5579f3c",
       "size": 139264,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2348,7 +2324,7 @@
       "optimization": "o0",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o0.dll",
-      "sha256": "db968137f18943e2722f43f2e1eac526df4e336ccf1e954f64b9f569c957d8a6",
+      "sha256": "fd2d9932496f7531ec5d18a18cbd5fe0511c665d009433ae107d79ee6285a2e8",
       "size": 112128,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2432,7 +2408,7 @@
       "optimization": "o2",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o2.exe",
-      "sha256": "e4485c8699a5879b5d3145ba4c708d763a3a65c2369a0f1877b9e396e8200b2e",
+      "sha256": "5a36dffee1e8058b30037dd8fcbf8b623ffa8741087683d5c913b1e342209b20",
       "size": 129536,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2520,7 +2496,7 @@
       "optimization": "o2",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o2.dll",
-      "sha256": "46c2ebeccb564021db3fe805b8a839daa6c48a412b5afa35129b1be8321dbac4",
+      "sha256": "618f252dccbf7e55021aa0896d434187803dffb2473fbdac2b2d13e698a6e03e",
       "size": 107008,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2578,9 +2554,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 0,
         "min_landing_pads": 1,
@@ -2595,7 +2569,7 @@
       "optimization": "o0",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o0.exe",
-      "sha256": "6cbf3526528e638f085fb4c5af89515426802292ff25a126ca603befcdf8bbdf",
+      "sha256": "49e3ec90f3db036cddd2ee713ebe1144a84567549f97a51d7b82dda270004a08",
       "size": 160768,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2661,9 +2635,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 0,
         "min_landing_pads": 1,
@@ -2678,7 +2650,7 @@
       "optimization": "o0",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o0.dll",
-      "sha256": "cc8f5afaa58c6b2a00dba6be41ed48919de061735a2296575bddd1487d0115a3",
+      "sha256": "758de1146a835a96be9f36f79d740067ef8a894815b40a27d8c0d960cb848069",
       "size": 118272,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2736,9 +2708,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 0,
         "min_landing_pads": 1,
@@ -2753,7 +2723,7 @@
       "optimization": "o2",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o2.exe",
-      "sha256": "dd90aeaa7f6987e53ab70c18fc2a5651483654147136662c3f5dfbd692deaa09",
+      "sha256": "ef430f2089f97a75622aa239bd5eaaa55940c40e213012b261a61b2295d518e1",
       "size": 144384,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2819,9 +2789,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 0,
         "min_landing_pads": 1,
@@ -2836,7 +2804,7 @@
       "optimization": "o2",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o2.dll",
-      "sha256": "d3a3e87282c32dd1b758410f263d5fa62470f5d72394f3c5748e027bb8d9de33",
+      "sha256": "e505c2248bf7d917f907cb22a2a92e0c6a81d696489ac4cce0a1ca2510388af2",
       "size": 111616,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2846,7 +2814,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_image": "ubuntu24-20260720.247.2",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -2944,7 +2912,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_image": "ubuntu24-20260720.247.2",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3034,7 +3002,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3132,7 +3100,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3282,9 +3250,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -3365,9 +3331,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -3452,9 +3416,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 4,
@@ -3535,9 +3497,7 @@
           "complete"
         ],
         "expect_no_landing_pads": false,
-        "landing_pad_free_symbols": [
-          "rust_eh_dylib_c_leaf_nounwind"
-        ],
+        "landing_pad_free_symbols": [],
         "min_catch_unwind_pads": 1,
         "min_drop_glue_pads": 2,
         "min_landing_pads": 3,
@@ -3559,7 +3519,7 @@
   ],
   "corpus": "rust-eh",
   "producer": {
-    "repository_revision": "419c6674381fe69ca7e849e21ed27011dcd6aef9",
+    "repository_revision": "d936f9a5dd04d02ce27905b19a224e9ae9ade86e",
     "rustc": {
       "commit_date": "2026-07-14",
       "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
