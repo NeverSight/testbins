@@ -469,17 +469,22 @@ def required_strings(cell: MatrixCell, crate_name: str) -> tuple[str, ...]:
 def landing_pad_free_symbols(cell: MatrixCell, crate_name: str) -> tuple[str, ...]:
     """Frames that must carry no landing pad.
 
-    Under `-C panic=abort` that is every frame this producer compiled. Under
-    `-C panic=unwind` it is the one `extern "C"` probe whose body provably
-    cannot panic, which is what makes the guard on its neighbours meaningful.
+    Under `-C panic=abort` that is every frame this producer compiled.
+
+    Under `-C panic=unwind` it is none of them, including the `extern "C"`
+    leaf that looks like it should qualify.  `wrapping_mul` cannot panic, but
+    the body still calls `black_box`, and rustc emits the abort guard from
+    whether it can *prove* the body nounwind rather than from whether the body
+    happens to be.  At `-C opt-level=0` it cannot, so the leaf carries an
+    empty exception specification -- `filter=-1` with no types, the encoding
+    for "if an exception reaches here, terminate" -- exactly like its
+    neighbours.  A contract that denied this would be asking a decoder to
+    disbelieve a landing pad that is really in the image.
     """
 
     if cell.panic_strategy == "abort":
         return probe_symbols(crate_name)
-    leaf = "rust_eh_dylib_c_leaf_nounwind"
-    if crate_type(crate_name) == "bin":
-        leaf = "rust_eh_c_leaf_nounwind"
-    return (leaf,)
+    return ()
 
 
 def evidence_contract(cell: MatrixCell, crate_name: str) -> dict[str, object]:

@@ -241,7 +241,8 @@
           "type": "boolean"
         },
         "landing_pad_free_symbols": {
-          "$ref": "#/$defs/nonEmptyStringArray"
+          "description": "Empty for an unwinding build. Every frame such a build compiles carries a landing pad, including the `extern \"C\"` leaf whose body cannot panic: rustc emits the abort guard from whether it can prove the body nounwind, and at -C opt-level=0 an opaque `black_box` call means it cannot.",
+          "$ref": "#/$defs/stringArray"
         },
         "min_landing_pads": {
           "type": "integer",
