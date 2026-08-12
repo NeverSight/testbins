@@ -137,7 +137,15 @@ jobs:
   publish-corpus:
     name: Commit generated corpus to main
     needs: assemble-corpus
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # A manual run on main publishes too.  Two pushes in quick succession
+    # leave the first run's publication refused by the stale-main guard
+    # below, which is right -- but without this there is no way to publish
+    # the result afterwards short of pushing again.  The guard still
+    # applies, so a dispatch can no more publish a stale tree than a push
+    # can.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
