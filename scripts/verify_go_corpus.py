@@ -921,6 +921,16 @@ def _validate_neverd(
             "at least one frame"
         )
 
+    layout = _require_string(neverd, "open_coded_defer_layout", context)
+    # Neither open-coded defer rewrite moved the pclntab magic, so a consumer
+    # has to read the record's shape out of the bytes.  This is the answer it
+    # has to arrive at, and the only place the release is allowed to be asked.
+    if layout != release.open_coded_defer_layout:
+        raise VerificationError(
+            f"{context}.open_coded_defer_layout is {layout!r}, Go "
+            f"{variant.go_version} writes {release.open_coded_defer_layout!r}"
+        )
+
     requires_moduledata = _require_bool(neverd, "requires_moduledata", context)
     # Before Go 1.18 a funcdata entry was a relocated pointer, so the decoder
     # needs no module structure to follow it.  From Go 1.18 the entries are

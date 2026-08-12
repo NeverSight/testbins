@@ -298,6 +298,7 @@ def _artifact_record(variant: Variant, path: Path, output_root: Path) -> dict[st
             "min_open_coded_defer_funcs": (
                 _MIN_OPEN_CODED_DEFER_FUNCS if optimized else 0
             ),
+            "open_coded_defer_layout": release.open_coded_defer_layout,
             "requires_moduledata": release.pclntab_version in ("go1.18", "go1.20"),
         },
     }

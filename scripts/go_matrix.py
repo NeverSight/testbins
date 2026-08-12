@@ -44,6 +44,18 @@ class GoRelease:
     has_unsafe_point_table: bool
     #: `go:func.*` gained its colon in Go 1.20 (#37762).
     gofunc_symbol: str
+    #: How `FUNCDATA_OpenCodedDeferInfo` spells the frame's closure slots.
+    #: Open-coded defers arrived in Go 1.14 and the record has been rewritten
+    #: twice since.  CL 326061 made deferred functions argumentless for Go
+    #: 1.18, dropping the leading maximum argument frame and each defer's own
+    #: argument size and argument list; CL 516199 then sorted the slots into
+    #: one ascending run for Go 1.22, after which the record names only where
+    #: the run begins.  The pclntab magic says nothing about either change --
+    #: it last moved in Go 1.20, so one magic spans the 1.22 rewrite and the
+    #: 1.18 one happened inside the span of another -- so a reader has to
+    #: decide this from the bytes, and the releases either side of each change
+    #: are here to prove it does.
+    open_coded_defer_layout: str
     #: True while a position-independent ELF still carried the table in the
     #: relro segment, which named it `.data.rel.ro.gopclntab`.  CL 718065 moved
     #: it to plain read-only data for Go 1.26 on the grounds that it holds no
@@ -65,6 +77,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=5,
         has_unsafe_point_table=False,
         gofunc_symbol="go.func.*",
+        open_coded_defer_layout="legacy-enumerated",
         relro_pclntab=True,
         supports_darwin_arm64=False,
     ),
@@ -75,6 +88,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go.func.*",
+        open_coded_defer_layout="legacy-enumerated",
         relro_pclntab=True,
         supports_darwin_arm64=True,
     ),
@@ -85,6 +99,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go.func.*",
+        open_coded_defer_layout="enumerated",
         relro_pclntab=True,
         supports_darwin_arm64=True,
     ),
@@ -95,6 +110,34 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go:func.*",
+        open_coded_defer_layout="enumerated",
+        relro_pclntab=True,
+        supports_darwin_arm64=True,
+    ),
+    # The last release before CL 516199 and the first one after it.  1.16 and
+    # 1.18 already straddle the other open-coded defer rewrite and are told
+    # apart by their magic; this pair is not, sharing one with each other and
+    # with 1.20 and 1.26, so it is the pair that proves the record layout is
+    # read from the bytes and not guessed from the header.
+    GoRelease(
+        version="1.21.13",
+        pclntab_version="go1.20",
+        pclntab_magic=0xFFFFFFF1,
+        open_coded_defer_funcdata_index=4,
+        has_unsafe_point_table=True,
+        gofunc_symbol="go:func.*",
+        open_coded_defer_layout="enumerated",
+        relro_pclntab=True,
+        supports_darwin_arm64=True,
+    ),
+    GoRelease(
+        version="1.22.12",
+        pclntab_version="go1.20",
+        pclntab_magic=0xFFFFFFF1,
+        open_coded_defer_funcdata_index=4,
+        has_unsafe_point_table=True,
+        gofunc_symbol="go:func.*",
+        open_coded_defer_layout="contiguous",
         relro_pclntab=True,
         supports_darwin_arm64=True,
     ),
@@ -105,6 +148,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go:func.*",
+        open_coded_defer_layout="contiguous",
         relro_pclntab=False,
         supports_darwin_arm64=True,
     ),
@@ -155,6 +199,8 @@ _BASE_TARGETS: dict[str, tuple[str, ...]] = {
     "1.16.15": ("linux-amd64", "darwin-arm64"),
     "1.18.10": ("linux-amd64", "windows-amd64"),
     "1.20.14": ("linux-amd64",),
+    "1.21.13": ("linux-amd64",),
+    "1.22.12": ("linux-amd64",),
     "1.26.5": (
         "linux-amd64",
         "linux-arm64",

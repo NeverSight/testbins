@@ -29,17 +29,25 @@ unwind a panic. The Go producer therefore has one dominant axis — the toolchai
 release, because the `pclntab` header changed shape at Go 1.16, Go 1.18, and
 Go 1.20 — and a second axis for how hard the table is to find.
 
-| Go release | pclntab magic | Header layout | Cells | Artifacts |
-|---|---|---|---|---:|
-| 1.15.15 | `0xfffffffb` | `go1.2` | 1 | 5 |
-| 1.16.15 | `0xfffffffa` | `go1.16` | 1 | 2 |
-| 1.18.10 | `0xfffffff0` | `go1.18` | 1 | 2 |
-| 1.20.14 | `0xfffffff1` | `go1.20` | 1 | 1 |
-| 1.26.5 | `0xfffffff1` | `go1.20` | 1 | 13 |
+| Go release | pclntab magic | Header layout | Defer record | Cells | Artifacts |
+|---|---|---|---|---|---:|
+| 1.15.15 | `0xfffffffb` | `go1.2` | legacy-enumerated | 1 | 5 |
+| 1.16.15 | `0xfffffffa` | `go1.16` | legacy-enumerated | 1 | 2 |
+| 1.18.10 | `0xfffffff0` | `go1.18` | enumerated | 1 | 2 |
+| 1.20.14 | `0xfffffff1` | `go1.20` | enumerated | 1 | 1 |
+| 1.21.13 | `0xfffffff1` | `go1.20` | enumerated | 1 | 1 |
+| 1.22.12 | `0xfffffff1` | `go1.20` | contiguous | 1 | 1 |
+| 1.26.5 | `0xfffffff1` | `go1.20` | contiguous | 1 | 13 |
 
-The complete matrix contains 5 cells and 23 artifacts. One cell is one pinned
+The complete matrix contains 7 cells and 25 artifacts. One cell is one pinned
 toolchain and one CI job; the artifacts inside it are the GOOS/GOARCH,
 buildmode, cgo, link-mode, and optimization variants that release supports.
+
+`1.21.13` and `1.22.12` are pinned for the defer-record column alone. Every
+other release in the table is separated from its neighbours by the magic, so a
+consumer could reach the right record shape by reading the header; these two
+share a magic with each other and with `1.20.14` and `1.26.5`, so nothing but
+the record itself says which shape it is.
 
 Targets are `linux/amd64`, `linux/arm64`, `windows/amd64`, `darwin/amd64`, and
 `darwin/arm64`. All of them are cross-compiled from one ubuntu x64 runner:
@@ -71,6 +79,13 @@ not reach the file table the corpus publishes.
 - **Optimization.** `-gcflags=all=-N -l` clears `ssagen.hasOpenDefers` for every
   function, so the same source produces heap and stack `_defer` records instead
   of an open-coded defer bitmask.
+- **Defer record.** `FUNCDATA_OpenCodedDeferInfo` has been respelled twice since
+  open-coded defers arrived in Go 1.14. CL 326061 made deferred functions
+  argumentless for Go 1.18, dropping the record's leading maximum argument frame
+  and each defer's own argument size and argument list. CL 516199 then sorted the
+  closure slots into one ascending run for Go 1.22, after which the record names
+  where the run begins instead of naming every slot. Neither boundary is a magic
+  boundary, so a consumer has to decide the shape from the bytes.
 
 ### Validation levels
 
@@ -245,12 +260,13 @@ git-lfs is introduced.
   `linux/arm` would cover it at about 1 MB each. They are omitted for size, not
   because they would not be useful; adding them is two lines in
   `_BASE_TARGETS`.
-- **Go 1.17, 1.19, and 1.21 through 1.25.** None of them introduced a new
-  `pcHeader` magic or `_func` shape. Go 1.17's register ABI and Go 1.25's move
-  from `runtime.goPanicIndex` to `runtime.panicBounds` both change the emitted
-  code, but the decoder classifies both under the same
+- **Go 1.17, 1.19, and 1.23 through 1.25.** None of them introduced a new
+  `pcHeader` magic, `_func` shape, or defer-record shape. Go 1.17's register ABI
+  and Go 1.25's move from `runtime.goPanicIndex` to `runtime.panicBounds` both
+  change the emitted code, but the decoder classifies both under the same
   `runtime.goPanic*`/`runtime.panic*` prefixes, and the 1.20.14 and 1.26.5 cells
-  already hold one image of each form.
+  already hold one image of each form. 1.21 and 1.22 were in this list until the
+  defer record turned out to change between them without the magic moving.
 - **`windows/arm64` and `windows/386`.** No new decoder branch: PE discovery is
   already covered by `windows/amd64`, and the pc quantum by `linux/arm64`.
 - **`-buildmode=plugin` and `-buildmode=c-archive`.** A plugin would give the
@@ -265,7 +281,10 @@ git-lfs is introduced.
 | `go1.15.15` | `Go12Magic`, `decodeGo12PcHeader`, `usesPreGo112Record` vote, `FuncDataOpenCodedDeferInfoPreGo116` (index 5), `HasUnsafePointTable == false`, `resolveStackMapPCDataIndex` probe |
 | `go1.16.15` | `Go116Magic`, `EntryIsOffset == false`, `FuncDataIsPointer == true`, header size `PtrSize + 36` |
 | `go1.18.10` | `Go118Magic`, `entryoff` offsets, 32-bit funcdata offsets from `moduledata.gofunc`, `FuncIDOffset == 36` |
-| `go1.20.14`, `go1.26.5` | `Go120Magic`, `FuncIDOffset == 40`, `startLine` present |
+| `go1.20.14`, `go1.21.13`, `go1.22.12`, `go1.26.5` | `Go120Magic`, `FuncIDOffset == 40`, `startLine` present |
+| `go1.15.15`, `go1.16.15` | `GoOpenCodedDeferLayout::LegacyEnumerated`, the record's leading maximum argument frame and per-defer argument lists |
+| `go1.18.10`, `go1.20.14`, `go1.21.13` | `GoOpenCodedDeferLayout::Enumerated`, a slot count and then every closure slot |
+| `go1.22.12`, `go1.26.5` | `GoOpenCodedDeferLayout::Contiguous`, one ascending run named by where it begins |
 | `windows/amd64` (any) | `findPcHeader` segment scan, because the PE linker folds the table into `.rdata` |
 | `darwin/*` (any) | `section_names::macho::GoPclnTab`, table in `__DATA_CONST` |
 | `linux/*` `pie` (Go &le; 1.25) | the `.data.rel.ro.gopclntab` name in `findPcHeader`'s section list |

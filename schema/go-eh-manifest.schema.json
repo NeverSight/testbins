@@ -359,6 +359,7 @@
         "min_recover_sites",
         "min_panic_sites",
         "min_open_coded_defer_funcs",
+        "open_coded_defer_layout",
         "requires_moduledata"
       ],
       "properties": {
@@ -407,6 +408,14 @@
         "min_open_coded_defer_funcs": {
           "type": "integer",
           "minimum": 0
+        },
+        "open_coded_defer_layout": {
+          "description": "Shape of FUNCDATA_OpenCodedDeferInfo. legacy-enumerated: the leading maximum argument frame, the bitmask offset, the slot count, then each defer's argument size, closure slot, and argument list (Go 1.14 to 1.17). enumerated: the bitmask offset, the slot count, then each closure slot (Go 1.18 to 1.21). contiguous: the bitmask offset and where the single ascending run of slots begins (Go 1.22 and later). Neither rewrite moved the pclntab magic, so a consumer must read this out of the record.",
+          "enum": [
+            "legacy-enumerated",
+            "enumerated",
+            "contiguous"
+          ]
         },
         "requires_moduledata": {
           "type": "boolean"
@@ -1034,6 +1043,85 @@
                   "expected_pclntab_version",
                   "validation_level",
                   "requires_moduledata"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "The open-coded defer record was rewritten at Go 1.18 and again at Go 1.22, on boundaries the pclntab magic does not share, so its shape is keyed on the release by itself.",
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.(?:[2-9]|1[0-7])\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "open_coded_defer_layout": {
+                    "const": "legacy-enumerated"
+                  }
+                },
+                "required": [
+                  "open_coded_defer_layout"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.(?:1[89]|2[01])\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "open_coded_defer_layout": {
+                    "const": "enumerated"
+                  }
+                },
+                "required": [
+                  "open_coded_defer_layout"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.(?:2[2-9]|[3-9][0-9])\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "open_coded_defer_layout": {
+                    "const": "contiguous"
+                  }
+                },
+                "required": [
+                  "open_coded_defer_layout"
                 ]
               }
             }

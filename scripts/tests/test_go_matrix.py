@@ -235,6 +235,60 @@ class GoMatrixTests(unittest.TestCase):
             len(self.matrix.expected_variants()),
         )
 
+    def test_the_open_coded_defer_record_shape_tracks_its_two_rewrites(self) -> None:
+        """Open-coded defers arrived in Go 1.14 and were respelled twice.
+
+        Go 1.18 made deferred functions argumentless, which removed the record's
+        leading maximum argument frame and each defer's own argument size and
+        argument list.  Go 1.22 then sorted the closure slots into one ascending
+        run, after which the record names where the run begins instead of naming
+        every slot.
+        """
+
+        produced = {
+            version: self.matrix.release_for(version).open_coded_defer_layout
+            for version in self.matrix.pinned_go_versions()
+        }
+        self.assertEqual(
+            produced,
+            {
+                "1.15.15": "legacy-enumerated",
+                "1.16.15": "legacy-enumerated",
+                "1.18.10": "enumerated",
+                "1.20.14": "enumerated",
+                "1.21.13": "enumerated",
+                "1.22.12": "contiguous",
+                "1.26.5": "contiguous",
+            },
+        )
+
+    def test_one_magic_covers_both_shapes_of_the_go122_rewrite(self) -> None:
+        """This pair is the reason 1.21 and 1.22 are pinned at all.
+
+        Every other release in the corpus is told apart from its neighbours by
+        the `pcHeader` magic, so a consumer could reach the right record shape
+        by reading the header and never look at the record.  These two share a
+        magic with each other and with 1.20 and 1.26, so the only thing that
+        separates them is the bytes -- which is exactly the reading a consumer
+        has to get right and had nothing to get wrong on before.
+        """
+
+        before = self.matrix.release_for("1.21.13")
+        after = self.matrix.release_for("1.22.12")
+        self.assertEqual(before.pclntab_magic, after.pclntab_magic)
+        self.assertEqual(before.pclntab_version, after.pclntab_version)
+        self.assertNotEqual(
+            before.open_coded_defer_layout, after.open_coded_defer_layout
+        )
+
+        # Both sides of the change are built, or the pair proves nothing.
+        built = {
+            variant.go_version
+            for variant in self.matrix.expected_variants()
+            if variant.optimization == "default"
+        }
+        self.assertLessEqual({"1.21.13", "1.22.12"}, built)
+
     def test_artifact_budget_stays_small_enough_to_commit(self) -> None:
         """A Go binary is about a megabyte before it does anything.
 

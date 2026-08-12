@@ -433,6 +433,27 @@ class GoManifestTests(unittest.TestCase):
             ):
                 VERIFY.verify_manifest(manifest_path, root)
 
+    def test_rejects_a_defer_record_shape_the_release_does_not_write(self) -> None:
+        """Go 1.22 respelled the record without moving the pclntab magic.
+
+        Nothing else in the manifest changes across that boundary, so a wrong
+        value here would reach a consumer as a decoding target it cannot hit
+        and read as its own bug rather than the manifest's.
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            manifest = _manifest(root, [_variant(go_version="1.21.13")])
+            manifest["artifacts"][0]["neverd"]["open_coded_defer_layout"] = (
+                "contiguous"
+            )
+            manifest_path = _write(root, manifest)
+
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError, "open_coded_defer_layout"
+            ):
+                VERIFY.verify_manifest(manifest_path, root)
+
     def test_rejects_a_complete_parse_claimed_for_a_go12_table(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
