@@ -72,6 +72,81 @@ class ELFReaderTests(unittest.TestCase):
             load_object(bytes(payload))
 
 
+class ARMEHABIReaderTests(unittest.TestCase):
+    """32-bit ARM replaces the DWARF chain with an index section."""
+
+    def _arm_image(self, entry_count: int = 12, **overrides: bytes):
+        section_overrides = {
+            ".ARM.exidx": synthetic_objects.arm_exidx_section(entry_count)
+        }
+        section_overrides.update(overrides)
+        return load_object(
+            synthetic_objects.build_elf(
+                architecture="arm",
+                elf_class=32,
+                sections=(".text", ".ARM.exidx", ".ARM.extab"),
+                symbols=("__gxx_personality_v0", "cxx_eh_probe_quiet_sum"),
+                section_overrides=section_overrides,
+            )
+        )
+
+    def test_reads_a_thirty_two_bit_image(self) -> None:
+        image = self._arm_image()
+
+        self.assertEqual(image.object_format, "elf")
+        self.assertEqual(image.architecture, "arm")
+        self.assertLessEqual({".text", ".ARM.exidx", ".ARM.extab"}, set(image.sections))
+        self.assertTrue(image.has_symbol_table)
+        self.assertIn("__gxx_personality_v0", image.symbols)
+
+    def test_counts_index_entries(self) -> None:
+        self.assertEqual(self._arm_image(entry_count=12).arm_exidx_entries(), 12)
+        self.assertEqual(self._arm_image(entry_count=1).arm_exidx_entries(), 1)
+
+    def test_rejects_an_index_that_is_not_whole_entries(self) -> None:
+        image = self._arm_image(**{".ARM.exidx": b"\x00" * 12})
+
+        with self.assertRaisesRegex(ObjectFormatError, "whole number of index"):
+            image.arm_exidx_entries()
+
+    def test_reports_no_index_when_the_section_is_absent(self) -> None:
+        for payload in (
+            synthetic_objects.build_elf(),
+            synthetic_objects.build_macho(),
+            synthetic_objects.build_pe(),
+        ):
+            image = load_object(payload)
+            with self.subTest(object_format=image.object_format):
+                self.assertEqual(image.arm_exidx_entries(), 0)
+
+
+class FrameRecordCountTests(unittest.TestCase):
+    def test_separates_common_information_entries_from_descriptions(self) -> None:
+        image = load_object(synthetic_objects.build_elf())
+
+        self.assertEqual(image.frame_record_counts(), (1, 1))
+
+    def test_notices_a_section_that_describes_no_function(self) -> None:
+        image = load_object(
+            synthetic_objects.build_elf(
+                eh_frame=synthetic_objects.dwarf_frame_section_without_descriptions()
+            )
+        )
+
+        cies, descriptions = image.frame_record_counts()
+        self.assertEqual(cies, 1)
+        self.assertEqual(descriptions, 0)
+        # The chain is still well formed, which is exactly why presence and
+        # coverage have to be asked separately.
+        self.assertEqual(image.verify_unwind_tables(), 1)
+
+    def test_reports_an_absent_frame_section(self) -> None:
+        image = load_object(synthetic_objects.build_elf(sections=(".text",)))
+
+        with self.assertRaisesRegex(ObjectFormatError, "absent"):
+            image.frame_record_counts()
+
+
 class MachOReaderTests(unittest.TestCase):
     def test_reads_sections_symbols_and_compact_unwind(self) -> None:
         payload = synthetic_objects.build_macho(
@@ -152,6 +227,22 @@ class PEReaderTests(unittest.TestCase):
 
         self.assertFalse(image.has_symbol_table)
         self.assertEqual(image.symbols, set())
+
+    def test_reads_the_coff_symbol_table_a_mingw_link_keeps(self) -> None:
+        payload = synthetic_objects.build_pe(
+            sections=(".text", ".pdata", ".xdata"),
+            symbols=("__gxx_personality_seh0", "main", "__cxa_throw"),
+        )
+
+        image = load_object(payload)
+
+        self.assertTrue(image.has_symbol_table)
+        self.assertLessEqual({".pdata", ".xdata"}, set(image.sections))
+        # Short names live in the record; longer ones in the string table.
+        self.assertLessEqual(
+            {"__gxx_personality_seh0", "main", "__cxa_throw"}, image.symbols
+        )
+        self.assertEqual(image.verify_unwind_tables(), 1)
 
     def test_rejects_runtime_function_outside_executable_code(self) -> None:
         payload = synthetic_objects.build_pe(

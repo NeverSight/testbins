@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import struct
 
-_ELF_MACHINES = {"x86_64": 0x3E, "aarch64": 0xB7}
+_ELF_MACHINES = {"x86_64": 0x3E, "aarch64": 0xB7, "arm": 0x28}
 _MACHO_CPU_TYPES = {"x86_64": 0x01000007, "aarch64": 0x0100000C}
 _PE_MACHINES = {"x86_64": 0x8664, "aarch64": 0xAA64}
 
@@ -40,10 +40,29 @@ def dwarf_frame_section() -> bytes:
     )
 
 
+def dwarf_frame_section_without_descriptions() -> bytes:
+    """A CIE and the terminator: well formed, but describing no function."""
+
+    cie_body = struct.pack("<I", 0) + b"\x01" + b"\x00" * 7
+    return struct.pack("<I", len(cie_body)) + cie_body + struct.pack("<I", 0)
+
+
 def compact_unwind_section(version: int = 1, index_count: int = 2) -> bytes:
     """A `__unwind_info` header with a first-level index and nothing else."""
 
     return struct.pack("<7I", version, 28, 0, 28, 0, 28, index_count) + b"\x00" * 32
+
+
+def arm_exidx_section(entry_count: int) -> bytes:
+    """An `.ARM.exidx` index of \\p entry_count two-word entries.
+
+    Each entry is a PREL31 offset to a function followed by `EXIDX_CANTUNWIND`,
+    which is the smallest legal thing an entry can say.
+    """
+
+    return b"".join(
+        struct.pack("<II", 0x100 + index * 4, 1) for index in range(entry_count)
+    )
 
 
 def _string_table(names: list[str]) -> tuple[bytes, dict[str, int]]:
@@ -62,8 +81,19 @@ def build_elf(
     sections: tuple[str, ...] = (".text", ".eh_frame", ".gcc_except_table"),
     eh_frame: bytes | None = None,
     trailing_bytes: bytes = b"",
+    elf_class: int = 64,
+    section_overrides: dict[str, bytes] | None = None,
 ) -> bytes:
-    """Return a 64-bit little-endian ELF with the requested sections."""
+    """Return a little-endian ELF with the requested sections.
+
+    `elf_class` exists for the 32-bit ARM cells, whose whole point is that they
+    carry `.ARM.exidx` instead of a DWARF frame chain, and which no other
+    product line in this repository produces.
+    """
+
+    if elf_class not in (32, 64):
+        raise ValueError("an ELF is either 32-bit or 64-bit")
+    is64 = elf_class == 64
 
     frame = dwarf_frame_section() if eh_frame is None else eh_frame
     contents: dict[str, bytes] = {}
@@ -72,16 +102,28 @@ def build_elf(
             contents[name] = frame
         elif name == ".text":
             contents[name] = b"\x90" * 16
+        elif name == ".ARM.exidx":
+            contents[name] = arm_exidx_section(4)
         else:
             contents[name] = b"\x00" * 8
+    for name, payload_bytes in (section_overrides or {}).items():
+        contents[name] = payload_bytes
 
+    symbol_entry_size = 24 if is64 else 16
     symbol_names = list(symbols)
     string_table, string_offsets = _string_table(symbol_names)
-    symbol_table = bytearray(struct.pack("<IBBHQQ", 0, 0, 0, 0, 0, 0))
-    for name in symbol_names:
-        symbol_table += struct.pack(
-            "<IBBHQQ", string_offsets[name], 0x12, 0, 1, 0x1000, 8
-        )
+    if is64:
+        symbol_table = bytearray(struct.pack("<IBBHQQ", 0, 0, 0, 0, 0, 0))
+        for name in symbol_names:
+            symbol_table += struct.pack(
+                "<IBBHQQ", string_offsets[name], 0x12, 0, 1, 0x1000, 8
+            )
+    else:
+        symbol_table = bytearray(struct.pack("<IIIBBH", 0, 0, 0, 0, 0, 0))
+        for name in symbol_names:
+            symbol_table += struct.pack(
+                "<IIIBBH", string_offsets[name], 0x1000, 8, 0x12, 0, 1
+            )
 
     ordered = list(sections) + [".symtab", ".strtab", ".shstrtab"]
     section_names, name_offsets = _string_table(ordered)
@@ -91,7 +133,7 @@ def build_elf(
 
     payload = bytearray(b"\x00" * 64)
     payload[0:4] = b"\x7fELF"
-    payload[4] = 2
+    payload[4] = 2 if is64 else 1
     payload[5] = 1
     payload[6] = 1
     offsets: dict[str, int] = {}
@@ -104,20 +146,21 @@ def build_elf(
     while len(payload) % 8:
         payload += b"\x00"
     section_header_offset = len(payload)
-    symtab_index = ordered.index(".symtab")
     strtab_index = ordered.index(".strtab")
 
-    headers = bytearray(struct.pack("<IIQQQQIIQQ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+    header_format = "<IIQQQQIIQQ" if is64 else "<IIIIIIIIII"
+    headers = bytearray(struct.pack(header_format, *([0] * 10)))
     for index, name in enumerate(ordered):
         if name == ".symtab":
-            section_type, flags, link, entry_size = _SHT_SYMTAB, 0, strtab_index + 1, 24
+            section_type = _SHT_SYMTAB
+            flags, link, entry_size = 0, strtab_index + 1, symbol_entry_size
         elif name in (".strtab", ".shstrtab"):
             section_type, flags, link, entry_size = _SHT_STRTAB, 0, 0, 0
         else:
             flags = _SHF_ALLOC | (_SHF_EXECINSTR if name == ".text" else 0)
             section_type, link, entry_size = _SHT_PROGBITS, 0, 0
         headers += struct.pack(
-            "<IIQQQQIIQQ",
+            header_format,
             name_offsets[name],
             section_type,
             flags,
@@ -135,13 +178,19 @@ def build_elf(
     struct.pack_into("<H", payload, 16, 2)
     struct.pack_into("<H", payload, 18, _ELF_MACHINES[architecture])
     struct.pack_into("<I", payload, 20, 1)
-    struct.pack_into("<Q", payload, 40, section_header_offset)
-    struct.pack_into("<H", payload, 52, 64)
-    struct.pack_into("<HHH", payload, 58, 64, len(ordered) + 1, len(ordered))
     # The section-name table is the last entry, and the null header shifts
     # every index by one.
-    struct.pack_into("<H", payload, 62, ordered.index(".shstrtab") + 1)
-    assert symtab_index >= 0
+    shstrtab_index = ordered.index(".shstrtab") + 1
+    if is64:
+        struct.pack_into("<Q", payload, 40, section_header_offset)
+        struct.pack_into("<H", payload, 52, 64)
+        struct.pack_into("<HHH", payload, 58, 64, len(ordered) + 1, len(ordered))
+        struct.pack_into("<H", payload, 62, shstrtab_index)
+    else:
+        struct.pack_into("<I", payload, 32, section_header_offset)
+        struct.pack_into("<H", payload, 40, 52)
+        struct.pack_into("<HHH", payload, 46, 40, len(ordered) + 1, len(ordered))
+        struct.pack_into("<H", payload, 50, shstrtab_index)
     return bytes(payload)
 
 
@@ -252,15 +301,43 @@ def build_macho(
     return bytes(payload)
 
 
+def _coff_symbol_table(names: tuple[str, ...]) -> tuple[bytes, bytes]:
+    """Return the 18-byte symbol records and the string table beside them."""
+
+    long_names = [name for name in names if len(name) > 8]
+    strings = bytearray(struct.pack("<I", 4))
+    offsets: dict[str, int] = {}
+    for name in long_names:
+        offsets[name] = len(strings)
+        strings += name.encode("ascii") + b"\x00"
+    struct.pack_into("<I", strings, 0, len(strings))
+
+    records = bytearray()
+    for name in names:
+        if len(name) > 8:
+            records += struct.pack("<II", 0, offsets[name])
+        else:
+            records += name.encode("ascii").ljust(8, b"\x00")
+        # Value, section number, type, storage class, and no auxiliary records.
+        records += struct.pack("<IhHBB", 0x10, 1, 0x20, 2, 0)
+    return bytes(records), bytes(strings)
+
+
 def build_pe(
     *,
     architecture: str = "x86_64",
     exports: tuple[str, ...] = (),
+    symbols: tuple[str, ...] = (),
     sections: tuple[str, ...] = (".text", ".pdata", ".rdata"),
     runtime_functions: tuple[tuple[int, int, int], ...] | None = None,
     trailing_bytes: bytes = b"",
 ) -> bytes:
-    """Return a PE32+ image with a `.pdata` table and an optional export table."""
+    """Return a PE32+ image with a `.pdata` table and an optional export table.
+
+    `symbols` writes a COFF symbol table, which a linked MSVC image does not
+    have but a mingw-w64 one keeps: it is where the C++ Itanium corpus finds
+    `__gxx_personality_seh0`.
+    """
 
     section_layout = [
         (".text", 0x1000, 0x400, True, False),
@@ -268,6 +345,7 @@ def build_pe(
         (".rdata", 0x3000, 0x800, False, False),
         (".edata", 0x4000, 0xA00, False, False),
         (".data", 0x5000, 0xC00, False, True),
+        (".xdata", 0x6000, 0xE00, False, False),
     ]
     chosen = [entry for entry in section_layout if entry[0] in sections]
     if exports and ".edata" not in sections:
@@ -300,7 +378,10 @@ def build_pe(
 
     entries = runtime_functions
     if entries is None:
-        entries = ((0x1000, 0x1010, 0x3000),)
+        # A mingw image puts its unwind data in `.xdata`; an MSVC one folds it
+        # into `.rdata`.  The default points at whichever the caller asked for.
+        unwind_rva = 0x6000 if ".xdata" in sections else 0x3000
+        entries = ((0x1000, 0x1010, unwind_rva),)
     struct.pack_into("<II", payload, directory + 3 * 8, 0x2000, len(entries) * 12)
 
     section_table = optional + optional_size
@@ -347,6 +428,15 @@ def build_pe(
             encoded = name.encode("ascii") + b"\x00"
             payload[cursor : cursor + len(encoded)] = encoded
             cursor += len(encoded)
+
+    if symbols:
+        records, strings = _coff_symbol_table(symbols)
+        symbol_offset = len(payload)
+        # PointerToSymbolTable and NumberOfSymbols, twelve bytes into the COFF
+        # header that begins right after the `PE\0\0` signature.
+        struct.pack_into("<II", payload, pe + 12, symbol_offset, len(symbols))
+        payload += records
+        payload += strings
 
     payload += trailing_bytes
     return bytes(payload)

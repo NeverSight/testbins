@@ -1,0 +1,327 @@
+name: Build and publish C++ Itanium EH corpus
+
+# One matrix cell is one (toolchain, target) pair, because installing a cross
+# toolchain is by far the most expensive thing a build job does and all eight
+# variants of a target share it.  Seven cells cross-compile from one ubuntu x64
+# host and two build Mach-O on Apple silicon; nothing else in the matrix needs a
+# runner of its own.
+#
+# The paths filters name this product line's files individually rather than
+# `scripts/**`, so a change to another corpus does not rebuild nine C++
+# toolchains.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/build-cxx-itanium-eh.yml"
+      - "schema/cxx-itanium-eh-manifest.schema.json"
+      - "scripts/cxx_itanium_matrix.py"
+      - "scripts/build_cxx_itanium_corpus.py"
+      - "scripts/merge_cxx_itanium_corpus.py"
+      - "scripts/verify_cxx_itanium_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/object_readers.py"
+      - "scripts/tests/*cxx_itanium*.py"
+      - "scripts/tests/test_object_readers.py"
+      - "scripts/tests/synthetic_objects.py"
+      - "sources/cxx-itanium-eh/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-cxx-itanium-eh.yml"
+      - "schema/cxx-itanium-eh-manifest.schema.json"
+      - "scripts/cxx_itanium_matrix.py"
+      - "scripts/build_cxx_itanium_corpus.py"
+      - "scripts/merge_cxx_itanium_corpus.py"
+      - "scripts/verify_cxx_itanium_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/object_readers.py"
+      - "scripts/tests/*cxx_itanium*.py"
+      - "scripts/tests/test_object_readers.py"
+      - "scripts/tests/synthetic_objects.py"
+      - "sources/cxx-itanium-eh/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxx-itanium-eh-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-producer:
+    name: Verify producer and prepare matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run producer unit tests
+        run: |
+          set -euo pipefail
+          # The glob has to match the matrix, sources, builder, and verifier
+          # tests, which do not share a common prefix.
+          python3 -m unittest discover -s scripts/tests -p "*cxx_itanium*.py" -v
+          # The C++ line is the only one that reads `.ARM.exidx` and splits the
+          # DWARF frame counts, so its own tests are not enough: the readers it
+          # extended have to keep working for the other three lines too.
+          python3 -m unittest discover -s scripts/tests -p "test_object_readers.py" -v
+
+      - name: Compile-check Python scripts
+        run: >-
+          python3 -m py_compile
+          scripts/cxx_itanium_matrix.py
+          scripts/object_readers.py
+          scripts/json_schema_check.py
+          scripts/verify_cxx_itanium_corpus.py
+          scripts/merge_cxx_itanium_corpus.py
+          scripts/build_cxx_itanium_corpus.py
+
+      - name: Parse manifest schema
+        run: >-
+          python3 -m json.tool
+          schema/cxx-itanium-eh-manifest.schema.json
+          > /dev/null
+
+      - name: Reject a schema the verifier cannot enforce in full
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          sys.path.insert(0, "scripts")
+          import json_schema_check
+
+          with open(
+              "schema/cxx-itanium-eh-manifest.schema.json", encoding="utf-8"
+          ) as stream:
+              json_schema_check.check_schema(json.load(stream))
+          print("every schema keyword is enforced by the verifier")
+          PY
+
+      - name: Print the artifact plan
+        run: python3 scripts/cxx_itanium_matrix.py --plan
+
+      - name: Generate supported build matrix
+        id: matrix
+        run: >-
+          python3 scripts/cxx_itanium_matrix.py
+          --github-output "$GITHUB_OUTPUT"
+
+  build-cell:
+    name: ${{ matrix.cell_name }}
+    needs: verify-producer
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install the cross toolchain this cell needs
+        if: matrix.runner_os == 'linux' && matrix.apt_packages != ''
+        shell: bash
+        env:
+          APT_PACKAGES: ${{ matrix.apt_packages }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes $APT_PACKAGES
+
+      - name: Select the pinned Xcode
+        if: matrix.xcode_path != ''
+        shell: bash
+        env:
+          XCODE_PATH: ${{ matrix.xcode_path }}
+        run: |
+          set -euo pipefail
+          # The matrix pins the release series Apple's clang must report, and
+          # this is what makes that pin true.  If the image stops carrying this
+          # Xcode the cell fails here rather than silently producing artifacts
+          # from a compiler the manifest does not describe.
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "the pinned $XCODE_PATH is not on this image; available:" >&2
+            ls -d /Applications/Xcode*.app >&2
+            exit 1
+          fi
+          sudo xcode-select --switch "$XCODE_PATH/Contents/Developer"
+          clang++ --version
+
+      - name: Build, run when native, and validate cell
+        shell: bash
+        env:
+          CELL_TOOLCHAIN: ${{ matrix.toolchain }}
+          CELL_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          python3 scripts/build_cxx_itanium_corpus.py \
+            --toolchain "$CELL_TOOLCHAIN" \
+            --target "$CELL_TARGET" \
+            --output-root "$RUNNER_TEMP/cxx-itanium-eh"
+
+      - name: Upload validated cell
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: cxx-itanium-eh-${{ matrix.cell_name }}
+          path: ${{ runner.temp }}/cxx-itanium-eh
+          if-no-files-found: error
+          retention-days: 14
+
+  assemble-corpus:
+    name: Assemble canonical corpus
+    needs: build-cell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download all validated cells
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: cxx-itanium-eh-*
+          path: ${{ runner.temp }}/cxx-itanium-eh
+          merge-multiple: true
+
+      - name: Merge and validate the complete matrix
+        run: >-
+          python3 scripts/merge_cxx_itanium_corpus.py
+          --root "${{ runner.temp }}/cxx-itanium-eh"
+          --fragments "${{ runner.temp }}/cxx-itanium-eh/fragments"
+          --output "${{ runner.temp }}/cxx-itanium-eh/manifests/cxx-itanium-eh.json"
+          --require-complete-matrix
+
+      - name: Preserve generated-tree notice
+        run: >-
+          cp corpus/cxx-itanium-eh/README.md
+          "${{ runner.temp }}/cxx-itanium-eh/corpus/cxx-itanium-eh/README.md"
+
+      - name: Re-verify canonical manifest
+        run: >-
+          python3 scripts/verify_cxx_itanium_corpus.py
+          "${{ runner.temp }}/cxx-itanium-eh/manifests/cxx-itanium-eh.json"
+          --root "${{ runner.temp }}/cxx-itanium-eh"
+          --require-complete-matrix
+
+      - name: Report the committed size
+        shell: bash
+        run: |
+          set -euo pipefail
+          du -sh "$RUNNER_TEMP/cxx-itanium-eh/corpus/cxx-itanium-eh"
+          find "$RUNNER_TEMP/cxx-itanium-eh/corpus/cxx-itanium-eh" \
+            -type f -printf '%10s  %P\n' | sort -k2
+
+      - name: Upload canonical corpus
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: cxx-itanium-eh-canonical-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/cxx-itanium-eh/corpus/cxx-itanium-eh
+            ${{ runner.temp }}/cxx-itanium-eh/manifests/cxx-itanium-eh.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-corpus:
+    name: Commit generated corpus to main
+    needs: assemble-corpus
+    # A manual run on main publishes too.  Two pushes in quick succession
+    # leave the first run's publication refused by the stale-main guard
+    # below, which is right -- but without this there is no way to publish
+    # the result afterwards short of pushing again.  The guard still
+    # applies, so a dispatch can no more publish a stale tree than a push
+    # can.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out triggering main revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download canonical corpus
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: cxx-itanium-eh-canonical-${{ github.run_id }}
+          path: ${{ runner.temp }}/cxx-itanium-eh-canonical
+
+      - name: Verify downloaded corpus before publication
+        run: >-
+          python3 scripts/verify_cxx_itanium_corpus.py
+          "${{ runner.temp }}/cxx-itanium-eh-canonical/manifests/cxx-itanium-eh.json"
+          --root "${{ runner.temp }}/cxx-itanium-eh-canonical"
+          --require-complete-matrix
+
+      - name: Confirm source revision is still current and sync generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          # What must not have changed is the producer, not the branch.  Four
+          # product lines build from one push and each publishes its own tree,
+          # so requiring main to be untouched would mean the first line to
+          # finish invalidated the rest.  The generated trees are disjoint, so
+          # only a change outside them can make this run's output stale.
+          if ! git diff --quiet "$GITHUB_SHA" origin/main -- . \
+               ':(exclude)corpus' ':(exclude)manifests'; then
+            echo "the producer changed after this run started; refusing stale publication" >&2
+            exit 1
+          fi
+          git reset --hard --quiet origin/main
+          mkdir -p corpus/cxx-itanium-eh manifests
+          rsync --archive --delete \
+            "$RUNNER_TEMP/cxx-itanium-eh-canonical/corpus/cxx-itanium-eh/" \
+            corpus/cxx-itanium-eh/
+          cp \
+            "$RUNNER_TEMP/cxx-itanium-eh-canonical/manifests/cxx-itanium-eh.json" \
+            manifests/cxx-itanium-eh.json
+
+      - name: Re-verify repository tree
+        run: >-
+          python3 scripts/verify_cxx_itanium_corpus.py
+          manifests/cxx-itanium-eh.json
+          --root .
+          --require-complete-matrix
+
+      - name: Commit and fast-forward push generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- corpus/cxx-itanium-eh manifests/cxx-itanium-eh.json
+          if git diff --cached --quiet; then
+            echo "generated corpus is already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(corpus): refresh C++ Itanium EH binaries [skip ci]"
+          # Another line may have published while this one was committing.
+          # Its commit touches a different tree, so rebasing onto it is not a
+          # merge of anything: the retry loop exists because two disjoint
+          # publications race, not because they conflict.
+          for Attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git fetch --no-tags origin main
+            if ! git diff --quiet "$GITHUB_SHA" origin/main -- . \
+                 ':(exclude)corpus' ':(exclude)manifests'; then
+              echo "the producer changed during publication; refusing stale push" >&2
+              exit 1
+            fi
+            git rebase origin/main
+          done
+          echo "could not publish after three attempts" >&2
+          exit 1

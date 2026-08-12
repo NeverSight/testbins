@@ -14,11 +14,12 @@ Nothing is uploaded from a developer's machine.
 |---|---|---|---|---|
 | `windows-eh` | PE | `manifests/windows-eh.json` | `schema/windows-eh-manifest.schema.json` | `build-windows-eh.yml` |
 | `rust-eh` | ELF, PE, Mach-O | `manifests/rust-eh.json` | `schema/rust-eh-manifest.schema.json` | `build-rust-eh.yml` |
+| `cxx-itanium-eh` | ELF, Mach-O, PE | `manifests/cxx-itanium-eh.json` | `schema/cxx-itanium-eh-manifest.schema.json` | `build-cxx-itanium-eh.yml` |
 
-Both follow the same shape: sources pinned in the repository, a matrix script, a
-per-cell build script, a fragment merge, a strict JSON Schema, a verifier that
-re-derives every claim from the bytes on disk, and a four-stage workflow where
-only a `push` to `main` is granted `contents: write`.
+All three follow the same shape: sources pinned in the repository, a matrix
+script, a per-cell build script, a fragment merge, a strict JSON Schema, a
+verifier that re-derives every claim from the bytes on disk, and a four-stage
+workflow where only a `push` to `main` is granted `contents: write`.
 
 ## Windows exception corpus
 
@@ -199,17 +200,126 @@ corpus/rust-eh/aarch64-apple-darwin/abort/o0/cdylib/
 Linux and macOS executables have no extension, so `.gitattributes` marks the
 generated artifact directories as binary by path rather than by suffix.
 
+## C++ Itanium exception corpus
+
+The Itanium C++ ABI is one exception model with three containers and two
+producers, and the point of this line is that those combinations disagree with
+each other. The producer therefore varies the (toolchain, target) pair first,
+because that pair is what changes the format:
+
+| Toolchain | Target | Unwind metadata | Personality | Runner | Executables run? |
+|---|---|---|---|---|---|
+| gcc | `x86_64-linux-gnu` | `.eh_frame` + `.gcc_except_table` | `__gxx_personality_v0` | `ubuntu-24.04` | yes |
+| gcc | `aarch64-linux-gnu` | `.eh_frame` + `.gcc_except_table` | `__gxx_personality_v0` | `ubuntu-24.04` | cross-built |
+| gcc | `armv7-linux-gnueabihf` | `.ARM.exidx` + `.ARM.extab` | `__gxx_personality_v0` | `ubuntu-24.04` | cross-built |
+| gcc | `x86_64-w64-mingw32` | `.pdata` + `.xdata` | `__gxx_personality_seh0` | `ubuntu-24.04` | cross-built |
+| clang | `x86_64-linux-gnu` | `.eh_frame` + `.gcc_except_table` | `__gxx_personality_v0` | `ubuntu-24.04` | yes |
+| clang | `aarch64-linux-gnu` | `.eh_frame` + `.gcc_except_table` | `__gxx_personality_v0` | `ubuntu-24.04` | cross-built |
+| clang | `armv7-linux-gnueabihf` | `.ARM.exidx` + `.ARM.extab` | `__gxx_personality_v0` | `ubuntu-24.04` | cross-built |
+| clang | `x86_64-apple-darwin` | `__unwind_info` + `__gcc_except_tab` | `__gxx_personality_v0` | `macos-15` | cross-built |
+| clang | `arm64-apple-darwin` | `__unwind_info` + `__gcc_except_tab` | `__gxx_personality_v0` | `macos-15` | yes |
+
+Each of the nine cells builds the same eight variants, for a canonical total of
+72 artifacts: the main probe at `-O0` and `-O2`, with and without symbols; the
+exception-free control; the shared object at both optimization levels; and the C
+probe.
+
+Three of those differences are the reason the line exists. 32-bit ARM replaces
+the DWARF chain outright, so there is no `.eh_frame` and no `.gcc_except_table`
+anywhere -- the language specific data area is emitted inline in `.ARM.extab`,
+indexed by `.ARM.exidx`. mingw-w64 keeps Itanium language semantics but
+dispatches them through Windows SEH, so the frames live in `.pdata`/`.xdata` and
+the personality is spelled `seh0`. Mach-O prefers compact unwind records and
+keeps `__eh_frame` only for the frames that encoding cannot describe, so its
+presence is not something the producer's flags decide and the manifest does not
+claim it.
+
+The corpus deliberately carries no `-fsjlj-exceptions` axis. The setjmp/longjmp
+model is a configure-time property of the toolchain rather than a flag a
+distribution compiler reliably honours, so a cell for it would be red more often
+than it was informative. It is the obvious next axis if a producer that
+guarantees it is ever pinned here.
+
+The Linux cells pin GCC 13 and Clang 18 through the versioned apt packages they
+install; the macOS cells pin Apple clang 17 by selecting a specific Xcode before
+building. Every artifact records the release its driver actually reported, and
+the verifier rejects a manifest whose recorded release is outside the pinned
+series. Builds pass `-ffile-prefix-map` and `-g0`, and the verifier fails if the
+remapped checkout path is still findable in a published binary.
+
+### Test inputs
+
+Three sources under `sources/cxx-itanium-eh/`, with no dependency beyond the C
+and C++ standard libraries:
+
+- `cxx_eh_probe.cpp` covers every shape one LSDA can take: catch by value, by
+  const reference, and by pointer; a four-clause ladder; `catch (...)`; a bare
+  `throw;`; single and array cleanups; nested try; a base catch for a derived
+  throw and the same through virtual inheritance; a throw through a lambda and
+  through a `std::function`; a `noexcept` body that can throw; `return` from
+  inside a try; a try inside a loop; and a function-scope static whose
+  initializer can throw.
+- `cxx_eh_shared.cpp` puts the same machinery behind a shared-object boundary,
+  including an entry that calls back out and catches what comes back.
+- `c_eh_probe.c` is C compiled with `-fexceptions` and
+  `__attribute__((cleanup))`, which produces a `__gcc_personality_v0` table with
+  cleanup actions and no type table at all. It links the shared object, so a C++
+  exception really does travel through its frames.
+
+### The exception-free build is the negative control
+
+`cxx_eh_probe_noexc` is the same source as `cxx_eh_probe` compiled with
+`-fno-exceptions`, so everything that disappears disappeared because of one
+flag. Everything that raises sits behind `CXX_EH_PROBE_EXCEPTIONS`, including
+the exception types, so the control has neither an except table nor the RTTI
+that would identify one. It still passes `-fasynchronous-unwind-tables`: without
+frame records there would be no metadata left to validate, and `cfi-only` would
+be a claim about an empty image.
+
+What it claims to lack is scoped to what the flag decides. On ELF and Mach-O it
+asserts no except table and no `__cxa_throw`, because the C++ runtime is on the
+other side of a dynamic dependency. The mingw cell links a static `libstdc++`
+and therefore claims nothing: an except table there could belong to the runtime
+rather than to the producer.
+
+### Validation levels
+
+- `lsda-graph`: a decoded call-site table, action chain, and type table reached
+  through `.gcc_except_table`, `__gcc_except_tab`, or the SEH handler data.
+- `ehabi`: the same graph reached through an `.ARM.exidx` index and an inline
+  `.ARM.extab` entry.
+- `cfi-only`: bounded, non-malformed frame records, and nothing about exception
+  semantics.
+
+### Artifact names
+
+Both the directory and the filename repeat every build axis:
+
+```text
+corpus/cxx-itanium-eh/gcc/armv7-linux-gnueabihf/o2/symtab/exe/
+  cxx_eh_probe-gcc-armv7-linux-gnueabihf-o2-symtab
+
+corpus/cxx-itanium-eh/clang/arm64-apple-darwin/o0/symtab/shared/
+  libcxx_eh_shared-clang-arm64-apple-darwin-o0-symtab.dylib
+```
+
+A stripped artifact keeps no name of anything the producer compiled, so its
+evidence is the mangled name of the type it throws: RTTI is data, and
+`15CxxEhProbeError` survives a strip that removes every function name.
+
 ## Repository layout
 
 ```text
 .github/workflows/        Build, assemble, and publish workflows
 corpus/windows-eh/        Committed generated PE files
 corpus/rust-eh/           Committed generated ELF, PE, and Mach-O files
+corpus/cxx-itanium-eh/    Committed generated ELF, Mach-O, and PE files
 manifests/                Canonical machine-readable contracts
 schema/                   Manifest schemas
 scripts/                  Matrices, builders, mergers, verifiers, and tests
 sources/msvc-exceptions/  Focused ABI probes
 sources/rust-eh/          Rust panic and unwinding probes
+sources/cxx-itanium-eh/   C++ and C Itanium exception probes
 sources/windows-seh-tests Pinned official source snapshot
 rust-toolchain.toml       The exact rustc release the Rust corpus is built with
 LICENSES/                 Third-party license notices
@@ -230,11 +340,17 @@ python3 -m py_compile \
   scripts/json_schema_check.py \
   scripts/verify_rust_corpus.py \
   scripts/merge_rust_corpus.py \
-  scripts/build_rust_corpus.py
+  scripts/build_rust_corpus.py \
+  scripts/cxx_itanium_matrix.py \
+  scripts/verify_cxx_itanium_corpus.py \
+  scripts/merge_cxx_itanium_corpus.py \
+  scripts/build_cxx_itanium_corpus.py
 python3 -m json.tool schema/windows-eh-manifest.schema.json >/dev/null
 python3 -m json.tool schema/rust-eh-manifest.schema.json >/dev/null
+python3 -m json.tool schema/cxx-itanium-eh-manifest.schema.json >/dev/null
 python3 scripts/windows_matrix.py --json
 python3 scripts/rust_matrix.py --json
+python3 scripts/cxx_itanium_matrix.py --json
 ```
 
 On Windows with the required Visual Studio target tools and LLVM components,
@@ -278,22 +394,47 @@ python3 scripts/verify_rust_corpus.py \
   --require-complete-matrix
 ```
 
+One C++ Itanium cell can be built anywhere the cell's drivers are on `PATH` and
+report the pinned release series:
+
+```bash
+python3 scripts/build_cxx_itanium_corpus.py \
+  --toolchain clang \
+  --target arm64-apple-darwin \
+  --output-root ./staging
+```
+
+`--describe-only` resolves the same cell without building anything, which is how
+the producer tests check all nine cells on a machine with no cross toolchain
+installed. `scripts/cxx_itanium_matrix.py --plan` prints the whole 72-artifact
+inventory with the contract each entry carries, and `--paths` prints just the
+canonical paths.
+
+```bash
+python3 scripts/verify_cxx_itanium_corpus.py \
+  manifests/cxx-itanium-eh.json \
+  --root . \
+  --require-complete-matrix
+```
+
 ## CI publication
 
-**Build and publish Windows EH corpus** and **Build and publish Rust EH corpus**
-each run their complete matrix when their producer source, schema, scripts, or
-workflow changes. They are independent, and each publishes only its own tree.
+**Build and publish Windows EH corpus**, **Build and publish Rust EH corpus**,
+and **Build and publish C++ Itanium EH corpus** each run their complete matrix
+when their producer source, schema, scripts, or workflow changes. They are
+independent, and each publishes only its own tree.
 
 - Pull requests build and validate with read-only repository permissions.
 - A successful producer change on `main` assembles and re-verifies the complete
   corpus, then a dedicated job receives `contents: write`.
-- The Windows publish job synchronizes only `corpus/windows-eh` and
-  `manifests/windows-eh.json`; the Rust publish job synchronizes only
-  `corpus/rust-eh` and `manifests/rust-eh.json`. Each creates a bot commit only
-  when its own files changed, and pushes it to `main`.
-- Generated-only paths do not trigger either producer workflow. Concurrency and
-  trigger-revision checks prevent an older run from publishing over newer
-  producer source.
+- Each publish job synchronizes only its own generated files: `corpus/windows-eh`
+  and `manifests/windows-eh.json`, `corpus/rust-eh` and `manifests/rust-eh.json`,
+  or `corpus/cxx-itanium-eh` and `manifests/cxx-itanium-eh.json`. Each creates a
+  bot commit only when its own files changed, and pushes it to `main`.
+- Generated-only paths do not trigger any producer workflow, and each workflow's
+  path filters name its own files rather than `scripts/**`, so one line's change
+  does not rebuild another's matrix. Concurrency and trigger-revision checks
+  prevent an older run from publishing over newer producer source.
 
 Repository settings must allow GitHub Actions to write contents and must permit
 this generated-file bot commit on `main`.
@@ -331,6 +472,9 @@ cmake --build build-corpus \
   --parallel 4
 cmake --build build-corpus \
   --target check-neverd-rust-eh-corpus \
+  --parallel 4
+cmake --build build-corpus \
+  --target check-neverd-cxx-itanium-eh-corpus \
   --parallel 4
 ```
 

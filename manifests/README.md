@@ -29,3 +29,32 @@ structural evidence the verifier re-derives from the file, and a `neverd` block
 stating the weakest result the decompiler must produce. Artifacts built with
 `-C panic=abort` set every minimum to zero and assert
 `expect_no_landing_pads`, scoped to the probe symbols the producer compiled.
+
+## `cxx-itanium-eh.json`
+
+Generated only after all nine (toolchain, target) cells have built and passed
+validation across two runner operating systems. It inventories 72 committed ELF,
+Mach-O, and PE artifacts and conforms to
+`../schema/cxx-itanium-eh-manifest.schema.json`.
+
+Its `producer` block holds the repository revision plus one record per cell,
+because nine cells install five different compilers and no single version can
+stand for all of them. Each record names the drivers the matrix defines, the
+release series the cell is pinned to, and the release the runner actually
+reported; the verifier recomputes the first two and rejects a version outside
+the third. That per-cell shape is what lets fragments from nine jobs merge into
+one envelope.
+
+Each artifact carries the exact driver, flag vector, and pinned environment it
+was built with, the corpus paths its link consumed, the structural evidence the
+verifier re-derives from the file, and a `neverd` block stating the weakest
+result the decompiler must produce.
+
+The evidence makes absence claims as well as presence claims, and both are
+scoped to what a flag actually decides. A stripped artifact claims no symbol
+names at all and is identified instead by the mangled name of the type it
+throws, which is data and survives stripping. The `-fno-exceptions` control
+claims no except table and no `__cxa_throw` where the C++ runtime is dynamic,
+and claims neither on mingw, where it is linked in statically. ARM artifacts
+claim an `.ARM.exidx` index with a minimum entry count and claim nothing about
+DWARF, because ARM EHABI has no DWARF frame chain to claim anything about.

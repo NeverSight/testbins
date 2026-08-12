@@ -33,6 +33,12 @@ _MAX_LOAD_COMMANDS = 4096
 _MAX_UNWIND_ENTRIES = 1 << 20
 _MAX_STRING_BYTES = 4096
 
+# ARM EHABI index entries are two words: a PREL31 offset to the function and
+# either an inline compact model, a PREL31 offset into `.ARM.extab`, or the
+# `EXIDX_CANTUNWIND` marker.
+_ARM_EXIDX_SECTION = ".ARM.exidx"
+_ARM_EXIDX_ENTRY_SIZE = 8
+
 
 @dataclass(frozen=True)
 class ObjectSection:
@@ -98,6 +104,28 @@ class ObjectImage:
         """
 
         raise NotImplementedError
+
+    def frame_record_counts(self) -> tuple[int, int]:
+        """Return the (CIE, FDE) counts of the image's DWARF frame section.
+
+        `verify_unwind_tables` only proves the chain is well formed, and a
+        section holding one CIE and no frame descriptions satisfies that while
+        describing no code at all. Splitting the two lets a caller require
+        coverage rather than presence.
+        """
+
+        raise ObjectFormatError(
+            f"{self.object_format} images have no DWARF frame section here"
+        )
+
+    def arm_exidx_entries(self) -> int:
+        """Return the number of ARM EHABI index entries, or zero when absent.
+
+        Only ELF can carry `.ARM.exidx`, so every other format answers zero
+        rather than raising: absence is the expected answer, not an error.
+        """
+
+        return 0
 
 
 # ===----------------------------------------------------------------------===#
@@ -240,6 +268,19 @@ class ELFImage(ObjectImage):
         if not payload:
             raise ObjectFormatError(".eh_frame is empty")
         return _walk_dwarf_frame_section(payload, self._prefix)
+
+    def frame_record_counts(self) -> tuple[int, int]:
+        return count_dwarf_frame_records(self.section_bytes(".eh_frame"), self._prefix)
+
+    def arm_exidx_entries(self) -> int:
+        if _ARM_EXIDX_SECTION not in self.sections:
+            return 0
+        payload = self.section_bytes(_ARM_EXIDX_SECTION)
+        if len(payload) % _ARM_EXIDX_ENTRY_SIZE:
+            raise ObjectFormatError(
+                f"{_ARM_EXIDX_SECTION} is not a whole number of index entries"
+            )
+        return len(payload) // _ARM_EXIDX_ENTRY_SIZE
 
 
 # ===----------------------------------------------------------------------===#
@@ -401,6 +442,9 @@ class MachOImage(ObjectImage):
         if "__eh_frame" in self.sections:
             frames = _walk_dwarf_frame_section(self.section_bytes("__eh_frame"), "<")
         return int(index_count) + frames
+
+    def frame_record_counts(self) -> tuple[int, int]:
+        return count_dwarf_frame_records(self.section_bytes("__eh_frame"), "<")
 
 
 # ===----------------------------------------------------------------------===#
@@ -626,6 +670,9 @@ class PEImage(ObjectImage):
             raise ObjectFormatError("x64 runtime-function table is empty")
         return verified
 
+    def frame_record_counts(self) -> tuple[int, int]:
+        return count_dwarf_frame_records(self.section_bytes(".eh_frame"), "<")
+
 
 # ===----------------------------------------------------------------------===#
 # Shared helpers
@@ -645,16 +692,19 @@ def _decode_fixed_name(raw: bytes) -> str:
     return raw.split(b"\0", 1)[0].decode("utf-8", "replace")
 
 
-def _walk_dwarf_frame_section(payload: bytes, prefix: str) -> int:
+def count_dwarf_frame_records(payload: bytes, prefix: str = "<") -> tuple[int, int]:
     """Walk a `.eh_frame`/`__eh_frame` section and count its CIEs and FDEs.
 
     Only each entry's length and identifier are decoded. That is enough to
     prove the section holds a well-formed chain of records rather than
-    arbitrary bytes, without duplicating the frame decoder NeverD already has.
+    arbitrary bytes, and to tell a section that describes code from one that
+    holds nothing but a common information entry, without duplicating the frame
+    decoder NeverD already has.
     """
 
     offset = 0
     entries = 0
+    cies = 0
     while offset + 4 <= len(payload):
         (length,) = struct.unpack_from(f"{prefix}I", payload, offset)
         header = 4
@@ -677,13 +727,21 @@ def _walk_dwarf_frame_section(payload: bytes, prefix: str) -> int:
             (version,) = struct.unpack_from("B", payload, offset + header + 4)
             if version not in (1, 3, 4):
                 raise ObjectFormatError(f"unsupported CIE version {version}")
+            cies += 1
         entries += 1
         if entries > _MAX_UNWIND_ENTRIES:
             raise ObjectFormatError("DWARF frame section exceeds the decode budget")
         offset += header + length
     if not entries:
         raise ObjectFormatError("DWARF frame section holds no records")
-    return entries
+    return cies, entries - cies
+
+
+def _walk_dwarf_frame_section(payload: bytes, prefix: str) -> int:
+    """Return the total number of records in a DWARF frame section."""
+
+    cies, fdes = count_dwarf_frame_records(payload, prefix)
+    return cies + fdes
 
 
 def load_object(payload: bytes) -> ObjectImage:

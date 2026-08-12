@@ -23,3 +23,11 @@ corpus/rust-eh/*/*/*/cdylib/** binary
 # corpus/go-eh/<release>/<os>-<arch>/<mode>/<cgo>/<symbols>/<optimization>/<file>,
 # so matching at that depth leaves the tree's own notice a diffable text file.
 corpus/go-eh/*/*/*/*/*/*/** binary
+
+# And for the C++ Itanium line, whose ELF and Mach-O executables have no
+# extension either.  Its schema enforces
+# corpus/cxx-itanium-eh/<toolchain>/<target>/<optimization>/<symbols>/<kind>/<file>,
+# and `<kind>` is the last directory, so the two artifact kinds are matched by
+# name and the notice at the root of the tree stays diffable text.
+corpus/cxx-itanium-eh/*/*/*/*/exe/** binary
+corpus/cxx-itanium-eh/*/*/*/*/shared/** binary

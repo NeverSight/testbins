@@ -1,0 +1,1289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NeverSight/testbins/schema/cxx-itanium-eh-manifest.schema.json",
+  "title": "C++ Itanium ABI exception corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus",
+    "producer",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "corpus": {
+      "const": "cxx-itanium-eh"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitRevision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "toolchainName": {
+      "enum": [
+        "gcc",
+        "clang"
+      ]
+    },
+    "targetName": {
+      "enum": [
+        "x86_64-linux-gnu",
+        "aarch64-linux-gnu",
+        "armv7-linux-gnueabihf",
+        "x86_64-w64-mingw32",
+        "x86_64-apple-darwin",
+        "arm64-apple-darwin"
+      ]
+    },
+    "cellName": {
+      "type": "string",
+      "pattern": "^(gcc|clang)-(x86_64-linux-gnu|aarch64-linux-gnu|armv7-linux-gnueabihf|x86_64-w64-mingw32|x86_64-apple-darwin|arm64-apple-darwin)$"
+    },
+    "toolchainRecord": {
+      "description": "One cell's compiler, recorded once per cell rather than once per artifact. The matrix names the drivers and the version prefix; the runner supplies the release it actually found.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell",
+        "toolchain",
+        "target",
+        "cxx_driver",
+        "c_driver",
+        "strip_tool",
+        "version_prefix",
+        "version",
+        "version_string"
+      ],
+      "properties": {
+        "cell": {
+          "$ref": "#/$defs/cellName"
+        },
+        "toolchain": {
+          "$ref": "#/$defs/toolchainName"
+        },
+        "target": {
+          "$ref": "#/$defs/targetName"
+        },
+        "cxx_driver": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "c_driver": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "strip_tool": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "version_prefix": {
+          "description": "The release series the cell is pinned to. On Linux the versioned apt packages enforce it; on macOS the workflow's Xcode selection does.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.$"
+        },
+        "version": {
+          "$ref": "#/$defs/releaseVersion"
+        },
+        "version_string": {
+          "description": "The first line of the driver's own `--version` banner, which is the distribution build a human can trace.",
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "producer": {
+      "description": "What every cell in the matrix shares. Nine cells install five different compilers, so the compiler identity is per cell and everything else is common.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_revision",
+        "toolchains"
+      ],
+      "properties": {
+        "repository_revision": {
+          "$ref": "#/$defs/gitRevision"
+        },
+        "toolchains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/toolchainRecord"
+          }
+        }
+      }
+    },
+    "buildEnvironment": {
+      "description": "Everything the drivers might otherwise take from the runner. `SOURCE_DATE_EPOCH` also fixes the PE header timestamp, which is the one field a mingw artifact would otherwise change on every run.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "LC_ALL",
+        "SOURCE_DATE_EPOCH",
+        "TZ"
+      ],
+      "properties": {
+        "LC_ALL": {
+          "const": "C"
+        },
+        "SOURCE_DATE_EPOCH": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "TZ": {
+          "const": "UTC"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compiler",
+        "compiler_flags",
+        "linked_artifacts",
+        "strip_tool",
+        "environment",
+        "runner_image",
+        "runner_os",
+        "runner_arch"
+      ],
+      "properties": {
+        "compiler": {
+          "description": "The driver that compiled and linked the artifact, which is the cell's C driver for a C source and its C++ driver otherwise.",
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "compiler_flags": {
+          "description": "Every flag passed to the driver, in order, excluding the output path, the source path, and any library the link consumed.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "linked_artifacts": {
+          "description": "Corpus artifacts this link consumed, by their canonical corpus path. Only the C probe has one.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "strip_tool": {
+          "description": "The strip that ran after the link, or the empty string when the artifact kept its symbols. Symbols are removed after linking because `ld64` has no equivalent of GNU `ld -s`.",
+          "type": "string"
+        },
+        "environment": {
+          "$ref": "#/$defs/buildEnvironment"
+        },
+        "runner_image": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runner_os": {
+          "enum": [
+            "linux",
+            "macos"
+          ]
+        },
+        "runner_arch": {
+          "enum": [
+            "x64",
+            "arm64"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "description": "Structural facts the verifier re-derives from the file itself, without trusting the producer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_sections",
+        "forbidden_sections",
+        "required_symbols",
+        "forbidden_symbols",
+        "required_strings",
+        "symbol_names_expected",
+        "require_unwind_tables",
+        "eh_frame_present",
+        "arm_exidx_present",
+        "min_arm_exidx_entries"
+      ],
+      "properties": {
+        "required_sections": {
+          "$ref": "#/$defs/nonEmptyStringArray"
+        },
+        "forbidden_sections": {
+          "description": "Only the exception-free control claims one, and only where the C++ runtime is linked dynamically: a static libstdc++ could contribute an except table the producer's flags did not decide.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "required_symbols": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "forbidden_symbols": {
+          "description": "`__cxa_throw` is referenced only by a `throw` expression, so a build compiled without exceptions cannot reference it. Nothing else about the runtime is claimed.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "required_strings": {
+          "description": "RTTI is data, so the mangled name of the type a probe throws outlives a strip that removes every function name. It is the only C++ identity a stripped artifact still carries.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "symbol_names_expected": {
+          "type": "boolean"
+        },
+        "require_unwind_tables": {
+          "description": "False only on ARM, which has neither a DWARF frame chain nor a compact unwind table for the reader to walk.",
+          "type": "boolean"
+        },
+        "eh_frame_present": {
+          "description": "True means the image must carry a DWARF frame section that describes at least one function. False means the claim is not made: Mach-O keeps `__eh_frame` only for frames compact unwind cannot describe, a mingw x86-64 image describes its frames in `.xdata`, and ARM EHABI has no DWARF chain at all.",
+          "type": "boolean"
+        },
+        "arm_exidx_present": {
+          "type": "boolean"
+        },
+        "min_arm_exidx_entries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "neverd": {
+      "description": "The consumer contract: the weakest result NeverD must produce for this artifact.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation_level",
+        "personalities_any",
+        "expect_no_lsda",
+        "expect_arm_ehabi",
+        "min_call_sites",
+        "min_landing_pads",
+        "min_catch_clauses",
+        "min_cleanup_pads",
+        "min_type_table_entries"
+      ],
+      "properties": {
+        "validation_level": {
+          "description": "`lsda-graph` requires a decoded call-site table, action chain, and type table reached through `.gcc_except_table` or `__gcc_except_tab`; `ehabi` requires the same graph reached through an `.ARM.exidx` index and an inline `.ARM.extab` entry; `cfi-only` requires bounded, non-malformed frame records and nothing about exception semantics.",
+          "enum": [
+            "lsda-graph",
+            "ehabi",
+            "cfi-only"
+          ]
+        },
+        "personalities_any": {
+          "description": "Personalities a frame in this artifact may name. ARM lists the compact-model routines beside the language's own, because a frame with no table uses them instead.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "expect_no_lsda": {
+          "type": "boolean"
+        },
+        "expect_arm_ehabi": {
+          "type": "boolean"
+        },
+        "min_call_sites": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_landing_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_catch_clauses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_cleanup_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_type_table_entries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size",
+        "toolchain",
+        "toolchain_version",
+        "target",
+        "architecture",
+        "object_format",
+        "program",
+        "artifact_kind",
+        "source_language",
+        "exceptions",
+        "optimization",
+        "stripped",
+        "execution",
+        "build",
+        "evidence",
+        "neverd"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^corpus/cxx-itanium-eh/(gcc|clang)/(x86_64-linux-gnu|aarch64-linux-gnu|armv7-linux-gnueabihf|x86_64-w64-mingw32|x86_64-apple-darwin|arm64-apple-darwin)/(o0|o2)/(symtab|stripped)/(exe|shared)/[A-Za-z0-9_.-]+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "toolchain": {
+          "$ref": "#/$defs/toolchainName"
+        },
+        "toolchain_version": {
+          "$ref": "#/$defs/releaseVersion"
+        },
+        "target": {
+          "$ref": "#/$defs/targetName"
+        },
+        "architecture": {
+          "enum": [
+            "x86_64",
+            "aarch64",
+            "arm"
+          ]
+        },
+        "object_format": {
+          "enum": [
+            "elf",
+            "macho",
+            "pe"
+          ]
+        },
+        "program": {
+          "enum": [
+            "cxx_eh_probe",
+            "cxx_eh_probe_noexc",
+            "libcxx_eh_shared",
+            "c_eh_probe"
+          ]
+        },
+        "artifact_kind": {
+          "enum": [
+            "exe",
+            "shared"
+          ]
+        },
+        "source_language": {
+          "enum": [
+            "cxx",
+            "c"
+          ]
+        },
+        "exceptions": {
+          "enum": [
+            "on",
+            "off"
+          ]
+        },
+        "optimization": {
+          "enum": [
+            "o0",
+            "o2"
+          ]
+        },
+        "stripped": {
+          "type": "boolean"
+        },
+        "execution": {
+          "enum": [
+            "passed",
+            "not-run-cross-target",
+            "not-run-library"
+          ]
+        },
+        "build": {
+          "$ref": "#/$defs/build"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "neverd": {
+          "$ref": "#/$defs/neverd"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "object_format"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "elf"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "enum": [
+                  "x86_64-linux-gnu",
+                  "aarch64-linux-gnu",
+                  "armv7-linux-gnueabihf"
+                ]
+              },
+              "build": {
+                "properties": {
+                  "runner_os": {
+                    "const": "linux"
+                  }
+                }
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": ".text"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "macho"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "toolchain": {
+                "const": "clang"
+              },
+              "target": {
+                "enum": [
+                  "x86_64-apple-darwin",
+                  "arm64-apple-darwin"
+                ]
+              },
+              "build": {
+                "properties": {
+                  "runner_os": {
+                    "const": "macos"
+                  },
+                  "runner_arch": {
+                    "const": "arm64"
+                  }
+                }
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": "__TEXT,__text"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__TEXT,__unwind_info"
+                        }
+                      }
+                    ]
+                  },
+                  "eh_frame_present": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "pe"
+              }
+            }
+          },
+          "then": {
+            "description": "mingw-w64 keeps Itanium language semantics but dispatches them through Windows SEH, so the frames live in .pdata/.xdata and there is no DWARF chain to require. A PE section name is eight bytes, so `.gcc_except_table` cannot survive the link under its own name and the SEH personality is what proves the table is there.",
+            "properties": {
+              "toolchain": {
+                "const": "gcc"
+              },
+              "target": {
+                "const": "x86_64-w64-mingw32"
+              },
+              "architecture": {
+                "const": "x86_64"
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".pdata"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".xdata"
+                        }
+                      }
+                    ]
+                  },
+                  "forbidden_sections": {
+                    "maxItems": 0
+                  },
+                  "forbidden_symbols": {
+                    "maxItems": 0
+                  },
+                  "eh_frame_present": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "architecture"
+            ],
+            "properties": {
+              "architecture": {
+                "const": "arm"
+              }
+            }
+          },
+          "then": {
+            "description": "ARM EHABI replaces the DWARF chain outright: an .ARM.exidx index, an .ARM.extab entry carrying the language specific data area inline, and no .gcc_except_table section anywhere.",
+            "properties": {
+              "target": {
+                "const": "armv7-linux-gnueabihf"
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": ".ARM.exidx"
+                    }
+                  },
+                  "arm_exidx_present": {
+                    "const": true
+                  },
+                  "min_arm_exidx_entries": {
+                    "minimum": 1
+                  },
+                  "eh_frame_present": {
+                    "const": false
+                  },
+                  "require_unwind_tables": {
+                    "const": false
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "expect_arm_ehabi": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "architecture"
+            ],
+            "properties": {
+              "architecture": {
+                "enum": [
+                  "x86_64",
+                  "aarch64"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "arm_exidx_present": {
+                    "const": false
+                  },
+                  "min_arm_exidx_entries": {
+                    "const": 0
+                  },
+                  "require_unwind_tables": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "expect_arm_ehabi": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "architecture"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "elf"
+              },
+              "architecture": {
+                "enum": [
+                  "x86_64",
+                  "aarch64"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".eh_frame"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".eh_frame_hdr"
+                        }
+                      }
+                    ]
+                  },
+                  "eh_frame_present": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions",
+              "object_format",
+              "architecture"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "on"
+              },
+              "object_format": {
+                "const": "elf"
+              },
+              "architecture": {
+                "enum": [
+                  "x86_64",
+                  "aarch64"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": ".gcc_except_table"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions",
+              "object_format"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "on"
+              },
+              "object_format": {
+                "const": "macho"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": "__TEXT,__gcc_except_tab"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions",
+              "architecture"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "on"
+              },
+              "architecture": {
+                "const": "arm"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": ".ARM.extab"
+                    }
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "ehabi"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "on"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "forbidden_sections": {
+                    "maxItems": 0
+                  },
+                  "forbidden_symbols": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "enum": [
+                      "lsda-graph",
+                      "ehabi"
+                    ]
+                  },
+                  "personalities_any": {
+                    "minItems": 1
+                  },
+                  "expect_no_lsda": {
+                    "const": false
+                  },
+                  "min_call_sites": {
+                    "minimum": 1
+                  },
+                  "min_landing_pads": {
+                    "minimum": 1
+                  },
+                  "min_cleanup_pads": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "off"
+              }
+            }
+          },
+          "then": {
+            "description": "The negative control. It is the same source and the same cell as the main probe, so everything that disappears here disappeared because of one flag.",
+            "properties": {
+              "program": {
+                "const": "cxx_eh_probe_noexc"
+              },
+              "optimization": {
+                "const": "o2"
+              },
+              "stripped": {
+                "const": false
+              },
+              "evidence": {
+                "properties": {
+                  "required_strings": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "cfi-only"
+                  },
+                  "personalities_any": {
+                    "maxItems": 0
+                  },
+                  "expect_no_lsda": {
+                    "const": true
+                  },
+                  "min_call_sites": {
+                    "const": 0
+                  },
+                  "min_landing_pads": {
+                    "const": 0
+                  },
+                  "min_catch_clauses": {
+                    "const": 0
+                  },
+                  "min_cleanup_pads": {
+                    "const": 0
+                  },
+                  "min_type_table_entries": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "stripped"
+            ],
+            "properties": {
+              "stripped": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "description": "A stripped artifact keeps its RTTI, so it still has evidence -- but no name of anything the producer compiled.",
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "symbol_names_expected": {
+                    "const": false
+                  },
+                  "required_symbols": {
+                    "maxItems": 0
+                  },
+                  "forbidden_symbols": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "stripped"
+            ],
+            "properties": {
+              "stripped": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "symbol_names_expected": {
+                    "const": true
+                  },
+                  "required_symbols": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "artifact_kind"
+            ],
+            "properties": {
+              "artifact_kind": {
+                "const": "shared"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "const": "libcxx_eh_shared"
+              },
+              "source_language": {
+                "const": "cxx"
+              },
+              "exceptions": {
+                "const": "on"
+              },
+              "stripped": {
+                "const": false
+              },
+              "execution": {
+                "const": "not-run-library"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "artifact_kind"
+            ],
+            "properties": {
+              "artifact_kind": {
+                "const": "exe"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "execution": {
+                "enum": [
+                  "passed",
+                  "not-run-cross-target"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "source_language"
+            ],
+            "properties": {
+              "source_language": {
+                "const": "c"
+              }
+            }
+          },
+          "then": {
+            "description": "A C frame compiled with -fexceptions has cleanup actions and no type table at all, which is the shape the C++ probes never produce. Its cleanup edges only exist because the shared library it links can throw.",
+            "properties": {
+              "program": {
+                "const": "c_eh_probe"
+              },
+              "artifact_kind": {
+                "const": "exe"
+              },
+              "exceptions": {
+                "const": "on"
+              },
+              "optimization": {
+                "const": "o2"
+              },
+              "build": {
+                "properties": {
+                  "linked_artifacts": {
+                    "minItems": 1
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "min_catch_clauses": {
+                    "const": 0
+                  },
+                  "min_type_table_entries": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "source_language"
+            ],
+            "properties": {
+              "source_language": {
+                "const": "cxx"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "enum": [
+                  "cxx_eh_probe",
+                  "cxx_eh_probe_noexc",
+                  "libcxx_eh_shared"
+                ]
+              },
+              "build": {
+                "properties": {
+                  "linked_artifacts": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "const": "cxx_eh_probe"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact_kind": {
+                "const": "exe"
+              },
+              "source_language": {
+                "const": "cxx"
+              },
+              "exceptions": {
+                "const": "on"
+              },
+              "evidence": {
+                "properties": {
+                  "required_strings": {
+                    "const": [
+                      "15CxxEhProbeError"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "const": "libcxx_eh_shared"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_strings": {
+                    "const": [
+                      "16CxxEhSharedError"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "enum": [
+                  "x86_64-linux-gnu",
+                  "x86_64-w64-mingw32",
+                  "x86_64-apple-darwin"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "architecture": {
+                "const": "x86_64"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "enum": [
+                  "aarch64-linux-gnu",
+                  "arm64-apple-darwin"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "architecture": {
+                "const": "aarch64"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target",
+              "artifact_kind"
+            ],
+            "properties": {
+              "target": {
+                "enum": [
+                  "x86_64-linux-gnu",
+                  "arm64-apple-darwin"
+                ]
+              },
+              "artifact_kind": {
+                "const": "exe"
+              }
+            }
+          },
+          "then": {
+            "description": "The two targets a hosted runner can execute: an x64 Linux image builds x86_64-linux-gnu natively, and an Apple silicon image builds arm64-apple-darwin natively.",
+            "properties": {
+              "execution": {
+                "const": "passed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target",
+              "artifact_kind"
+            ],
+            "properties": {
+              "target": {
+                "enum": [
+                  "aarch64-linux-gnu",
+                  "armv7-linux-gnueabihf",
+                  "x86_64-w64-mingw32",
+                  "x86_64-apple-darwin"
+                ]
+              },
+              "artifact_kind": {
+                "const": "exe"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "execution": {
+                "const": "not-run-cross-target"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
