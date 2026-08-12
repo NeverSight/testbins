@@ -483,7 +483,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.18.10/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.18.10-linux-amd64-exe-cgo0-stripped-opt",
-      "sha256": "6dde2b33dc6ced82873981fc7b99d94c5395752486b56d2dc85de2c0d848be1e",
+      "sha256": "300fbab9e89502067598776d4a50556dc000867c3d8c36e88addf6edbb0db139",
       "size": 872448,
       "stripped": true
     },
@@ -544,7 +544,7 @@
       "object_format": "pe",
       "optimization": "default",
       "path": "corpus/go-eh/go1.18.10/windows-amd64/exe/cgo0/stripped/opt/eh_probe-go1.18.10-windows-amd64-exe-cgo0-stripped-opt.exe",
-      "sha256": "899344bef1040f3d000e14e1612baaf5d8ffb48ac47b313309764f335e0f4149",
+      "sha256": "bd748b07317f131e096865596df243f275ac427f55a75909885ae6261fb3c851",
       "size": 955392,
       "stripped": true
     },
@@ -605,7 +605,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.20.14/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.20.14-linux-amd64-exe-cgo0-stripped-opt",
-      "sha256": "7134908061843c04dce898765e10c7651eba4be904d442cce1a9a716a9d9d270",
+      "sha256": "96b2144039119ac80232f71551750b06756c66b06a6d268d1a0fc64a06b42edd",
       "size": 921600,
       "stripped": true
     },
@@ -666,7 +666,7 @@
       "object_format": "macho",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/darwin-amd64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-darwin-amd64-exe-cgo0-stripped-opt",
-      "sha256": "1a37af18ffa354e5ed6563c3e2c1c718052f0d27234e839a31957a3346e7cf39",
+      "sha256": "e19cc040919695b6bc767539449206724d7cff805a364878b3b39da561cf88bc",
       "size": 1488912,
       "stripped": true
     },
@@ -727,7 +727,7 @@
       "object_format": "macho",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/darwin-arm64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-darwin-arm64-exe-cgo0-stripped-opt",
-      "sha256": "13930846be45f7bfc484ec79e64441b7ab4ada4409af21bc3137cf8f8ea701b8",
+      "sha256": "e501eaa10ba30b99c174b03642c5f8ffdc4b9de00a01453f9369a41f10264dfd",
       "size": 1488002,
       "stripped": true
     },
@@ -787,7 +787,7 @@
       "object_format": "macho",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/darwin-arm64/exe/cgo0/symtab/opt/eh_probe-go1.26.5-darwin-arm64-exe-cgo0-symtab-opt",
-      "sha256": "441e52b4242796143df3bba4e03adc4969438e06f5b2137b34f9f00721b0bac5",
+      "sha256": "c3d6a0c08c0f144746aca1b9628de48101b593b4b097caba74067681009d4b0b",
       "size": 2250978,
       "stripped": false
     },
@@ -851,7 +851,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-amd64/c-shared/cgo1/stripped/opt/eh_probe-go1.26.5-linux-amd64-c-shared-cgo1-stripped-opt.so",
-      "sha256": "69530de48da6eb67c8538c39aa8d3ae78080b4d380bb7e5724ae463669381e02",
+      "sha256": "7fe109fc73c0e191d1a21e6e0e81388742376e8477fb50ab97d8f0f5539747a3",
       "size": 1591936,
       "stripped": true
     },
@@ -913,7 +913,7 @@
       "object_format": "elf",
       "optimization": "none",
       "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo0/stripped/noopt/eh_probe-go1.26.5-linux-amd64-exe-cgo0-stripped-noopt",
-      "sha256": "355eeb9dcb4edb983281d94563af51cab51a804f6e6b25bcfe883b3b3f71c2cb",
+      "sha256": "635231d4755d882512789069729727fc29ada22621a3bdeb5f90fb82cf3373d3",
       "size": 1421474,
       "stripped": true
     },
@@ -974,7 +974,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-linux-amd64-exe-cgo0-stripped-opt",
-      "sha256": "9c391682bb827ef83f69b3e826af948f15462caac15b38b780b939613ccbf9af",
+      "sha256": "b7709711eca312720d58742b00530a563fe465bfcc0927f7c332ca5c4c3626eb",
       "size": 1417378,
       "stripped": true
     },
@@ -1034,7 +1034,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo0/symtab/opt/eh_probe-go1.26.5-linux-amd64-exe-cgo0-symtab-opt",
-      "sha256": "006ed30cb7c6963565d8261f438ab3da692690e3038591c7aea757d43cef8369",
+      "sha256": "b9a05d80a34ef3af1545e644552c68ae20d4da60641e65078f1406aa4cb23755",
       "size": 2154687,
       "stripped": false
     },
@@ -1097,7 +1097,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-amd64/exe/cgo1/symtab/opt/eh_probe-go1.26.5-linux-amd64-exe-cgo1-symtab-opt",
-      "sha256": "ce7c64d43d55a82d5088507c9eba0e6d202f8a501a97050033d260e1ce5335fa",
+      "sha256": "516abf4045f6a96bc76f1f995ff76f8567f0ebbfa6abff9a78c75f6466082bf8",
       "size": 2154304,
       "stripped": false
     },
@@ -1158,7 +1158,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-amd64/pie/cgo0/stripped/opt/eh_probe-go1.26.5-linux-amd64-pie-cgo0-stripped-opt",
-      "sha256": "c736b87ce3196b83ef94d34bb531cebbc768da3e9d2ffef7693be9e8a20cfe1a",
+      "sha256": "b90a7a1528a7382a48e31d9c703d1af680fefd288964cd8a169f265fde430c5f",
       "size": 1573166,
       "stripped": true
     },
@@ -1219,7 +1219,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-arm64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-linux-arm64-exe-cgo0-stripped-opt",
-      "sha256": "7dbb20e991eb887caa1d227b4299cdfc45d79afbb7e2e097cb77c06b835129a2",
+      "sha256": "43ff10ef136c851073c0844524872362fbcdef4bef1f0a99da4ad68532b9344f",
       "size": 1441954,
       "stripped": true
     },
@@ -1280,7 +1280,7 @@
       "object_format": "elf",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/linux-arm64/pie/cgo0/stripped/opt/eh_probe-go1.26.5-linux-arm64-pie-cgo0-stripped-opt",
-      "sha256": "7efa269178a3a962b37b67e01d4773fcfabec56e922cb338ea793458341d2881",
+      "sha256": "34332e499660c37faaf0cceed591625d16cbfeadc1a2b4d5e5dad12c143ecbf9",
       "size": 1638702,
       "stripped": true
     },
@@ -1344,7 +1344,7 @@
       "object_format": "pe",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/windows-amd64/exe/cgo0/stripped/opt/eh_probe-go1.26.5-windows-amd64-exe-cgo0-stripped-opt.exe",
-      "sha256": "4a14f10f14780a5e2e0e64d41b56ef54a751b990af097d3bc6399746ee7be003",
+      "sha256": "50bcea9499d11a4b2e67a037814d9cf81695538da5cf8aecd8c68ca6a69510a6",
       "size": 1502208,
       "stripped": true
     },
@@ -1407,7 +1407,7 @@
       "object_format": "pe",
       "optimization": "default",
       "path": "corpus/go-eh/go1.26.5/windows-amd64/exe/cgo0/symtab/opt/eh_probe-go1.26.5-windows-amd64-exe-cgo0-symtab-opt.exe",
-      "sha256": "21bf2a21fa26daa451e030d51c568d440ab1e134d6818c0bf9f970cbf9137917",
+      "sha256": "a84f14db5d5e8b7159e2b736ff44da87e25c6d0b1d411fe1715d04f0b69f00e5",
       "size": 2230272,
       "stripped": false
     }
@@ -1417,7 +1417,7 @@
     "module_go_directive": "1.15",
     "module_path": "neversight.dev/goeh",
     "package": "./cmd/eh_probe",
-    "repository_revision": "2d72b5cce9c7989e9a070c3a23d3972a9c39705b",
+    "repository_revision": "d936f9a5dd04d02ce27905b19a224e9ae9ade86e",
     "runner_arch": "x64",
     "runner_os": "linux",
     "toolchains": [
@@ -1434,7 +1434,7 @@
         },
         "go_version": "1.15.15",
         "go_version_string": "go version go1.15.15 linux/amd64",
-        "runner_image": "ubuntu24-20260720.247.2"
+        "runner_image": "ubuntu24-20260810.271.1"
       },
       {
         "go_env": {
