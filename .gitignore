@@ -9,3 +9,8 @@ __pycache__/
 .vs/
 out/
 staging/
+
+# Rust build intermediates. The published corpus is generated into a runner
+# temporary directory, so nothing below should ever appear in a clean tree.
+target/
+*.dSYM/

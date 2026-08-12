@@ -1,0 +1,11 @@
+# Copyright (c) NeverSight contributors.
+# SPDX-License-Identifier: MIT
+
+# The rust-eh corpus is reproducible only if every runner compiles with the
+# same compiler, so this pins one release rather than tracking "stable".
+# Per-target standard libraries are added by scripts/build_rust_corpus.py with
+# `rustup target add`, which resolves against this channel.
+[toolchain]
+channel = "1.97.1"
+profile = "minimal"
+components = ["rustc", "cargo", "rust-std"]

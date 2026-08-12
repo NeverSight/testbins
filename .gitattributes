@@ -7,3 +7,19 @@ sources/windows-seh-tests/** -text
 *.dll binary
 *.lib binary
 *.obj binary
+*.so binary
+*.dylib binary
+
+# Linux and macOS executables have no extension, so the generated Rust
+# artifacts are marked binary by the layout the manifest schema enforces:
+# corpus/rust-eh/<target>/<panic>/<optimization>/<crate type>/<file>. Matching
+# the artifact directories rather than the whole tree leaves the notice at the
+# root of it an ordinary, diffable text file.
+corpus/rust-eh/*/*/*/bin/** binary
+corpus/rust-eh/*/*/*/cdylib/** binary
+
+# The same holds for Go, whose `exe` and `pie` artifacts carry no extension off
+# Windows.  The layout the manifest schema enforces is
+# corpus/go-eh/<release>/<os>-<arch>/<mode>/<cgo>/<symbols>/<optimization>/<file>,
+# so matching at that depth leaves the tree's own notice a diffable text file.
+corpus/go-eh/*/*/*/*/*/*/** binary

@@ -1,0 +1,1020 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NeverSight/testbins/schema/rust-eh-manifest.schema.json",
+  "title": "Rust unwinding and panic corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus",
+    "producer",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "corpus": {
+      "const": "rust-eh"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitRevision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "semanticVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "rustcIdentity": {
+      "description": "The `rustc -vV` fields that are the same on every host, so an artifact can be traced to one compiler build rather than to a moving channel. The host triple is per-cell and lives on the artifact.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release",
+        "commit_hash",
+        "commit_date",
+        "llvm_version"
+      ],
+      "properties": {
+        "release": {
+          "$ref": "#/$defs/semanticVersion"
+        },
+        "commit_hash": {
+          "$ref": "#/$defs/gitRevision"
+        },
+        "commit_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "llvm_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "producer": {
+      "description": "What every cell in the matrix shares. The matrix spans three runner operating systems, so anything that differs between them is recorded per artifact instead.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rustc",
+        "toolchain_channel",
+        "repository_revision"
+      ],
+      "properties": {
+        "rustc": {
+          "$ref": "#/$defs/rustcIdentity"
+        },
+        "toolchain_channel": {
+          "description": "The channel pinned by rust-toolchain.toml, which must be an exact release rather than `stable`.",
+          "$ref": "#/$defs/semanticVersion"
+        },
+        "repository_revision": {
+          "$ref": "#/$defs/gitRevision"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edition",
+        "linker",
+        "rustc_flags",
+        "rustc_host",
+        "runner_image",
+        "runner_os",
+        "runner_arch"
+      ],
+      "properties": {
+        "edition": {
+          "const": "2024"
+        },
+        "linker": {
+          "description": "The `-C linker=` value, or `rustc-default` when the target's own linker driver was used.",
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "rustc_flags": {
+          "description": "Every flag passed to rustc, in order, excluding the output path and the source path.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "rustc_host": {
+          "description": "The compiler's own host triple, which equals the target only for the cells that were not cross-built.",
+          "enum": [
+            "x86_64-unknown-linux-gnu",
+            "x86_64-pc-windows-msvc",
+            "aarch64-apple-darwin"
+          ]
+        },
+        "runner_image": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runner_os": {
+          "enum": [
+            "linux",
+            "windows",
+            "macos"
+          ]
+        },
+        "runner_arch": {
+          "enum": [
+            "x64",
+            "arm64"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "description": "Structural facts the verifier re-derives from the file itself, without trusting the producer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_sections",
+        "required_symbols",
+        "forbidden_symbols",
+        "required_strings",
+        "require_unwind_tables",
+        "symbol_names_expected"
+      ],
+      "properties": {
+        "required_sections": {
+          "$ref": "#/$defs/nonEmptyStringArray"
+        },
+        "required_symbols": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "forbidden_symbols": {
+          "description": "Symbols whose absence is a property of the build. `_Unwind_RaiseException` is the discriminator that separates an aborting image from an unwinding one; the rest of the unwinder is still linked either way, because the prebuilt standard library was compiled to unwind.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "required_strings": {
+          "description": "Byte sequences that must appear in the image. On MSVC the unmangled `rust_panic` type-descriptor name is what tells a Rust panic apart from a C++ exception in tables the two share.",
+          "$ref": "#/$defs/stringArray"
+        },
+        "require_unwind_tables": {
+          "type": "boolean"
+        },
+        "symbol_names_expected": {
+          "description": "False only for a PE executable, whose names live in a PDB the corpus does not ship. A PE `cdylib` still names every C-ABI probe in its export table.",
+          "type": "boolean"
+        }
+      }
+    },
+    "neverd": {
+      "description": "The consumer contract: the weakest result NeverD must produce for this artifact.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation_level",
+        "allowed_parse_status",
+        "personalities_any",
+        "expect_no_landing_pads",
+        "landing_pad_free_symbols",
+        "min_landing_pads",
+        "min_drop_glue_pads",
+        "min_catch_unwind_pads",
+        "min_nounwind_guard_pads",
+        "min_panic_sites"
+      ],
+      "properties": {
+        "validation_level": {
+          "description": "`panic-graph` requires classified Rust landing pads and panic sites; `unwind-only` requires bounded, non-malformed unwind records and nothing about Rust panic semantics.",
+          "enum": [
+            "panic-graph",
+            "unwind-only"
+          ]
+        },
+        "allowed_parse_status": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "complete",
+              "partial"
+            ]
+          }
+        },
+        "personalities_any": {
+          "$ref": "#/$defs/nonEmptyStringArray"
+        },
+        "expect_no_landing_pads": {
+          "description": "Scoped to `landing_pad_free_symbols`, not to the image. An aborting build still links standard-library objects that were compiled to unwind, so the image keeps `.eh_frame` and an except table; what the producer controls, and what this asserts, is that no frame it compiled carries a landing pad.",
+          "type": "boolean"
+        },
+        "landing_pad_free_symbols": {
+          "$ref": "#/$defs/nonEmptyStringArray"
+        },
+        "min_landing_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_drop_glue_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_catch_unwind_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_nounwind_guard_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_panic_sites": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size",
+        "architecture",
+        "object_format",
+        "target_triple",
+        "crate_name",
+        "crate_type",
+        "panic_strategy",
+        "optimization",
+        "execution",
+        "build",
+        "evidence",
+        "neverd"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^corpus/rust-eh/(x86_64-unknown-linux-gnu|aarch64-unknown-linux-gnu|x86_64-pc-windows-msvc|x86_64-apple-darwin|aarch64-apple-darwin)/(unwind|abort)/(o0|o2)/(bin|cdylib)/[A-Za-z0-9_.-]+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "architecture": {
+          "enum": [
+            "x86_64",
+            "aarch64"
+          ]
+        },
+        "object_format": {
+          "enum": [
+            "elf",
+            "pe",
+            "macho"
+          ]
+        },
+        "target_triple": {
+          "enum": [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+            "x86_64-pc-windows-msvc",
+            "x86_64-apple-darwin",
+            "aarch64-apple-darwin"
+          ]
+        },
+        "crate_name": {
+          "enum": [
+            "rust_eh_probe",
+            "rust_eh_cdylib"
+          ]
+        },
+        "crate_type": {
+          "enum": [
+            "bin",
+            "cdylib"
+          ]
+        },
+        "panic_strategy": {
+          "enum": [
+            "unwind",
+            "abort"
+          ]
+        },
+        "optimization": {
+          "enum": [
+            "o0",
+            "o2"
+          ]
+        },
+        "execution": {
+          "enum": [
+            "passed",
+            "not-run-cross-target",
+            "not-run-library"
+          ]
+        },
+        "build": {
+          "$ref": "#/$defs/build"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "neverd": {
+          "$ref": "#/$defs/neverd"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "object_format"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "elf"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_triple": {
+                "enum": [
+                  "x86_64-unknown-linux-gnu",
+                  "aarch64-unknown-linux-gnu"
+                ]
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".text"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".eh_frame"
+                        }
+                      }
+                    ]
+                  },
+                  "required_symbols": {
+                    "contains": {
+                      "const": "rust_eh_personality"
+                    }
+                  },
+                  "symbol_names_expected": {
+                    "const": true
+                  },
+                  "require_unwind_tables": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "personalities_any": {
+                    "const": [
+                      "rust_eh_personality"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "macho"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_triple": {
+                "enum": [
+                  "x86_64-apple-darwin",
+                  "aarch64-apple-darwin"
+                ]
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": "__text"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__eh_frame"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__unwind_info"
+                        }
+                      }
+                    ]
+                  },
+                  "required_symbols": {
+                    "contains": {
+                      "const": "rust_eh_personality"
+                    }
+                  },
+                  "symbol_names_expected": {
+                    "const": true
+                  },
+                  "require_unwind_tables": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "personalities_any": {
+                    "const": [
+                      "rust_eh_personality"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "pe"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_triple": {
+                "const": "x86_64-pc-windows-msvc"
+              },
+              "architecture": {
+                "const": "x86_64"
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".text"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".pdata"
+                        }
+                      }
+                    ]
+                  },
+                  "forbidden_symbols": {
+                    "maxItems": 0
+                  },
+                  "require_unwind_tables": {
+                    "const": true
+                  }
+                }
+              },
+              "neverd": {
+                "description": "Rust on MSVC shares __CxxFrameHandler3 tables with C++, and only a catch naming the unmangled `rust_panic` descriptor tells the two apart. A frame that merely runs Drop glue is therefore not attributable to Rust, and neither drop-glue frames, abort guards, nor panic sites are claimed.",
+                "properties": {
+                  "personalities_any": {
+                    "const": [
+                      "__CxxFrameHandler3"
+                    ]
+                  },
+                  "min_drop_glue_pads": {
+                    "const": 0
+                  },
+                  "min_nounwind_guard_pads": {
+                    "const": 0
+                  },
+                  "min_panic_sites": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "crate_type"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "pe"
+              },
+              "crate_type": {
+                "const": "bin"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_symbols": {
+                    "maxItems": 0
+                  },
+                  "symbol_names_expected": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "crate_type"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "pe"
+              },
+              "crate_type": {
+                "const": "cdylib"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_symbols": {
+                    "contains": {
+                      "const": "rust_eh_dylib_c_leaf_nounwind"
+                    }
+                  },
+                  "symbol_names_expected": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "panic_strategy"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "elf"
+              },
+              "panic_strategy": {
+                "const": "unwind"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": ".gcc_except_table"
+                    }
+                  },
+                  "required_symbols": {
+                    "contains": {
+                      "const": "_Unwind_RaiseException"
+                    }
+                  },
+                  "forbidden_symbols": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "panic_strategy"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "macho"
+              },
+              "panic_strategy": {
+                "const": "unwind"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "contains": {
+                      "const": "__gcc_except_tab"
+                    }
+                  },
+                  "required_symbols": {
+                    "contains": {
+                      "const": "_Unwind_RaiseException"
+                    }
+                  },
+                  "forbidden_symbols": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "panic_strategy"
+            ],
+            "properties": {
+              "object_format": {
+                "const": "pe"
+              },
+              "panic_strategy": {
+                "const": "unwind"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "required_strings": {
+                    "const": [
+                      "rust_panic"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "panic_strategy"
+            ],
+            "properties": {
+              "object_format": {
+                "enum": [
+                  "elf",
+                  "macho"
+                ]
+              },
+              "panic_strategy": {
+                "const": "abort"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "forbidden_symbols": {
+                    "const": [
+                      "_Unwind_RaiseException"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "panic_strategy"
+            ],
+            "properties": {
+              "panic_strategy": {
+                "const": "unwind"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "panic-graph"
+                  },
+                  "allowed_parse_status": {
+                    "const": [
+                      "complete"
+                    ]
+                  },
+                  "expect_no_landing_pads": {
+                    "const": false
+                  },
+                  "min_landing_pads": {
+                    "minimum": 1
+                  },
+                  "min_catch_unwind_pads": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "object_format",
+              "panic_strategy"
+            ],
+            "properties": {
+              "object_format": {
+                "enum": [
+                  "elf",
+                  "macho"
+                ]
+              },
+              "panic_strategy": {
+                "const": "unwind"
+              }
+            }
+          },
+          "then": {
+            "description": "Only an Itanium target makes every classification recoverable: the personality names Rust outright, cleanup pads are Rust's own, and the abort guard is an empty filter.",
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "min_drop_glue_pads": {
+                    "minimum": 1
+                  },
+                  "min_nounwind_guard_pads": {
+                    "minimum": 1
+                  },
+                  "min_panic_sites": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "panic_strategy"
+            ],
+            "properties": {
+              "panic_strategy": {
+                "const": "abort"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "unwind-only"
+                  },
+                  "allowed_parse_status": {
+                    "const": [
+                      "complete",
+                      "partial"
+                    ]
+                  },
+                  "expect_no_landing_pads": {
+                    "const": true
+                  },
+                  "min_landing_pads": {
+                    "const": 0
+                  },
+                  "min_drop_glue_pads": {
+                    "const": 0
+                  },
+                  "min_catch_unwind_pads": {
+                    "const": 0
+                  },
+                  "min_nounwind_guard_pads": {
+                    "const": 0
+                  },
+                  "min_panic_sites": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "crate_type"
+            ],
+            "properties": {
+              "crate_type": {
+                "const": "bin"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "crate_name": {
+                "const": "rust_eh_probe"
+              },
+              "execution": {
+                "enum": [
+                  "passed",
+                  "not-run-cross-target"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "crate_type"
+            ],
+            "properties": {
+              "crate_type": {
+                "const": "cdylib"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "crate_name": {
+                "const": "rust_eh_cdylib"
+              },
+              "execution": {
+                "const": "not-run-library"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target_triple"
+            ],
+            "properties": {
+              "target_triple": {
+                "enum": [
+                  "x86_64-unknown-linux-gnu",
+                  "x86_64-pc-windows-msvc",
+                  "x86_64-apple-darwin"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "architecture": {
+                "const": "x86_64"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target_triple"
+            ],
+            "properties": {
+              "target_triple": {
+                "enum": [
+                  "aarch64-unknown-linux-gnu",
+                  "aarch64-apple-darwin"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "architecture": {
+                "const": "aarch64"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target_triple",
+              "crate_type"
+            ],
+            "properties": {
+              "target_triple": {
+                "enum": [
+                  "aarch64-unknown-linux-gnu",
+                  "x86_64-apple-darwin"
+                ]
+              },
+              "crate_type": {
+                "const": "bin"
+              }
+            }
+          },
+          "then": {
+            "description": "Both are cross-built: hosted Linux runners are x64 and hosted macOS runners are Apple silicon without Rosetta.",
+            "properties": {
+              "execution": {
+                "const": "not-run-cross-target"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target_triple",
+              "crate_type"
+            ],
+            "properties": {
+              "target_triple": {
+                "enum": [
+                  "x86_64-unknown-linux-gnu",
+                  "x86_64-pc-windows-msvc",
+                  "aarch64-apple-darwin"
+                ]
+              },
+              "crate_type": {
+                "const": "bin"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "execution": {
+                "const": "passed"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

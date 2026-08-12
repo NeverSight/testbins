@@ -1,0 +1,272 @@
+name: Build and publish Go EH corpus
+
+# Every artifact in this product line is cross-compiled from one ubuntu x64
+# host.  Go's own toolchain is a complete cross-compiler with CGO_ENABLED=0, so
+# a single job per pinned release can emit the ELF, PE, and Mach-O images for
+# that release, and none of them can differ for a reason the manifest does not
+# record: same toolchain, same machine, same run.  The only artifacts that need
+# a C toolchain are the two cgo cells, and those are native.
+#
+# The paths filters name this product line's files individually rather than
+# `scripts/**`, so a change to another corpus does not rebuild every Go
+# toolchain in the matrix.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/build-go-eh.yml"
+      - "schema/go-eh-manifest.schema.json"
+      - "scripts/go_matrix.py"
+      - "scripts/build_go_corpus.py"
+      - "scripts/merge_go_corpus.py"
+      - "scripts/verify_go_corpus.py"
+      - "scripts/tests/test_go_*.py"
+      - "sources/go-eh/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-go-eh.yml"
+      - "schema/go-eh-manifest.schema.json"
+      - "scripts/go_matrix.py"
+      - "scripts/build_go_corpus.py"
+      - "scripts/merge_go_corpus.py"
+      - "scripts/verify_go_corpus.py"
+      - "scripts/tests/test_go_*.py"
+      - "sources/go-eh/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: go-eh-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-producer:
+    name: Verify producer and prepare matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install the manifest schema validator
+        run: >-
+          python3 -m pip install --disable-pip-version-check --quiet jsonschema
+          || python3 -m pip install --disable-pip-version-check --quiet
+          --break-system-packages jsonschema
+
+      - name: Run producer unit tests
+        run: python3 -m unittest discover -s scripts/tests -p "test_go_*.py" -v
+
+      - name: Compile-check Python scripts
+        run: >-
+          python3 -m py_compile
+          scripts/go_matrix.py
+          scripts/build_go_corpus.py
+          scripts/merge_go_corpus.py
+          scripts/verify_go_corpus.py
+
+      - name: Parse manifest schema
+        run: >-
+          python3 -m json.tool
+          schema/go-eh-manifest.schema.json
+          > /dev/null
+
+      - name: Print the artifact plan
+        run: python3 scripts/go_matrix.py --plan
+
+      - name: Generate supported build matrix
+        id: matrix
+        run: >-
+          python3 scripts/go_matrix.py
+          --github-output "$GITHUB_OUTPUT"
+
+  build-cell:
+    name: ${{ matrix.cell_name }}
+    needs: verify-producer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install the pinned Go toolchain
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "${{ matrix.go_version }}"
+          # The module has no dependencies and every cell installs a different
+          # release, so a build cache would only ever miss.
+          cache: false
+
+      - name: Confirm the toolchain on PATH is the pinned one
+        run: |
+          set -euo pipefail
+          go version
+          test "$(go version | cut -d' ' -f3)" = "go${{ matrix.go_version }}"
+
+      - name: Install the manifest schema validator
+        run: >-
+          python3 -m pip install --disable-pip-version-check --quiet jsonschema
+          || python3 -m pip install --disable-pip-version-check --quiet
+          --break-system-packages jsonschema
+
+      - name: Build, run when host native, and validate cell
+        run: >-
+          python3 scripts/build_go_corpus.py
+          --go-version "${{ matrix.go_version }}"
+          --output-root "${{ runner.temp }}/go-eh"
+
+      - name: Upload validated cell
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: go-eh-${{ matrix.cell_name }}
+          path: ${{ runner.temp }}/go-eh
+          if-no-files-found: error
+          retention-days: 14
+
+  assemble-corpus:
+    name: Assemble canonical corpus
+    needs: build-cell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install the manifest schema validator
+        run: >-
+          python3 -m pip install --disable-pip-version-check --quiet jsonschema
+          || python3 -m pip install --disable-pip-version-check --quiet
+          --break-system-packages jsonschema
+
+      - name: Download all validated cells
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: go-eh-*
+          path: ${{ runner.temp }}/go-eh
+          merge-multiple: true
+
+      - name: Merge and validate the complete matrix
+        run: >-
+          python3 scripts/merge_go_corpus.py
+          --root "${{ runner.temp }}/go-eh"
+          --fragments "${{ runner.temp }}/go-eh/fragments"
+          --output "${{ runner.temp }}/go-eh/manifests/go-eh.json"
+          --require-complete-matrix
+
+      - name: Preserve generated-tree notice
+        run: >-
+          cp corpus/go-eh/README.md
+          "${{ runner.temp }}/go-eh/corpus/go-eh/README.md"
+
+      - name: Re-verify canonical manifest
+        run: >-
+          python3 scripts/verify_go_corpus.py
+          "${{ runner.temp }}/go-eh/manifests/go-eh.json"
+          --root "${{ runner.temp }}/go-eh"
+          --require-complete-matrix
+          --require-schema-validation
+
+      - name: Report the committed size
+        shell: bash
+        run: |
+          set -euo pipefail
+          du -sh "$RUNNER_TEMP/go-eh/corpus/go-eh"
+          find "$RUNNER_TEMP/go-eh/corpus/go-eh" -type f -printf '%10s  %P\n' | sort -k2
+
+      - name: Upload canonical corpus
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: go-eh-canonical-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/go-eh/corpus/go-eh
+            ${{ runner.temp }}/go-eh/manifests/go-eh.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-corpus:
+    name: Commit generated corpus to main
+    needs: assemble-corpus
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out triggering main revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install the manifest schema validator
+        run: >-
+          python3 -m pip install --disable-pip-version-check --quiet jsonschema
+          || python3 -m pip install --disable-pip-version-check --quiet
+          --break-system-packages jsonschema
+
+      - name: Download canonical corpus
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: go-eh-canonical-${{ github.run_id }}
+          path: ${{ runner.temp }}/go-eh-canonical
+
+      - name: Verify downloaded corpus before publication
+        run: >-
+          python3 scripts/verify_go_corpus.py
+          "${{ runner.temp }}/go-eh-canonical/manifests/go-eh.json"
+          --root "${{ runner.temp }}/go-eh-canonical"
+          --require-complete-matrix
+          --require-schema-validation
+
+      - name: Confirm source revision is still current and sync generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          if [[ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]]; then
+            echo "main advanced after this producer run started; refusing stale publication" >&2
+            exit 1
+          fi
+          mkdir -p corpus/go-eh manifests
+          rsync --archive --delete \
+            "$RUNNER_TEMP/go-eh-canonical/corpus/go-eh/" \
+            corpus/go-eh/
+          cp \
+            "$RUNNER_TEMP/go-eh-canonical/manifests/go-eh.json" \
+            manifests/go-eh.json
+
+      - name: Re-verify repository tree
+        run: >-
+          python3 scripts/verify_go_corpus.py
+          manifests/go-eh.json
+          --root .
+          --require-complete-matrix
+          --require-schema-validation
+
+      - name: Commit and fast-forward push generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- corpus/go-eh manifests/go-eh.json
+          if git diff --cached --quiet; then
+            echo "generated corpus is already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(corpus): refresh Go EH binaries [skip ci]"
+          git fetch --no-tags origin main
+          if [[ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]]; then
+            echo "main advanced during publication; refusing stale push" >&2
+            exit 1
+          fi
+          git push origin HEAD:main

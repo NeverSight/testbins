@@ -1,0 +1,1277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NeverSight/testbins/schema/go-eh-manifest.schema.json",
+  "title": "Go runtime metadata corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus",
+    "producer",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "corpus": {
+      "const": "go-eh"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitRevision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "goVersion": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*\\.[0-9]+\\.[0-9]+$"
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "sectionName": {
+      "type": "string",
+      "pattern": "^(\\.|__)[A-Za-z0-9_.]+$"
+    },
+    "goEnv": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "GOAMD64",
+        "GOARM64",
+        "GOEXPERIMENT",
+        "GOFLAGS",
+        "GOHOSTARCH",
+        "GOHOSTOS",
+        "GOTOOLCHAIN",
+        "GOVERSION"
+      ],
+      "properties": {
+        "GOAMD64": {
+          "type": "string"
+        },
+        "GOARM64": {
+          "type": "string"
+        },
+        "GOEXPERIMENT": {
+          "type": "string"
+        },
+        "GOFLAGS": {
+          "const": ""
+        },
+        "GOHOSTARCH": {
+          "const": "amd64"
+        },
+        "GOHOSTOS": {
+          "const": "linux"
+        },
+        "GOTOOLCHAIN": {
+          "type": "string"
+        },
+        "GOVERSION": {
+          "type": "string"
+        }
+      }
+    },
+    "toolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "go_version",
+        "go_version_string",
+        "go_env"
+      ],
+      "properties": {
+        "go_version": {
+          "$ref": "#/$defs/goVersion"
+        },
+        "go_version_string": {
+          "type": "string",
+          "pattern": "^go version go[0-9]+\\.[0-9]+(\\.[0-9]+)? [a-z0-9]+/[a-z0-9]+$"
+        },
+        "go_env": {
+          "$ref": "#/$defs/goEnv"
+        }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_revision",
+        "runner_image",
+        "runner_os",
+        "runner_arch",
+        "module_path",
+        "module_go_directive",
+        "package",
+        "toolchains"
+      ],
+      "properties": {
+        "repository_revision": {
+          "$ref": "#/$defs/gitRevision"
+        },
+        "runner_image": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runner_os": {
+          "const": "linux"
+        },
+        "runner_arch": {
+          "const": "x64"
+        },
+        "module_path": {
+          "const": "neversight.dev/goeh"
+        },
+        "module_go_directive": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*\\.[0-9]+$"
+        },
+        "package": {
+          "const": "./cmd/eh_probe"
+        },
+        "toolchains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/toolchain"
+          }
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "flags",
+        "env",
+        "execution"
+      ],
+      "properties": {
+        "package": {
+          "const": "./cmd/eh_probe"
+        },
+        "flags": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/stringArray"
+            },
+            {
+              "minItems": 2,
+              "uniqueItems": true,
+              "contains": {
+                "const": "-trimpath"
+              }
+            }
+          ]
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "CGO_ENABLED",
+            "GO111MODULE",
+            "GOARCH",
+            "GOFLAGS",
+            "GOOS",
+            "GOPROXY",
+            "GOTOOLCHAIN",
+            "GOWORK"
+          ],
+          "properties": {
+            "CGO_ENABLED": {
+              "enum": [
+                "0",
+                "1"
+              ]
+            },
+            "GO111MODULE": {
+              "const": "on"
+            },
+            "GOARCH": {
+              "enum": [
+                "amd64",
+                "arm64"
+              ]
+            },
+            "GOFLAGS": {
+              "const": ""
+            },
+            "GOOS": {
+              "enum": [
+                "linux",
+                "windows",
+                "darwin"
+              ]
+            },
+            "GOPROXY": {
+              "const": "off"
+            },
+            "GOTOOLCHAIN": {
+              "const": "local"
+            },
+            "GOWORK": {
+              "const": "off"
+            }
+          }
+        },
+        "execution": {
+          "enum": [
+            "passed",
+            "not-run-cross-target",
+            "not-run-shared-object"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_sections",
+        "pclntab_section",
+        "pclntab_at_section_start",
+        "pclntab_magic",
+        "pclntab_min_lc",
+        "pclntab_ptr_size",
+        "pclntab_function_count",
+        "symbol_table",
+        "gofunc_symbol",
+        "native_unwind_sections"
+      ],
+      "properties": {
+        "required_sections": {
+          "allOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/sectionName"
+              }
+            },
+            {
+              "minItems": 2,
+              "uniqueItems": true
+            }
+          ]
+        },
+        "pclntab_section": {
+          "$ref": "#/$defs/sectionName"
+        },
+        "pclntab_at_section_start": {
+          "type": "boolean"
+        },
+        "pclntab_magic": {
+          "enum": [
+            4294967291,
+            4294967290,
+            4294967280,
+            4294967281
+          ]
+        },
+        "pclntab_min_lc": {
+          "enum": [
+            1,
+            2,
+            4
+          ]
+        },
+        "pclntab_ptr_size": {
+          "enum": [
+            4,
+            8
+          ]
+        },
+        "pclntab_function_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "symbol_table": {
+          "description": "go-names: the table names Go functions. loader-only: a table exists but carries only entries the dynamic loader needs. absent: no symbol table at all.",
+          "enum": [
+            "go-names",
+            "loader-only",
+            "absent"
+          ]
+        },
+        "gofunc_symbol": {
+          "description": "The funcdata base symbol when the image still names it, which lets the decoder skip the moduledata textsectmap search.",
+          "oneOf": [
+            {
+              "enum": [
+                "go:func.*",
+                "go.func.*"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native_unwind_sections": {
+          "description": "Platform unwind tables that cgo's C objects contribute alongside Go's own pclntab.",
+          "allOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/sectionName"
+              }
+            },
+            {
+              "uniqueItems": true
+            }
+          ]
+        }
+      }
+    },
+    "neverd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation_level",
+        "allowed_parse_status",
+        "expected_pclntab_version",
+        "min_go_functions",
+        "min_defer_sites",
+        "min_recover_sites",
+        "min_panic_sites",
+        "min_open_coded_defer_funcs",
+        "requires_moduledata"
+      ],
+      "properties": {
+        "validation_level": {
+          "description": "runtime-graph: module state, function records, and funcdata-derived defer state are all expected. table-only: the pclntab-derived facts are expected but the release predates the tables the rest would come from.",
+          "enum": [
+            "runtime-graph",
+            "table-only"
+          ]
+        },
+        "allowed_parse_status": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "complete",
+              "partial"
+            ]
+          }
+        },
+        "expected_pclntab_version": {
+          "enum": [
+            "go1.2",
+            "go1.16",
+            "go1.18",
+            "go1.20"
+          ]
+        },
+        "min_go_functions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "min_defer_sites": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_recover_sites": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_panic_sites": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_open_coded_defer_funcs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requires_moduledata": {
+          "type": "boolean"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size",
+        "goos",
+        "goarch",
+        "go_version",
+        "object_format",
+        "buildmode",
+        "cgo_enabled",
+        "stripped",
+        "optimization",
+        "build",
+        "evidence",
+        "neverd"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^corpus/go-eh/go[0-9]+\\.[0-9]+\\.[0-9]+/(linux|windows|darwin)-(amd64|arm64)/(exe|pie|c-shared)/cgo[01]/(symtab|stripped)/(opt|noopt)/eh_probe-[A-Za-z0-9_.-]+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "goos": {
+          "enum": [
+            "linux",
+            "windows",
+            "darwin"
+          ]
+        },
+        "goarch": {
+          "enum": [
+            "amd64",
+            "arm64"
+          ]
+        },
+        "go_version": {
+          "$ref": "#/$defs/goVersion"
+        },
+        "object_format": {
+          "enum": [
+            "elf",
+            "pe",
+            "macho"
+          ]
+        },
+        "buildmode": {
+          "enum": [
+            "exe",
+            "pie",
+            "c-shared"
+          ]
+        },
+        "cgo_enabled": {
+          "type": "boolean"
+        },
+        "stripped": {
+          "type": "boolean"
+        },
+        "optimization": {
+          "enum": [
+            "default",
+            "none"
+          ]
+        },
+        "build": {
+          "$ref": "#/$defs/build"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "neverd": {
+          "$ref": "#/$defs/neverd"
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "GOOS fixes the container format, the pointer quantum, and the section names the table can be found under.",
+          "if": {
+            "properties": {
+              "goos": {
+                "const": "linux"
+              }
+            },
+            "required": [
+              "goos"
+            ]
+          },
+          "then": {
+            "properties": {
+              "object_format": {
+                "const": "elf"
+              },
+              "evidence": {
+                "properties": {
+                  "pclntab_at_section_start": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "pclntab_at_section_start"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "goos": {
+                "const": "windows"
+              }
+            },
+            "required": [
+              "goos"
+            ]
+          },
+          "then": {
+            "properties": {
+              "object_format": {
+                "const": "pe"
+              },
+              "evidence": {
+                "properties": {
+                  "pclntab_section": {
+                    "const": ".rdata"
+                  },
+                  "pclntab_at_section_start": {
+                    "const": false
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".rdata"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".text"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "pclntab_section",
+                  "pclntab_at_section_start",
+                  "required_sections"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "goos": {
+                "const": "darwin"
+              }
+            },
+            "required": [
+              "goos"
+            ]
+          },
+          "then": {
+            "properties": {
+              "object_format": {
+                "const": "macho"
+              },
+              "evidence": {
+                "properties": {
+                  "pclntab_section": {
+                    "const": "__gopclntab"
+                  },
+                  "pclntab_at_section_start": {
+                    "const": true
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": "__gopclntab"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__noptrdata"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__text"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "pclntab_section",
+                  "pclntab_at_section_start",
+                  "required_sections"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "An ELF image built position independent moves the table into the relro segment, which renames its section.",
+          "if": {
+            "properties": {
+              "goos": {
+                "const": "linux"
+              },
+              "buildmode": {
+                "const": "exe"
+              }
+            },
+            "required": [
+              "goos",
+              "buildmode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_section": {
+                    "const": ".gopclntab"
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".gopclntab"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".noptrdata"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".text"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "pclntab_section",
+                  "required_sections"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "goos": {
+                "const": "linux"
+              },
+              "buildmode": {
+                "enum": [
+                  "pie",
+                  "c-shared"
+                ]
+              }
+            },
+            "required": [
+              "goos",
+              "buildmode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_section": {
+                    "const": ".data.rel.ro.gopclntab"
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".data.rel.ro.gopclntab"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".noptrdata"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".text"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "pclntab_section",
+                  "required_sections"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "arm64 divides every pc delta by four; amd64 does not divide at all.",
+          "if": {
+            "properties": {
+              "goarch": {
+                "const": "amd64"
+              }
+            },
+            "required": [
+              "goarch"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_min_lc": {
+                    "const": 1
+                  },
+                  "pclntab_ptr_size": {
+                    "const": 8
+                  }
+                },
+                "required": [
+                  "pclntab_min_lc",
+                  "pclntab_ptr_size"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "goarch": {
+                "const": "arm64"
+              }
+            },
+            "required": [
+              "goarch"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_min_lc": {
+                    "const": 4
+                  },
+                  "pclntab_ptr_size": {
+                    "const": 8
+                  }
+                },
+                "required": [
+                  "pclntab_min_lc",
+                  "pclntab_ptr_size"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "The toolchain release fixes the pcHeader magic. Go 1.2 through 1.15 share one magic and one record shape family; Go 1.16, Go 1.18, and Go 1.20 each introduced a new one.",
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.(?:[2-9]|1[0-5])\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_magic": {
+                    "const": 4294967291
+                  }
+                },
+                "required": [
+                  "pclntab_magic"
+                ]
+              },
+              "neverd": {
+                "properties": {
+                  "expected_pclntab_version": {
+                    "const": "go1.2"
+                  },
+                  "validation_level": {
+                    "const": "table-only"
+                  },
+                  "allowed_parse_status": {
+                    "const": [
+                      "partial"
+                    ]
+                  },
+                  "requires_moduledata": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "expected_pclntab_version",
+                  "validation_level",
+                  "allowed_parse_status",
+                  "requires_moduledata"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.1[67]\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_magic": {
+                    "const": 4294967290
+                  }
+                },
+                "required": [
+                  "pclntab_magic"
+                ]
+              },
+              "neverd": {
+                "properties": {
+                  "expected_pclntab_version": {
+                    "const": "go1.16"
+                  },
+                  "validation_level": {
+                    "const": "runtime-graph"
+                  },
+                  "requires_moduledata": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "expected_pclntab_version",
+                  "validation_level",
+                  "requires_moduledata"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.1[89]\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_magic": {
+                    "const": 4294967280
+                  }
+                },
+                "required": [
+                  "pclntab_magic"
+                ]
+              },
+              "neverd": {
+                "properties": {
+                  "expected_pclntab_version": {
+                    "const": "go1.18"
+                  },
+                  "validation_level": {
+                    "const": "runtime-graph"
+                  },
+                  "requires_moduledata": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "expected_pclntab_version",
+                  "validation_level",
+                  "requires_moduledata"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "go_version": {
+                "pattern": "^1\\.(?:2[0-9]|[3-9][0-9])\\."
+              }
+            },
+            "required": [
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_magic": {
+                    "const": 4294967281
+                  }
+                },
+                "required": [
+                  "pclntab_magic"
+                ]
+              },
+              "neverd": {
+                "properties": {
+                  "expected_pclntab_version": {
+                    "const": "go1.20"
+                  },
+                  "validation_level": {
+                    "const": "runtime-graph"
+                  },
+                  "requires_moduledata": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "expected_pclntab_version",
+                  "validation_level",
+                  "requires_moduledata"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "Stripping removes every Go name, which is what forces structural discovery.",
+          "if": {
+            "properties": {
+              "stripped": {
+                "const": true
+              }
+            },
+            "required": [
+              "stripped"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "symbol_table": {
+                    "enum": [
+                      "loader-only",
+                      "absent"
+                    ]
+                  },
+                  "gofunc_symbol": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "symbol_table",
+                  "gofunc_symbol"
+                ]
+              },
+              "build": {
+                "properties": {
+                  "flags": {
+                    "contains": {
+                      "const": "-ldflags=-s -w"
+                    }
+                  }
+                },
+                "required": [
+                  "flags"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "symbol_table": {
+                    "const": "go-names"
+                  },
+                  "gofunc_symbol": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "symbol_table",
+                  "gofunc_symbol"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "The colon in go:func.* arrived with the Go 1.20 symbol naming change.",
+          "if": {
+            "properties": {
+              "stripped": {
+                "const": false
+              },
+              "go_version": {
+                "pattern": "^1\\.(?:[2-9]|1[0-9])\\."
+              }
+            },
+            "required": [
+              "stripped",
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "gofunc_symbol": {
+                    "const": "go.func.*"
+                  }
+                },
+                "required": [
+                  "gofunc_symbol"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stripped": {
+                "const": false
+              },
+              "go_version": {
+                "pattern": "^1\\.(?:2[0-9]|[3-9][0-9])\\."
+              }
+            },
+            "required": [
+              "stripped",
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "gofunc_symbol": {
+                    "const": "go:func.*"
+                  }
+                },
+                "required": [
+                  "gofunc_symbol"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "-N clears ssagen.hasOpenDefers for every function, so no frame carries FUNCDATA_OpenCodedDeferInfo and every defer becomes a runtime call.",
+          "if": {
+            "properties": {
+              "optimization": {
+                "const": "none"
+              }
+            },
+            "required": [
+              "optimization"
+            ]
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "flags": {
+                    "contains": {
+                      "const": "-gcflags=all=-N -l"
+                    }
+                  }
+                },
+                "required": [
+                  "flags"
+                ]
+              },
+              "neverd": {
+                "properties": {
+                  "min_open_coded_defer_funcs": {
+                    "const": 0
+                  },
+                  "min_defer_sites": {
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "min_open_coded_defer_funcs",
+                  "min_defer_sites"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "neverd": {
+                "properties": {
+                  "min_open_coded_defer_funcs": {
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "min_open_coded_defer_funcs"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "-buildmode=c-shared cannot be linked without cgo, and the result is not an executable.",
+          "if": {
+            "properties": {
+              "buildmode": {
+                "const": "c-shared"
+              }
+            },
+            "required": [
+              "buildmode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cgo_enabled": {
+                "const": true
+              },
+              "build": {
+                "properties": {
+                  "execution": {
+                    "const": "not-run-shared-object"
+                  }
+                },
+                "required": [
+                  "execution"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "cgo links C objects, which bring their own DWARF unwind tables alongside Go's pclntab.",
+          "if": {
+            "properties": {
+              "cgo_enabled": {
+                "const": true
+              },
+              "object_format": {
+                "const": "elf"
+              }
+            },
+            "required": [
+              "cgo_enabled",
+              "object_format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "build": {
+                "properties": {
+                  "env": {
+                    "properties": {
+                      "CGO_ENABLED": {
+                        "const": "1"
+                      }
+                    },
+                    "required": [
+                      "CGO_ENABLED"
+                    ]
+                  }
+                },
+                "required": [
+                  "env"
+                ]
+              },
+              "evidence": {
+                "properties": {
+                  "native_unwind_sections": {
+                    "contains": {
+                      "const": ".eh_frame"
+                    }
+                  }
+                },
+                "required": [
+                  "native_unwind_sections"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "A pure Go image carries no platform unwind table for its own code.",
+          "if": {
+            "properties": {
+              "cgo_enabled": {
+                "const": false
+              },
+              "object_format": {
+                "enum": [
+                  "elf",
+                  "macho"
+                ]
+              }
+            },
+            "required": [
+              "cgo_enabled",
+              "object_format"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "native_unwind_sections": {
+                    "maxItems": 0
+                  }
+                },
+                "required": [
+                  "native_unwind_sections"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

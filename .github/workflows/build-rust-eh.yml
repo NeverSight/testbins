@@ -1,0 +1,270 @@
+name: Build and publish Rust EH corpus
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/build-rust-eh.yml"
+      - "rust-toolchain.toml"
+      - "schema/rust-eh-manifest.schema.json"
+      - "scripts/build_rust_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/merge_rust_corpus.py"
+      - "scripts/object_readers.py"
+      - "scripts/rust_matrix.py"
+      - "scripts/verify_rust_corpus.py"
+      - "scripts/tests/**"
+      - "sources/rust-eh/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-rust-eh.yml"
+      - "rust-toolchain.toml"
+      - "schema/rust-eh-manifest.schema.json"
+      - "scripts/build_rust_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/merge_rust_corpus.py"
+      - "scripts/object_readers.py"
+      - "scripts/rust_matrix.py"
+      - "scripts/verify_rust_corpus.py"
+      - "scripts/tests/**"
+      - "sources/rust-eh/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-eh-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-producer:
+    name: Verify producer and prepare matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run producer unit tests
+        run: python3 -m unittest discover -s scripts/tests -v
+
+      - name: Compile-check Python scripts
+        run: >-
+          python3 -m py_compile
+          scripts/rust_matrix.py
+          scripts/object_readers.py
+          scripts/json_schema_check.py
+          scripts/verify_rust_corpus.py
+          scripts/merge_rust_corpus.py
+          scripts/build_rust_corpus.py
+
+      - name: Parse manifest schema
+        run: >-
+          python3 -m json.tool
+          schema/rust-eh-manifest.schema.json
+          > /dev/null
+
+      - name: Reject a schema the verifier cannot enforce in full
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          sys.path.insert(0, "scripts")
+          import json_schema_check
+
+          with open("schema/rust-eh-manifest.schema.json", encoding="utf-8") as stream:
+              json_schema_check.check_schema(json.load(stream))
+          print("every schema keyword is enforced by the verifier")
+          PY
+
+      - name: Generate supported build matrix
+        id: matrix
+        run: >-
+          python3 scripts/rust_matrix.py
+          --github-output "$GITHUB_OUTPUT"
+
+  build-cell:
+    name: ${{ matrix.cell_name }}
+    needs: verify-producer
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Select the Python interpreter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v python3 >/dev/null 2>&1; then
+            echo "PYTHON=python3" >> "$GITHUB_ENV"
+          else
+            echo "PYTHON=python" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install the cross linker this target needs
+        if: matrix.runner_os == 'linux' && matrix.apt_packages != ''
+        shell: bash
+        env:
+          APT_PACKAGES: ${{ matrix.apt_packages }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes $APT_PACKAGES
+
+      - name: Install the pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$("$PYTHON" -c "import sys; sys.path.insert(0, 'scripts'); import verify_rust_corpus; print(verify_rust_corpus.pinned_toolchain_channel())")"
+          echo "rust-toolchain.toml pins $channel"
+          rustup toolchain install "$channel" --profile minimal --no-self-update
+          rustup show active-toolchain
+          rustc -vV
+
+      - name: Build, run when native, and validate cell
+        shell: bash
+        env:
+          CELL_TARGET: ${{ matrix.target }}
+          CELL_PANIC: ${{ matrix.panic_strategy }}
+          CELL_OPTIMIZATION: ${{ matrix.optimization }}
+        run: |
+          set -euo pipefail
+          "$PYTHON" scripts/build_rust_corpus.py \
+            --target "$CELL_TARGET" \
+            --panic-strategy "$CELL_PANIC" \
+            --optimization "$CELL_OPTIMIZATION" \
+            --output-root "$RUNNER_TEMP/rust-eh"
+
+      - name: Upload validated cell
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: rust-eh-${{ matrix.cell_name }}
+          path: ${{ runner.temp }}/rust-eh
+          if-no-files-found: error
+          retention-days: 14
+
+  assemble-corpus:
+    name: Assemble canonical corpus
+    needs: build-cell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download all validated cells
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: rust-eh-*
+          path: ${{ runner.temp }}/rust-eh
+          merge-multiple: true
+
+      - name: Merge and validate the complete matrix
+        run: >-
+          python3 scripts/merge_rust_corpus.py
+          --root "${{ runner.temp }}/rust-eh"
+          --fragments "${{ runner.temp }}/rust-eh/fragments"
+          --output "${{ runner.temp }}/rust-eh/manifests/rust-eh.json"
+          --require-complete-matrix
+
+      - name: Preserve generated-tree notice
+        run: >-
+          cp corpus/rust-eh/README.md
+          "${{ runner.temp }}/rust-eh/corpus/rust-eh/README.md"
+
+      - name: Re-verify canonical manifest
+        run: >-
+          python3 scripts/verify_rust_corpus.py
+          "${{ runner.temp }}/rust-eh/manifests/rust-eh.json"
+          --root "${{ runner.temp }}/rust-eh"
+          --require-complete-matrix
+
+      - name: Upload canonical corpus
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: rust-eh-canonical-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/rust-eh/corpus/rust-eh
+            ${{ runner.temp }}/rust-eh/manifests/rust-eh.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-corpus:
+    name: Commit generated corpus to main
+    needs: assemble-corpus
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out triggering main revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download canonical corpus
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: rust-eh-canonical-${{ github.run_id }}
+          path: ${{ runner.temp }}/rust-eh-canonical
+
+      - name: Verify downloaded corpus before publication
+        run: >-
+          python3 scripts/verify_rust_corpus.py
+          "${{ runner.temp }}/rust-eh-canonical/manifests/rust-eh.json"
+          --root "${{ runner.temp }}/rust-eh-canonical"
+          --require-complete-matrix
+
+      - name: Confirm source revision is still current and sync generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          if [[ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]]; then
+            echo "main advanced after this producer run started; refusing stale publication" >&2
+            exit 1
+          fi
+          mkdir -p corpus/rust-eh manifests
+          rsync --archive --delete \
+            "$RUNNER_TEMP/rust-eh-canonical/corpus/rust-eh/" \
+            corpus/rust-eh/
+          cp \
+            "$RUNNER_TEMP/rust-eh-canonical/manifests/rust-eh.json" \
+            manifests/rust-eh.json
+
+      - name: Re-verify repository tree
+        run: >-
+          python3 scripts/verify_rust_corpus.py
+          manifests/rust-eh.json
+          --root .
+          --require-complete-matrix
+
+      - name: Commit and fast-forward push generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- corpus/rust-eh manifests/rust-eh.json
+          if git diff --cached --quiet; then
+            echo "generated corpus is already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(corpus): refresh Rust EH binaries [skip ci]"
+          git fetch --no-tags origin main
+          if [[ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]]; then
+            echo "main advanced during publication; refusing stale push" >&2
+            exit 1
+          fi
+          git push origin HEAD:main
