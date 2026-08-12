@@ -58,8 +58,10 @@ not reach the file table the corpus publishes.
   `pclntab` structurally instead of through `runtime.pclntab` or `go:func.*`.
   Most artifacts are stripped; the unstripped ones exist so the symbol-driven
   path is covered too.
-- **Buildmode.** A position-independent ELF moves the table from `.gopclntab`
-  to `.data.rel.ro.gopclntab`, and a `c-shared` object has no executable entry
+- **Buildmode.** Through Go 1.25 a position-independent ELF moved the table
+  from `.gopclntab` to `.data.rel.ro.gopclntab`; CL 718065 moved it back for
+  Go 1.26, on the grounds that the table holds no relocations and so does not
+  belong in the relro segment. A `c-shared` object has no executable entry
   point at all. Both change where `moduledata` ends up. `pie` on darwin and
   Windows is omitted: darwin is already position independent by default, and
   the Windows PIE image reaches its table exactly as the exe image does.
@@ -266,7 +268,8 @@ git-lfs is introduced.
 | `go1.20.14`, `go1.26.5` | `Go120Magic`, `FuncIDOffset == 40`, `startLine` present |
 | `windows/amd64` (any) | `findPcHeader` segment scan, because the PE linker folds the table into `.rdata` |
 | `darwin/*` (any) | `section_names::macho::GoPclnTab`, table in `__DATA_CONST` |
-| `linux/*` `pie` | the `.data.rel.ro.gopclntab` name in `findPcHeader`'s section list |
+| `linux/*` `pie` (Go &le; 1.25) | the `.data.rel.ro.gopclntab` name in `findPcHeader`'s section list |
+| `linux/*` `pie` (Go &ge; 1.26) | the plain `.gopclntab` name, which is why that list has to keep both |
 | `linux/arm64` | `MinLC == 4`, so every `forEachPCValue` advance is scaled |
 | stripped cells | `findModuleData` plus the `textsectmap` anchor in `decodeModuleData`, with no `go:func.*` symbol to short-circuit it |
 | unstripped cells | the `Sym.Name == "go:func.*" || "go.func.*"` shortcut, and `kAutoFuncPrefix` symbol replacement |

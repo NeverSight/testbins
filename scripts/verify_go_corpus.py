@@ -76,13 +76,6 @@ _NATIVE_UNWIND_SECTIONS = {
     "pe": (".pdata", ".xdata"),
 }
 
-_ELF_PCLNTAB_SECTIONS = {
-    "exe": ".gopclntab",
-    "pie": ".data.rel.ro.gopclntab",
-    "c-shared": ".data.rel.ro.gopclntab",
-}
-
-
 @dataclass(frozen=True)
 class VerificationResult:
     artifact_count: int
@@ -709,7 +702,7 @@ def _expected_required_sections(variant: Variant) -> list[str]:
 
     object_format = variant.target.object_format
     if object_format == "elf":
-        return sorted((_ELF_PCLNTAB_SECTIONS[variant.buildmode], ".noptrdata", ".text"))
+        return sorted((variant.elf_pclntab_section, ".noptrdata", ".text"))
     if object_format == "macho":
         return sorted(("__gopclntab", "__noptrdata", "__text"))
     return sorted((".rdata", ".data", ".text"))
@@ -718,7 +711,7 @@ def _expected_required_sections(variant: Variant) -> list[str]:
 def _expected_pclntab_section(variant: Variant) -> tuple[str, bool]:
     object_format = variant.target.object_format
     if object_format == "elf":
-        return _ELF_PCLNTAB_SECTIONS[variant.buildmode], True
+        return variant.elf_pclntab_section, True
     if object_format == "macho":
         return "__gopclntab", True
     # The PE linker gives the table no section of its own, so the decoder has

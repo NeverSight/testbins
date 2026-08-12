@@ -44,6 +44,11 @@ class GoRelease:
     has_unsafe_point_table: bool
     #: `go:func.*` gained its colon in Go 1.20 (#37762).
     gofunc_symbol: str
+    #: True while a position-independent ELF still carried the table in the
+    #: relro segment, which named it `.data.rel.ro.gopclntab`.  CL 718065 moved
+    #: it to plain read-only data for Go 1.26 on the grounds that it holds no
+    #: relocations, so from that release a PIE names it like every other link.
+    relro_pclntab: bool
     #: darwin/arm64 only exists from Go 1.16.
     supports_darwin_arm64: bool
 
@@ -60,6 +65,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=5,
         has_unsafe_point_table=False,
         gofunc_symbol="go.func.*",
+        relro_pclntab=True,
         supports_darwin_arm64=False,
     ),
     GoRelease(
@@ -69,6 +75,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go.func.*",
+        relro_pclntab=True,
         supports_darwin_arm64=True,
     ),
     GoRelease(
@@ -78,6 +85,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go.func.*",
+        relro_pclntab=True,
         supports_darwin_arm64=True,
     ),
     GoRelease(
@@ -87,6 +95,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go:func.*",
+        relro_pclntab=True,
         supports_darwin_arm64=True,
     ),
     GoRelease(
@@ -96,6 +105,7 @@ _RELEASES: tuple[GoRelease, ...] = (
         open_coded_defer_funcdata_index=4,
         has_unsafe_point_table=True,
         gofunc_symbol="go:func.*",
+        relro_pclntab=False,
         supports_darwin_arm64=True,
     ),
 )
@@ -215,8 +225,9 @@ _FOCUS_VARIANTS: tuple[tuple[str, str, str, bool, bool, str, str], ...] = (
         False,
         True,
         "default",
-        "position-independent ELF, where the table moves to "
-        ".data.rel.ro.gopclntab",
+        "position-independent ELF, which from Go 1.26 names the table "
+        ".gopclntab like an ordinary executable rather than moving it into "
+        "the relro segment",
     ),
     (
         "1.26.5",
@@ -326,6 +337,19 @@ class Variant:
     @property
     def path(self) -> str:
         return f"{self.directory}/{self.filename}"
+
+    @property
+    def elf_pclntab_section(self) -> str:
+        """The ELF section this cell's linker puts the function table in.
+
+        Only ELF has a name to give: the Mach-O link uses `__gopclntab` and the
+        PE link folds the table into `.rdata` with no section of its own, so
+        both are decided by the container rather than by the release.
+        """
+
+        if self.buildmode == "exe" or not self.release.relro_pclntab:
+            return ".gopclntab"
+        return ".data.rel.ro.gopclntab"
 
     @property
     def executable_here(self) -> bool:

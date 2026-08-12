@@ -51,19 +51,27 @@ class GoBuildCorpusTests(unittest.TestCase):
                 )
 
     def test_the_pclntab_is_looked_for_where_each_linker_puts_it(self) -> None:
+        # `relro_pclntab` is what splits the two position-independent rows:
+        # CL 718065 moved the table out of the relro segment for Go 1.26, so
+        # the name a PIE gets depends on the release and not only on the
+        # buildmode.  Reading a 1.26 image at the older name finds nothing.
         cases = {
-            ("linux", "exe"): (".gopclntab", True),
-            ("linux", "pie"): (".data.rel.ro.gopclntab", True),
-            ("linux", "c-shared"): (".data.rel.ro.gopclntab", True),
-            ("darwin", "exe"): ("__gopclntab", True),
+            ("linux", "exe", True): (".gopclntab", True),
+            ("linux", "exe", False): (".gopclntab", True),
+            ("linux", "pie", True): (".data.rel.ro.gopclntab", True),
+            ("linux", "pie", False): (".gopclntab", True),
+            ("linux", "c-shared", True): (".data.rel.ro.gopclntab", True),
+            ("linux", "c-shared", False): (".gopclntab", True),
+            ("darwin", "exe", True): ("__gopclntab", True),
             # The PE linker gives the table no section, so it has to be found
             # by scanning the read-only data it was folded into.
-            ("windows", "exe"): (".rdata", False),
+            ("windows", "exe", True): (".rdata", False),
         }
-        for (goos, buildmode), expected in cases.items():
-            with self.subTest(goos=goos, buildmode=buildmode):
+        for (goos, buildmode, relro), expected in cases.items():
+            version = "1.20.14" if relro else "1.26.5"
+            with self.subTest(goos=goos, buildmode=buildmode, go=version):
                 variant = MATRIX.validate_variant(
-                    "1.26.5",
+                    version,
                     goos,
                     "arm64" if goos == "darwin" else "amd64",
                     buildmode,
@@ -71,6 +79,7 @@ class GoBuildCorpusTests(unittest.TestCase):
                     True,
                     "default",
                 )
+                self.assertEqual(variant.release.relro_pclntab, relro)
                 self.assertEqual(BUILD._pclntab_location(variant), expected)
 
     def test_the_declared_floors_are_below_what_the_probe_produces(self) -> None:

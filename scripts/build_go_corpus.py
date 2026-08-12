@@ -71,13 +71,6 @@ _MIN_PANIC_SITES = 20
 #: default optimization; the runtime adds many more.
 _MIN_OPEN_CODED_DEFER_FUNCS = 12
 
-_ELF_PCLNTAB_SECTIONS = {
-    "exe": ".gopclntab",
-    "pie": ".data.rel.ro.gopclntab",
-    "c-shared": ".data.rel.ro.gopclntab",
-}
-
-
 class BuildError(RuntimeError):
     """Raised when a cell cannot be produced as specified."""
 
@@ -183,7 +176,7 @@ def _runner_image() -> str:
 def _expected_required_sections(variant: Variant) -> list[str]:
     object_format = variant.target.object_format
     if object_format == "elf":
-        return sorted((_ELF_PCLNTAB_SECTIONS[variant.buildmode], ".noptrdata", ".text"))
+        return sorted((variant.elf_pclntab_section, ".noptrdata", ".text"))
     if object_format == "macho":
         return sorted(("__gopclntab", "__noptrdata", "__text"))
     return sorted((".rdata", ".data", ".text"))
@@ -192,7 +185,7 @@ def _expected_required_sections(variant: Variant) -> list[str]:
 def _pclntab_location(variant: Variant) -> tuple[str, bool]:
     object_format = variant.target.object_format
     if object_format == "elf":
-        return _ELF_PCLNTAB_SECTIONS[variant.buildmode], True
+        return variant.elf_pclntab_section, True
     if object_format == "macho":
         return "__gopclntab", True
     return ".rdata", False

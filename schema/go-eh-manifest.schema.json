@@ -679,6 +679,7 @@
           }
         },
         {
+          "$comment": "Through Go 1.25 a position-independent ELF carried the table in the relro segment, which prefixed its name.",
           "if": {
             "properties": {
               "goos": {
@@ -689,11 +690,15 @@
                   "pie",
                   "c-shared"
                 ]
+              },
+              "go_version": {
+                "pattern": "^1\\.(?:[1-9]|1[0-9]|2[0-5])\\."
               }
             },
             "required": [
               "goos",
-              "buildmode"
+              "buildmode",
+              "go_version"
             ]
           },
           "then": {
@@ -708,6 +713,64 @@
                       {
                         "contains": {
                           "const": ".data.rel.ro.gopclntab"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".noptrdata"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": ".text"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "pclntab_section",
+                  "required_sections"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$comment": "CL 718065 moved the table to plain read-only data for Go 1.26, on the grounds that it holds no relocations, so a PIE now names it exactly as an ordinary executable does.",
+          "if": {
+            "properties": {
+              "goos": {
+                "const": "linux"
+              },
+              "buildmode": {
+                "enum": [
+                  "pie",
+                  "c-shared"
+                ]
+              },
+              "go_version": {
+                "pattern": "^1\\.(?:2[6-9]|[3-9][0-9])\\."
+              }
+            },
+            "required": [
+              "goos",
+              "buildmode",
+              "go_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "properties": {
+                  "pclntab_section": {
+                    "const": ".gopclntab"
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": ".gopclntab"
                         }
                       },
                       {
