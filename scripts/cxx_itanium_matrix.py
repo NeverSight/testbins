@@ -448,7 +448,10 @@ _GRAPH_MINIMUMS: dict[str, dict[str, int]] = {
 # its source defines, that being the count no optimization level can reduce.
 _MIN_ARM_EXIDX_ENTRIES: dict[str, int] = {
     "cxx_eh_probe": 8,
-    "cxx_eh_probe_noexc": 8,
+    # The control keeps only the quiet probes, so its floor is theirs and is
+    # written from that list rather than beside it, the two having no way to
+    # disagree then.  `main` is the entry the margin comes from.
+    "cxx_eh_probe_noexc": len(_QUIET_PROBES),
     "libcxx_eh_shared": 5,
     "c_eh_probe": 4,
 }

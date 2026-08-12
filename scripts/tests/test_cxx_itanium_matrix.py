@@ -349,9 +349,18 @@ class EvidenceContractTests(unittest.TestCase):
         }
         self.assertLess(floors["c_eh_probe"], floors["cxx_eh_probe"])
         self.assertLess(floors["libcxx_eh_shared"], floors["cxx_eh_probe"])
+        # The control is the same source with the throwing probes compiled
+        # away, so it is a smaller program than the probe rather than the same
+        # one built differently.
+        self.assertLess(floors["cxx_eh_probe_noexc"], floors["cxx_eh_probe"])
+
+        # The entry points a program declares are the regions it is guaranteed
+        # to leave in the index, so a floor above that count is asking for
+        # something only the C runtime beside it could supply.
         for program, floor in floors.items():
             with self.subTest(program=program):
                 self.assertGreaterEqual(floor, 1)
+                self.assertLessEqual(floor, len(matrix.probe_symbols(program)))
 
     def test_only_arm_claims_an_exidx_floor(self) -> None:
         for cell in matrix.expected_cells():
