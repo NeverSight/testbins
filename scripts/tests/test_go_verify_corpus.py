@@ -103,6 +103,7 @@ def _toolchain(version: str) -> dict:
     return {
         "go_version": version,
         "go_version_string": f"go version go{version} linux/amd64",
+        "runner_image": "ubuntu24-test",
         "go_env": {
             "GOAMD64": "v1",
             "GOARM64": "",
@@ -129,7 +130,6 @@ def _manifest(root: Path, variants, *, function_count: int = 1500) -> dict:
         "corpus": "go-eh",
         "producer": {
             "repository_revision": "1" * 40,
-            "runner_image": "ubuntu24-test",
             "runner_os": "linux",
             "runner_arch": "x64",
             "module_path": "neversight.dev/goeh",
@@ -503,8 +503,7 @@ class GoCompleteMatrixTests(unittest.TestCase):
             "corpus": "go-eh",
             "producer": {
                 "repository_revision": "1" * 40,
-                "runner_image": "ubuntu24-test",
-                "runner_os": "linux",
+                    "runner_os": "linux",
                 "runner_arch": "x64",
                 "module_path": "neversight.dev/goeh",
                 "module_go_directive": "1.15",
@@ -575,6 +574,36 @@ class GoMergeTests(unittest.TestCase):
             self.assertEqual(
                 [entry["go_version"] for entry in merged["producer"]["toolchains"]],
                 ["1.16.15", "1.26.5"],
+            )
+
+    def test_merges_fragments_built_on_different_runner_images(self) -> None:
+        """Each Go release is built by its own job, and GitHub does not promise
+        two jobs of one workflow land on the same image version -- during a
+        rollout they routinely do not.  That is a fact about the pool, not a
+        sign the fragments came from different producer runs, so the merge has
+        to accept it and keep both images on record.
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            fragments = []
+            for index, version in enumerate(("1.16.15", "1.26.5")):
+                manifest = _manifest(root, [_variant(go_version=version)])
+                manifest["producer"]["toolchains"][0]["runner_image"] = (
+                    f"ubuntu24-2026080{index + 1}.1"
+                )
+                fragments.append(
+                    _write(root, manifest, f"fragments/go{version}.json")
+                )
+
+            output = root / "manifests/go-eh.json"
+            self.assertEqual(
+                VERIFY.merge_manifests(fragments, output, root).artifact_count, 2
+            )
+            merged = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(
+                [entry["runner_image"] for entry in merged["producer"]["toolchains"]],
+                ["ubuntu24-20260801.1", "ubuntu24-20260802.1"],
             )
 
     def test_rejects_fragments_from_different_producer_runs(self) -> None:

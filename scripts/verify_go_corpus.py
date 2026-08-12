@@ -614,7 +614,6 @@ def _validate_producer(manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
     revision = _require_string(producer, "repository_revision", "producer")
     if not _REVISION_RE.fullmatch(revision):
         raise VerificationError("producer.repository_revision must be a full SHA")
-    _require_string(producer, "runner_image", "producer")
     if producer.get("runner_os") != "linux" or producer.get("runner_arch") != "x64":
         raise VerificationError(
             "the Go corpus is cross-compiled from one linux/x64 host; "

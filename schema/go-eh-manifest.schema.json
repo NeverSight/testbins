@@ -101,7 +101,8 @@
       "required": [
         "go_version",
         "go_version_string",
-        "go_env"
+        "go_env",
+        "runner_image"
       ],
       "properties": {
         "go_version": {
@@ -113,6 +114,9 @@
         },
         "go_env": {
           "$ref": "#/$defs/goEnv"
+        },
+        "runner_image": {
+          "$ref": "#/$defs/nonEmptyString"
         }
       }
     },
@@ -121,7 +125,6 @@
       "additionalProperties": false,
       "required": [
         "repository_revision",
-        "runner_image",
         "runner_os",
         "runner_arch",
         "module_path",
@@ -132,9 +135,6 @@
       "properties": {
         "repository_revision": {
           "$ref": "#/$defs/gitRevision"
-        },
-        "runner_image": {
-          "$ref": "#/$defs/nonEmptyString"
         },
         "runner_os": {
           "const": "linux"
@@ -159,7 +159,8 @@
             "$ref": "#/$defs/toolchain"
           }
         }
-      }
+      },
+      "description": "Facts shared by every cell of one producer run. The runner image is not one of them: each Go release is built by its own job and GitHub does not promise two jobs land on the same image version, so it is recorded per toolchain."
     },
     "build": {
       "type": "object",

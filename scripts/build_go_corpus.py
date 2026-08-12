@@ -133,7 +133,14 @@ def _module_go_directive() -> str:
 
 
 def _toolchain_record(go: str, version: str) -> dict[str, object]:
-    """Capture the toolchain identity exactly as the toolchain reports it."""
+    """Capture the toolchain identity exactly as the toolchain reports it.
+
+    The runner image belongs here rather than beside the fields every cell
+    shares.  Each Go release is built by its own job, and GitHub does not
+    promise that two jobs of one workflow land on the same image version --
+    during a rollout they routinely do not.  Recorded as a shared fact it
+    makes the merge fail for a reason that has nothing to do with the corpus.
+    """
 
     environment = _base_environment()
     version_string = _run([go, "version"], env=environment).strip()
@@ -148,6 +155,7 @@ def _toolchain_record(go: str, version: str) -> dict[str, object]:
     return {
         "go_version": version,
         "go_version_string": version_string,
+        "runner_image": _runner_image(),
         "go_env": {
             key: value.strip() for key, value in zip(_GO_ENV_KEYS, values, strict=True)
         },
@@ -312,7 +320,6 @@ def build_cell(
         "corpus": "go-eh",
         "producer": {
             "repository_revision": _repository_revision(),
-            "runner_image": _runner_image(),
             "runner_os": "linux",
             "runner_arch": "x64",
             "module_path": _MODULE_PATH,
