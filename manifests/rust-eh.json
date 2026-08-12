@@ -1106,7 +1106,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_image": "ubuntu24-20260720.247.2",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1193,7 +1193,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_image": "ubuntu24-20260720.247.2",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1276,7 +1276,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1363,7 +1363,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -2236,7 +2236,7 @@
       "optimization": "o0",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o0.exe",
-      "sha256": "e971302a606aa7254398a59d24d5901f32e0e8ec0ffb0286480a3e0918899707",
+      "sha256": "ba7395e1cabed693f9ea9fa38c608934958a7cb977033089aac0c760df908f6f",
       "size": 139264,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2324,7 +2324,7 @@
       "optimization": "o0",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o0.dll",
-      "sha256": "9032b6b0291dab40fd25d50878dfe7792477ca1550c317883a0fe21faf851da0",
+      "sha256": "bc9ee7f62f5cde468cb185a7971d3f83c2d65e167473571a3a17bec72b223aeb",
       "size": 112128,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2408,7 +2408,7 @@
       "optimization": "o2",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o2.exe",
-      "sha256": "800cb84bce54d2e4a54de15c3ef4a2b6acee0afad7f6beea51c3d00d6ecfce4e",
+      "sha256": "c05552477362fa4bb65a9d24f725b8935a3aee928358c65c6ec6cf035dbf3440",
       "size": 129536,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2496,7 +2496,7 @@
       "optimization": "o2",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o2.dll",
-      "sha256": "9f3f7350559f2a9c86c923533f5f704286cbb4d4838e8f34bbabe401fc615ba9",
+      "sha256": "4bd8619c56743aac8cbcef9dcad0a8960178a3d74ed6ff8fb25a81af671263de",
       "size": 107008,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2569,7 +2569,7 @@
       "optimization": "o0",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o0.exe",
-      "sha256": "2dfffa785e30c904354e46f716caf6c09662cc5ca7d241fbfa077bf3f2138776",
+      "sha256": "ddb8d5ea7b83e96d1fb3d84f1d60bddb45b19e2209c925cf1fd43cd67bcb9c63",
       "size": 160768,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2650,7 +2650,7 @@
       "optimization": "o0",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o0.dll",
-      "sha256": "aef0282e3c662a53c048db7d611009a34f86a65666095f294e4bfdbbb9ec40a1",
+      "sha256": "70e057b27a4baebd2f70f93434d1e084264429409632021ed59f567908a388ab",
       "size": 118272,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2723,7 +2723,7 @@
       "optimization": "o2",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o2.exe",
-      "sha256": "def177581b7f1d180e29cf6c9b3550816dd2bf2a5015367abac01330e88c2bfd",
+      "sha256": "aba9adb7d3e2303b29e25690fd7722f22aaab6cf030b145e5aed86774258e7de",
       "size": 144384,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2804,7 +2804,7 @@
       "optimization": "o2",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o2.dll",
-      "sha256": "76d087b100a5767703da4a760c10b9164c81cd3428c69e7e2e4f9836151e2938",
+      "sha256": "d3c0f11da01b9571f4e58fd3c69f75323b0b21720a3d65944bbf2d7836482efa",
       "size": 111616,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -3190,7 +3190,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3275,7 +3275,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3356,7 +3356,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3441,7 +3441,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3519,7 +3519,7 @@
   ],
   "corpus": "rust-eh",
   "producer": {
-    "repository_revision": "a2b0809a6ddf356db9d857564d624564cc01974d",
+    "repository_revision": "52e858efb11368f76597fc0d5a3f94846349885d",
     "rustc": {
       "commit_date": "2026-07-14",
       "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
