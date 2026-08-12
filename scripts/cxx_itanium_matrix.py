@@ -439,9 +439,19 @@ _GRAPH_MINIMUMS: dict[str, dict[str, int]] = {
     },
 }
 
-#: A linked ARM executable's index covers the C runtime as well as the probe,
-#: so this floor is far under what any of them emits.
-_MIN_ARM_EXIDX_ENTRIES = 8
+# How many `.ARM.exidx` index entries each program guarantees, which is a
+# property of the program and not of the target: an index holds one entry per
+# code region, so a small C executable has far fewer than the C++ probe however
+# much C runtime is linked beside it.
+#
+# Each floor sits under the number of `noinline` externally visible functions
+# its source defines, that being the count no optimization level can reduce.
+_MIN_ARM_EXIDX_ENTRIES: dict[str, int] = {
+    "cxx_eh_probe": 8,
+    "cxx_eh_probe_noexc": 8,
+    "libcxx_eh_shared": 5,
+    "c_eh_probe": 4,
+}
 
 
 @dataclass(frozen=True, order=True)
@@ -1008,7 +1018,9 @@ def arm_exidx_present(cell: MatrixCell, variant: Variant) -> bool:
 
 
 def min_arm_exidx_entries(cell: MatrixCell, variant: Variant) -> int:
-    return _MIN_ARM_EXIDX_ENTRIES if cell.architecture == "arm" else 0
+    if cell.architecture != "arm":
+        return 0
+    return _MIN_ARM_EXIDX_ENTRIES[variant.program]
 
 
 def require_unwind_tables(cell: MatrixCell, variant: Variant) -> bool:

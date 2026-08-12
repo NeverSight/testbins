@@ -338,6 +338,29 @@ class EvidenceContractTests(unittest.TestCase):
                         matrix.neverd_contract(cell, variant)["expect_arm_ehabi"]
                     )
 
+    def test_the_exidx_floor_follows_the_program_not_the_target(self) -> None:
+        # An index holds one entry per code region, so the floor is a property
+        # of how many functions a program defines.  A single target-wide floor
+        # calibrated on the C++ probe is one the small C probe cannot clear.
+        cell = matrix.validate_cell("gcc", "armv7-linux-gnueabihf")
+        floors = {
+            variant.program: matrix.min_arm_exidx_entries(cell, variant)
+            for variant in cell.variants
+        }
+        self.assertLess(floors["c_eh_probe"], floors["cxx_eh_probe"])
+        self.assertLess(floors["libcxx_eh_shared"], floors["cxx_eh_probe"])
+        for program, floor in floors.items():
+            with self.subTest(program=program):
+                self.assertGreaterEqual(floor, 1)
+
+    def test_only_arm_claims_an_exidx_floor(self) -> None:
+        for cell in matrix.expected_cells():
+            if cell.architecture == "arm":
+                continue
+            for variant in cell.variants:
+                with self.subTest(cell=cell.key, variant=variant.key):
+                    self.assertEqual(matrix.min_arm_exidx_entries(cell, variant), 0)
+
     def test_arm_carries_an_extab_only_when_it_has_exceptions(self) -> None:
         cell = matrix.validate_cell("gcc", "armv7-linux-gnueabihf")
         throwing = matrix.validate_variant("cxx_eh_probe", "o2", False)
