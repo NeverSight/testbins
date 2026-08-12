@@ -279,6 +279,35 @@ class GoManifestTests(unittest.TestCase):
                 result = VERIFY.verify_manifest(manifest_path, root)
                 self.assertEqual(result.artifact_count, 1)
 
+    def test_accepts_a_stripped_darwin_image_whichever_way_its_link_went(
+        self,
+    ) -> None:
+        """`-s -w` on darwin left `_go.func.*` behind through Go 1.20 and had
+        stopped doing so by Go 1.26.  Both are real toolchain output, so both
+        have to verify; what must not happen is a rule that only one of them
+        satisfies.
+        """
+
+        variant = _variant(goos="darwin", goarch="arm64", stripped=True)
+        for symbols in ([variant.release.gofunc_symbol], []):
+            with (
+                self.subTest(kept_gofunc=bool(symbols)),
+                tempfile.TemporaryDirectory() as temp_dir,
+            ):
+                root = Path(temp_dir)
+                spec = FIXTURES.ImageSpec(
+                    sections=_sections_for(variant, function_count=1500),
+                    symbols=symbols,
+                )
+                path = root / Path(*variant.path.split("/"))
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(FIXTURES.BUILDERS["macho"](spec))
+
+                manifest_path = _write(root, _manifest(root, [variant]))
+                self.assertEqual(
+                    VERIFY.verify_manifest(manifest_path, root).artifact_count, 1
+                )
+
     def test_applies_the_published_schema_when_it_can(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

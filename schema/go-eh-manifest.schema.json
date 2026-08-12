@@ -1109,7 +1109,7 @@
           }
         },
         {
-          "$comment": "Mach-O is the exception: -s -w drops the DWARF and the Go symbol table, but the link still emits a LC_SYMTAB naming _go.func.*, so a stripped darwin image keeps the one symbol that lets a reader skip the moduledata search. Asserting the ELF rule here would reject a correct artifact.",
+          "$comment": "Mach-O is the exception, and an unstable one. Through Go 1.20 the darwin link still emitted an LC_SYMTAB naming _go.func.* even under -s -w; by Go 1.26 it does not. Where the boundary between those falls is not established here, so this branch pins only what is true of every release -- that either outcome is legitimate -- and leaves the decision to the verifier, which reads the actual image and rejects any manifest that disagrees with it. A guessed version boundary would reject correct artifacts the moment it is off by one release.",
           "if": {
             "properties": {
               "stripped": {
@@ -1127,14 +1127,6 @@
           "then": {
             "properties": {
               "evidence": {
-                "properties": {
-                  "symbol_table": {
-                    "const": "go-names"
-                  },
-                  "gofunc_symbol": {
-                    "type": "string"
-                  }
-                },
                 "required": [
                   "symbol_table",
                   "gofunc_symbol"
