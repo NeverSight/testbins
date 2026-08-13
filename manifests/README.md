@@ -65,3 +65,22 @@ claims no except table and no `__cxa_throw` where the C++ runtime is dynamic,
 and claims neither on mingw, where it is linked in statically. ARM artifacts
 claim an `.ARM.exidx` index with a minimum entry count and claim nothing about
 DWARF, because ARM EHABI has no DWARF frame chain to claim anything about.
+
+## `objc-eh.json`
+
+Generated only after both Apple-runtime target cells have built and passed
+validation. It inventories 12 committed Mach-O executables and conforms to
+`../schema/objc-eh-manifest.schema.json`.
+
+The `producer` block holds the repository revision plus one Apple clang record
+per target cell. Each artifact records the Objective-C runtime, target, ARC and
+exception settings, exact compiler flags, runner identity, and the exact
+three-part compiler release reported by the selected Xcode.
+
+Its evidence is re-derived from Mach-O headers and bytes: architecture,
+sections, normalized symbols and imports, class-name strings, compact unwind,
+the architecture-specific DWARF frame expectation, hashes, sizes, and build
+path absence. The `neverd` block is then compared exactly with
+`objc_matrix.neverd_contract`; an exception-free control can claim only
+`cfi-only`, while exception-enabled artifacts require an Apple Objective-C
+exception graph and its class-clause categories.

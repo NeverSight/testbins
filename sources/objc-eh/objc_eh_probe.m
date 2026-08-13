@@ -39,10 +39,10 @@
 // The same source is the corpus's negative control, because it has to compile
 // with `-fno-objc-exceptions`.  Everything that raises lives behind
 // `OBJC_EH_PROBE_EXCEPTIONS`, so an exception-free build of this file is a
-// program with the same entry points and no landing pad anywhere.  It is also
-// built without ARC, so that an image whose cleanup is the program's rather
-// than the compiler's exists to compare against; that axis is
-// `OBJC_EH_PROBE_ARC`.
+// program that retains exactly the quiet entry points and has no landing pad
+// anywhere. A separate exception-enabled variant is built without ARC, so an
+// image whose cleanup is the program's rather than the compiler's exists to
+// compare against; that axis is `OBJC_EH_PROBE_ARC`.
 
 #import <Foundation/Foundation.h>
 #include <stdio.h>

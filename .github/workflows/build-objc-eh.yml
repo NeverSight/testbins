@@ -1,0 +1,296 @@
+name: Build and publish Objective-C EH corpus
+
+# One cell is one (runtime, target) pair and builds all six variants. Both cells
+# use the same pinned Xcode on an Apple-silicon runner; only the arm64 cell is
+# native and therefore executable on that runner.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/build-objc-eh.yml"
+      - "schema/objc-eh-manifest.schema.json"
+      - "scripts/objc_matrix.py"
+      - "scripts/build_objc_corpus.py"
+      - "scripts/merge_objc_corpus.py"
+      - "scripts/verify_objc_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/object_readers.py"
+      - "scripts/tests/test_objc_matrix.py"
+      - "scripts/tests/test_objc_sources.py"
+      - "scripts/tests/test_build_objc_corpus_script.py"
+      - "scripts/tests/test_verify_objc_corpus.py"
+      - "scripts/tests/test_object_readers.py"
+      - "scripts/tests/synthetic_objects.py"
+      - "sources/objc-eh/**"
+      - "corpus/objc-eh/README.md"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-objc-eh.yml"
+      - "schema/objc-eh-manifest.schema.json"
+      - "scripts/objc_matrix.py"
+      - "scripts/build_objc_corpus.py"
+      - "scripts/merge_objc_corpus.py"
+      - "scripts/verify_objc_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/object_readers.py"
+      - "scripts/tests/test_objc_matrix.py"
+      - "scripts/tests/test_objc_sources.py"
+      - "scripts/tests/test_build_objc_corpus_script.py"
+      - "scripts/tests/test_verify_objc_corpus.py"
+      - "scripts/tests/test_object_readers.py"
+      - "scripts/tests/synthetic_objects.py"
+      - "sources/objc-eh/**"
+      - "corpus/objc-eh/README.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objc-eh-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-producer:
+    name: Verify producer and prepare matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run producer unit tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/tests -p "*objc*.py" -v
+          python3 -m unittest discover -s scripts/tests -p "test_object_readers.py" -v
+
+      - name: Compile-check Python scripts
+        run: >-
+          python3 -m py_compile
+          scripts/objc_matrix.py
+          scripts/object_readers.py
+          scripts/json_schema_check.py
+          scripts/verify_objc_corpus.py
+          scripts/merge_objc_corpus.py
+          scripts/build_objc_corpus.py
+
+      - name: Parse manifest schema
+        run: >-
+          python3 -m json.tool
+          schema/objc-eh-manifest.schema.json
+          > /dev/null
+
+      - name: Reject a schema the verifier cannot enforce in full
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          sys.path.insert(0, "scripts")
+          import json_schema_check
+
+          with open(
+              "schema/objc-eh-manifest.schema.json", encoding="utf-8"
+          ) as stream:
+              json_schema_check.check_schema(json.load(stream))
+          print("every schema keyword is enforced by the verifier")
+          PY
+
+      - name: Print the artifact plan
+        run: python3 scripts/objc_matrix.py --plan
+
+      - name: Generate supported build matrix
+        id: matrix
+        run: >-
+          python3 scripts/objc_matrix.py
+          --github-output "$GITHUB_OUTPUT"
+
+  build-cell:
+    name: ${{ matrix.cell_name }}
+    needs: verify-producer
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Select the pinned Xcode
+        shell: bash
+        env:
+          XCODE_PATH: ${{ matrix.xcode_path }}
+        run: |
+          set -euo pipefail
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "the pinned $XCODE_PATH is not on this image; available:" >&2
+            ls -d /Applications/Xcode*.app >&2
+            exit 1
+          fi
+          sudo xcode-select --switch "$XCODE_PATH/Contents/Developer"
+          clang --version
+
+      - name: Build, run when native, and validate cell
+        shell: bash
+        env:
+          CELL_RUNTIME: ${{ matrix.runtime }}
+          CELL_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          python3 scripts/build_objc_corpus.py \
+            --runtime "$CELL_RUNTIME" \
+            --target "$CELL_TARGET" \
+            --output-root "$RUNNER_TEMP/objc-eh"
+
+      - name: Upload validated cell
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: objc-eh-${{ matrix.cell_name }}
+          path: ${{ runner.temp }}/objc-eh
+          if-no-files-found: error
+          retention-days: 14
+
+  assemble-corpus:
+    name: Assemble canonical corpus
+    needs: build-cell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download all validated cells
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: objc-eh-*
+          path: ${{ runner.temp }}/objc-eh
+          merge-multiple: true
+
+      - name: Merge and validate the complete matrix
+        run: >-
+          python3 scripts/merge_objc_corpus.py
+          --root "${{ runner.temp }}/objc-eh"
+          --fragments "${{ runner.temp }}/objc-eh/fragments"
+          --output "${{ runner.temp }}/objc-eh/manifests/objc-eh.json"
+          --require-complete-matrix
+
+      - name: Preserve generated-tree notice
+        run: >-
+          cp corpus/objc-eh/README.md
+          "${{ runner.temp }}/objc-eh/corpus/objc-eh/README.md"
+
+      - name: Re-verify canonical manifest
+        run: >-
+          python3 scripts/verify_objc_corpus.py
+          "${{ runner.temp }}/objc-eh/manifests/objc-eh.json"
+          --root "${{ runner.temp }}/objc-eh"
+          --require-complete-matrix
+
+      - name: Report the committed size
+        shell: bash
+        run: |
+          set -euo pipefail
+          du -sh "$RUNNER_TEMP/objc-eh/corpus/objc-eh"
+          find "$RUNNER_TEMP/objc-eh/corpus/objc-eh" \
+            -type f -printf '%10s  %P\n' | sort -k2
+
+      - name: Upload canonical corpus
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: objc-eh-canonical-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/objc-eh/corpus/objc-eh
+            ${{ runner.temp }}/objc-eh/manifests/objc-eh.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-corpus:
+    name: Commit generated corpus to main
+    needs: assemble-corpus
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out triggering main revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download canonical corpus
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: objc-eh-canonical-${{ github.run_id }}
+          path: ${{ runner.temp }}/objc-eh-canonical
+
+      - name: Verify downloaded corpus before publication
+        run: >-
+          python3 scripts/verify_objc_corpus.py
+          "${{ runner.temp }}/objc-eh-canonical/manifests/objc-eh.json"
+          --root "${{ runner.temp }}/objc-eh-canonical"
+          --require-complete-matrix
+
+      - name: Confirm source revision is still current and sync generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          # Generated trees are disjoint, so only a producer change can make
+          # this run stale. Another line publishing its own corpus is allowed.
+          if ! git diff --quiet "$GITHUB_SHA" origin/main -- . \
+               ':(exclude)corpus' ':(exclude)manifests'; then
+            echo "the producer changed after this run started; refusing stale publication" >&2
+            exit 1
+          fi
+          git reset --hard --quiet origin/main
+          mkdir -p corpus/objc-eh manifests
+          rsync --archive --delete \
+            "$RUNNER_TEMP/objc-eh-canonical/corpus/objc-eh/" \
+            corpus/objc-eh/
+          cp \
+            "$RUNNER_TEMP/objc-eh-canonical/manifests/objc-eh.json" \
+            manifests/objc-eh.json
+
+      - name: Re-verify repository tree
+        run: >-
+          python3 scripts/verify_objc_corpus.py
+          manifests/objc-eh.json
+          --root .
+          --require-complete-matrix
+
+      - name: Commit and fast-forward push generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- corpus/objc-eh manifests/objc-eh.json
+          if git diff --cached --quiet; then
+            echo "generated corpus is already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(corpus): refresh Objective-C EH binaries [skip ci]"
+          for Attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git fetch --no-tags origin main
+            if ! git diff --quiet "$GITHUB_SHA" origin/main -- . \
+                 ':(exclude)corpus' ':(exclude)manifests'; then
+              echo "the producer changed during publication; refusing stale push" >&2
+              exit 1
+            fi
+            git rebase origin/main
+          done
+          echo "could not publish after three attempts" >&2
+          exit 1

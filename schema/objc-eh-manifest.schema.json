@@ -1,0 +1,821 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NeverSight/testbins/schema/objc-eh-manifest.schema.json",
+  "title": "Objective-C exception corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus",
+    "producer",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "corpus": {
+      "const": "objc-eh"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitRevision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "targetName": {
+      "enum": [
+        "arm64-apple-darwin",
+        "x86_64-apple-darwin"
+      ]
+    },
+    "cellName": {
+      "type": "string",
+      "pattern": "^apple-(arm64-apple-darwin|x86_64-apple-darwin)$"
+    },
+    "toolchainRecord": {
+      "description": "One matrix cell's exact Apple clang identity.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell",
+        "runtime",
+        "target",
+        "driver",
+        "strip_tool",
+        "version_prefix",
+        "version",
+        "version_string"
+      ],
+      "properties": {
+        "cell": {
+          "$ref": "#/$defs/cellName"
+        },
+        "runtime": {
+          "const": "apple"
+        },
+        "target": {
+          "$ref": "#/$defs/targetName"
+        },
+        "driver": {
+          "const": "clang"
+        },
+        "strip_tool": {
+          "const": "strip"
+        },
+        "version_prefix": {
+          "const": "17."
+        },
+        "version": {
+          "$ref": "#/$defs/releaseVersion"
+        },
+        "version_string": {
+          "type": "string",
+          "pattern": "^Apple clang version [0-9]+\\.[0-9]+\\.[0-9]+( |$)"
+        }
+      }
+    },
+    "producer": {
+      "description": "The source revision and one exact compiler record per built cell.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_revision",
+        "toolchains"
+      ],
+      "properties": {
+        "repository_revision": {
+          "$ref": "#/$defs/gitRevision"
+        },
+        "toolchains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/toolchainRecord"
+          }
+        }
+      }
+    },
+    "buildEnvironment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "LC_ALL",
+        "SOURCE_DATE_EPOCH",
+        "TZ"
+      ],
+      "properties": {
+        "LC_ALL": {
+          "const": "C"
+        },
+        "SOURCE_DATE_EPOCH": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "TZ": {
+          "const": "UTC"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compiler",
+        "compiler_flags",
+        "linked_artifacts",
+        "strip_tool",
+        "environment",
+        "runner_image",
+        "runner_os",
+        "runner_arch"
+      ],
+      "properties": {
+        "compiler": {
+          "const": "clang"
+        },
+        "compiler_flags": {
+          "description": "Every driver flag in order, excluding source and output paths.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "linked_artifacts": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "strip_tool": {
+          "enum": [
+            "",
+            "strip"
+          ]
+        },
+        "environment": {
+          "$ref": "#/$defs/buildEnvironment"
+        },
+        "runner_image": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runner_os": {
+          "const": "macos"
+        },
+        "runner_arch": {
+          "const": "arm64"
+        }
+      }
+    },
+    "evidence": {
+      "description": "Facts independently re-derived from the Mach-O bytes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_sections",
+        "forbidden_sections",
+        "required_symbols",
+        "forbidden_symbols",
+        "required_strings",
+        "symbol_names_expected",
+        "require_unwind_tables",
+        "eh_frame_present"
+      ],
+      "properties": {
+        "required_sections": {
+          "$ref": "#/$defs/nonEmptyStringArray"
+        },
+        "forbidden_sections": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "required_symbols": {
+          "$ref": "#/$defs/nonEmptyStringArray"
+        },
+        "forbidden_symbols": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "required_strings": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "symbol_names_expected": {
+          "const": true
+        },
+        "require_unwind_tables": {
+          "const": true
+        },
+        "eh_frame_present": {
+          "type": "boolean"
+        }
+      }
+    },
+    "neverd": {
+      "description": "The exact weakest Objective-C graph NeverD must recover.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation_level",
+        "objc_runtime",
+        "personalities_any",
+        "required_class_names",
+        "expect_no_lsda",
+        "expect_arc",
+        "expect_runtime_proven_by_personality",
+        "min_exception_functions",
+        "min_landing_pads",
+        "min_catch_frames",
+        "min_catch_clauses",
+        "min_class_clauses",
+        "min_any_object_clauses",
+        "min_catch_all_clauses",
+        "min_cleanup_frames",
+        "min_synchronized_frames",
+        "min_throw_sites"
+      ],
+      "properties": {
+        "validation_level": {
+          "enum": [
+            "objc-graph",
+            "cfi-only"
+          ]
+        },
+        "objc_runtime": {
+          "const": "apple"
+        },
+        "personalities_any": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "required_class_names": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "expect_no_lsda": {
+          "type": "boolean"
+        },
+        "expect_arc": {
+          "type": "boolean"
+        },
+        "expect_runtime_proven_by_personality": {
+          "type": "boolean"
+        },
+        "min_exception_functions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_landing_pads": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_catch_frames": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_catch_clauses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_class_clauses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_any_object_clauses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_catch_all_clauses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_cleanup_frames": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_synchronized_frames": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_throw_sites": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size",
+        "runtime",
+        "toolchain_version",
+        "target",
+        "architecture",
+        "object_format",
+        "program",
+        "arc",
+        "exceptions",
+        "optimization",
+        "stripped",
+        "execution",
+        "build",
+        "evidence",
+        "neverd"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^corpus/objc-eh/apple/(arm64-apple-darwin|x86_64-apple-darwin)/(o0|o2)/(symtab|stripped)/[A-Za-z0-9_.-]+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "runtime": {
+          "const": "apple"
+        },
+        "toolchain_version": {
+          "$ref": "#/$defs/releaseVersion"
+        },
+        "target": {
+          "$ref": "#/$defs/targetName"
+        },
+        "architecture": {
+          "enum": [
+            "aarch64",
+            "x86_64"
+          ]
+        },
+        "object_format": {
+          "const": "macho"
+        },
+        "program": {
+          "enum": [
+            "objc_eh_probe",
+            "objc_eh_probe_mrr",
+            "objc_eh_probe_noexc"
+          ]
+        },
+        "arc": {
+          "enum": [
+            "on",
+            "off"
+          ]
+        },
+        "exceptions": {
+          "enum": [
+            "on",
+            "off"
+          ]
+        },
+        "optimization": {
+          "enum": [
+            "o0",
+            "o2"
+          ]
+        },
+        "stripped": {
+          "type": "boolean"
+        },
+        "execution": {
+          "enum": [
+            "passed",
+            "not-run-cross-target"
+          ]
+        },
+        "build": {
+          "$ref": "#/$defs/build"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "neverd": {
+          "$ref": "#/$defs/neverd"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "const": "arm64-apple-darwin"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "architecture": {
+                "const": "aarch64"
+              },
+              "execution": {
+                "const": "passed"
+              },
+              "evidence": {
+                "properties": {
+                  "eh_frame_present": {
+                    "const": true
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": "__TEXT,__text"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__TEXT,__unwind_info"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__TEXT,__eh_frame"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "const": "x86_64-apple-darwin"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "architecture": {
+                "const": "x86_64"
+              },
+              "execution": {
+                "const": "not-run-cross-target"
+              },
+              "evidence": {
+                "properties": {
+                  "eh_frame_present": {
+                    "const": false
+                  },
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": "__TEXT,__text"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__TEXT,__unwind_info"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "on"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "enum": [
+                  "objc_eh_probe",
+                  "objc_eh_probe_mrr"
+                ]
+              },
+              "evidence": {
+                "properties": {
+                  "required_sections": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "const": "__TEXT,__gcc_except_tab"
+                        }
+                      },
+                      {
+                        "contains": {
+                          "const": "__objc_classlist"
+                        }
+                      }
+                    ]
+                  },
+                  "forbidden_sections": {
+                    "maxItems": 0
+                  },
+                  "required_strings": {
+                    "const": [
+                      "ObjCEhProbeError"
+                    ]
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "objc-graph"
+                  },
+                  "personalities_any": {
+                    "const": [
+                      "__objc_personality_v0"
+                    ]
+                  },
+                  "required_class_names": {
+                    "const": [
+                      "ObjCEhProbeError",
+                      "NSException"
+                    ]
+                  },
+                  "expect_no_lsda": {
+                    "const": false
+                  },
+                  "expect_runtime_proven_by_personality": {
+                    "const": true
+                  },
+                  "min_exception_functions": {
+                    "minimum": 1
+                  },
+                  "min_landing_pads": {
+                    "minimum": 1
+                  },
+                  "min_catch_frames": {
+                    "minimum": 1
+                  },
+                  "min_catch_clauses": {
+                    "minimum": 1
+                  },
+                  "min_class_clauses": {
+                    "minimum": 1
+                  },
+                  "min_any_object_clauses": {
+                    "minimum": 1
+                  },
+                  "min_catch_all_clauses": {
+                    "minimum": 1
+                  },
+                  "min_cleanup_frames": {
+                    "minimum": 1
+                  },
+                  "min_synchronized_frames": {
+                    "minimum": 1
+                  },
+                  "min_throw_sites": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "exceptions"
+            ],
+            "properties": {
+              "exceptions": {
+                "const": "off"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "const": "objc_eh_probe_noexc"
+              },
+              "arc": {
+                "const": "on"
+              },
+              "optimization": {
+                "const": "o2"
+              },
+              "stripped": {
+                "const": false
+              },
+              "evidence": {
+                "properties": {
+                  "forbidden_sections": {
+                    "const": [
+                      "__TEXT,__gcc_except_tab"
+                    ]
+                  },
+                  "required_strings": {
+                    "maxItems": 0
+                  }
+                }
+              },
+              "neverd": {
+                "properties": {
+                  "validation_level": {
+                    "const": "cfi-only"
+                  },
+                  "personalities_any": {
+                    "maxItems": 0
+                  },
+                  "required_class_names": {
+                    "maxItems": 0
+                  },
+                  "expect_no_lsda": {
+                    "const": true
+                  },
+                  "expect_arc": {
+                    "const": true
+                  },
+                  "expect_runtime_proven_by_personality": {
+                    "const": false
+                  },
+                  "min_exception_functions": {
+                    "const": 0
+                  },
+                  "min_landing_pads": {
+                    "const": 0
+                  },
+                  "min_catch_frames": {
+                    "const": 0
+                  },
+                  "min_catch_clauses": {
+                    "const": 0
+                  },
+                  "min_class_clauses": {
+                    "const": 0
+                  },
+                  "min_any_object_clauses": {
+                    "const": 0
+                  },
+                  "min_catch_all_clauses": {
+                    "const": 0
+                  },
+                  "min_cleanup_frames": {
+                    "const": 0
+                  },
+                  "min_synchronized_frames": {
+                    "const": 0
+                  },
+                  "min_throw_sites": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "arc"
+            ],
+            "properties": {
+              "arc": {
+                "const": "off"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "const": "objc_eh_probe_mrr"
+              },
+              "exceptions": {
+                "const": "on"
+              },
+              "optimization": {
+                "const": "o2"
+              },
+              "stripped": {
+                "const": false
+              },
+              "neverd": {
+                "properties": {
+                  "expect_arc": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "arc"
+            ],
+            "properties": {
+              "arc": {
+                "const": "on"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "enum": [
+                  "objc_eh_probe",
+                  "objc_eh_probe_noexc"
+                ]
+              },
+              "neverd": {
+                "properties": {
+                  "expect_arc": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "stripped"
+            ],
+            "properties": {
+              "stripped": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "program": {
+                "const": "objc_eh_probe"
+              },
+              "arc": {
+                "const": "on"
+              },
+              "exceptions": {
+                "const": "on"
+              },
+              "evidence": {
+                "properties": {
+                  "symbol_names_expected": {
+                    "const": true
+                  },
+                  "required_symbols": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

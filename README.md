@@ -15,11 +15,13 @@ Nothing is uploaded from a developer's machine.
 | `windows-eh` | PE | `manifests/windows-eh.json` | `schema/windows-eh-manifest.schema.json` | `build-windows-eh.yml` |
 | `rust-eh` | ELF, PE, Mach-O | `manifests/rust-eh.json` | `schema/rust-eh-manifest.schema.json` | `build-rust-eh.yml` |
 | `cxx-itanium-eh` | ELF, Mach-O, PE | `manifests/cxx-itanium-eh.json` | `schema/cxx-itanium-eh-manifest.schema.json` | `build-cxx-itanium-eh.yml` |
+| `objc-eh` | Mach-O | `manifests/objc-eh.json` | `schema/objc-eh-manifest.schema.json` | `build-objc-eh.yml` |
 
-All three follow the same shape: sources pinned in the repository, a matrix
+All four follow the same shape: sources pinned in the repository, a matrix
 script, a per-cell build script, a fragment merge, a strict JSON Schema, a
 verifier that re-derives every claim from the bytes on disk, and a four-stage
-workflow where only a `push` to `main` is granted `contents: write`.
+workflow where only the publish job on a `main` push or manual `main` dispatch
+is granted `contents: write`.
 
 ## Windows exception corpus
 
@@ -307,6 +309,69 @@ A stripped artifact keeps no name of anything the producer compiled, so its
 evidence is the mangled name of the type it throws: RTTI is data, and
 `15CxxEhProbeError` survives a strip that removes every function name.
 
+## Objective-C exception corpus
+
+Objective-C uses an Itanium language-specific data area but gives its type-table
+slots Apple runtime semantics. A class catch names an `objc_typeinfo`, `@catch
+(id)` names `OBJC_EHTYPE_id`, and `@catch (...)` is the null catch-all entry.
+The product line fixes that interpretation to Apple's non-fragile runtime and
+crosses it with both Mach-O architectures produced by the pinned Xcode:
+
+| Runtime | Target | Unwind metadata | Personality | Runner | Executables run? |
+|---|---|---|---|---|---|
+| Apple | `arm64-apple-darwin` | `__unwind_info` + `__eh_frame` + `__gcc_except_tab` | `__objc_personality_v0` | `macos-15` | yes |
+| Apple | `x86_64-apple-darwin` | `__unwind_info` + `__gcc_except_tab` | `__objc_personality_v0` | `macos-15` | cross-built |
+
+Each cell builds six executables, for a canonical total of 12 artifacts: the
+ARC exception probe at `-O0` and `-O2`, each with and without local symbols; an
+`-O2` manual-retain/release control; and an `-O2 -fno-objc-exceptions` control.
+All six arm64 executables must print `objc-eh probe passed` before their
+fragment can be uploaded. The x86_64 cell is never reported as run.
+
+The architecture-specific `__eh_frame` contract is measured rather than
+assumed. Under the pinned Apple clang 17/Xcode 16.4 line, arm64 keeps a
+well-formed DWARF frame chain beside compact unwind, while x86_64 encodes these
+frames entirely in `__unwind_info`. The verifier requires the arm64 chain and
+rejects an x86_64 chain, and independently walks the compact-unwind table for
+both.
+
+### Test input and controls
+
+`sources/objc-eh/objc_eh_probe.m` defines a local `NSException` subclass and
+covers class, framework-class, `id`, and ellipsis catches; a multi-clause catch
+ladder; nested tries; `@finally`; rethrow; cleanup-only frames;
+`@synchronized`; `@autoreleasepool`; and an ARC strong local held across a
+throwing call. Every probe is externally visible and `noinline` so the symbol
+inventory and exception shapes survive optimization.
+
+The MRR variant changes only `-fobjc-arc` to `-fno-objc-arc`. Its binary must
+lack the ARC return-value handshake import that both ARC optimization levels
+and the exception-free ARC control retain. The exception-free variant changes
+only `-fobjc-exceptions` to `-fno-objc-exceptions`; it must lack
+`__gcc_except_tab`, `__objc_personality_v0`, and `objc_exception_throw`, while
+still carrying valid unwind metadata.
+
+Mach-O adds an underscore to C symbols in its raw nlist. Manifests deliberately
+use source spellings such as `objc_exception_throw` and
+`__objc_personality_v0`; `object_readers.py` exposes that normalized spelling
+while retaining the raw name too. This keeps container syntax out of the
+Objective-C ABI contract.
+
+### Artifact names
+
+Both the directory and filename repeat every build axis:
+
+```text
+corpus/objc-eh/apple/arm64-apple-darwin/o2/stripped/
+  objc_eh_probe-apple-arm64-apple-darwin-o2-stripped
+
+corpus/objc-eh/apple/x86_64-apple-darwin/o2/symtab/
+  objc_eh_probe_mrr-apple-x86_64-apple-darwin-o2-symtab
+```
+
+The executables have no extension, so `.gitattributes` marks only the generated
+artifact depth as binary and leaves `corpus/objc-eh/README.md` diffable.
+
 ## Repository layout
 
 ```text
@@ -314,12 +379,14 @@ evidence is the mangled name of the type it throws: RTTI is data, and
 corpus/windows-eh/        Committed generated PE files
 corpus/rust-eh/           Committed generated ELF, PE, and Mach-O files
 corpus/cxx-itanium-eh/    Committed generated ELF, Mach-O, and PE files
+corpus/objc-eh/            Committed generated Mach-O files
 manifests/                Canonical machine-readable contracts
 schema/                   Manifest schemas
 scripts/                  Matrices, builders, mergers, verifiers, and tests
 sources/msvc-exceptions/  Focused ABI probes
 sources/rust-eh/          Rust panic and unwinding probes
 sources/cxx-itanium-eh/   C++ and C Itanium exception probes
+sources/objc-eh/           Objective-C runtime and exception probe
 sources/windows-seh-tests Pinned official source snapshot
 rust-toolchain.toml       The exact rustc release the Rust corpus is built with
 LICENSES/                 Third-party license notices
@@ -344,13 +411,19 @@ python3 -m py_compile \
   scripts/cxx_itanium_matrix.py \
   scripts/verify_cxx_itanium_corpus.py \
   scripts/merge_cxx_itanium_corpus.py \
-  scripts/build_cxx_itanium_corpus.py
+  scripts/build_cxx_itanium_corpus.py \
+  scripts/objc_matrix.py \
+  scripts/verify_objc_corpus.py \
+  scripts/merge_objc_corpus.py \
+  scripts/build_objc_corpus.py
 python3 -m json.tool schema/windows-eh-manifest.schema.json >/dev/null
 python3 -m json.tool schema/rust-eh-manifest.schema.json >/dev/null
 python3 -m json.tool schema/cxx-itanium-eh-manifest.schema.json >/dev/null
+python3 -m json.tool schema/objc-eh-manifest.schema.json >/dev/null
 python3 scripts/windows_matrix.py --json
 python3 scripts/rust_matrix.py --json
 python3 scripts/cxx_itanium_matrix.py --json
+python3 scripts/objc_matrix.py --json
 ```
 
 On Windows with the required Visual Studio target tools and LLVM components,
@@ -417,20 +490,43 @@ python3 scripts/verify_cxx_itanium_corpus.py \
   --require-complete-matrix
 ```
 
+One Objective-C cell can be built on macOS after selecting the pinned Xcode:
+
+```bash
+sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+python3 scripts/build_objc_corpus.py \
+  --runtime apple \
+  --target arm64-apple-darwin \
+  --output-root ./staging
+```
+
+`--describe-only` resolves either target without invoking clang.
+`scripts/objc_matrix.py --plan` prints all 12 contracts, and `--paths` prints
+the canonical inventory.
+
+```bash
+python3 scripts/verify_objc_corpus.py \
+  manifests/objc-eh.json \
+  --root . \
+  --require-complete-matrix
+```
+
 ## CI publication
 
 **Build and publish Windows EH corpus**, **Build and publish Rust EH corpus**,
-and **Build and publish C++ Itanium EH corpus** each run their complete matrix
-when their producer source, schema, scripts, or workflow changes. They are
-independent, and each publishes only its own tree.
+**Build and publish C++ Itanium EH corpus**, and **Build and publish Objective-C
+EH corpus** each run their complete matrix when their producer source, schema,
+scripts, or workflow changes. They are independent, and each publishes only its
+own tree.
 
 - Pull requests build and validate with read-only repository permissions.
 - A successful producer change on `main` assembles and re-verifies the complete
   corpus, then a dedicated job receives `contents: write`.
 - Each publish job synchronizes only its own generated files: `corpus/windows-eh`
   and `manifests/windows-eh.json`, `corpus/rust-eh` and `manifests/rust-eh.json`,
-  or `corpus/cxx-itanium-eh` and `manifests/cxx-itanium-eh.json`. Each creates a
-  bot commit only when its own files changed, and pushes it to `main`.
+  `corpus/cxx-itanium-eh` and `manifests/cxx-itanium-eh.json`, or
+  `corpus/objc-eh` and `manifests/objc-eh.json`. Each creates a bot commit only
+  when its own files changed, and pushes it to `main`.
 - Generated-only paths do not trigger any producer workflow, and each workflow's
   path filters name its own files rather than `scripts/**`, so one line's change
   does not rebuild another's matrix. Concurrency and trigger-revision checks

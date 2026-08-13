@@ -77,10 +77,10 @@ class MatrixError(ValueError):
 #: symbol to be in the image, so a cell that silently built against a different
 #: runtime fails rather than being recorded as the one it was asked for.
 #:
-#: Spelled the way the source does.  How many underscores precede it in the
-#: image is a property of the container rather than of the runtime -- Mach-O
-#: adds one to every C symbol -- so `MatrixCell.personality_symbol` is what the
-#: evidence contract asserts and this is what the consumer contract names.
+#: Spelled the way the source does. `object_readers.MachOImage` exposes both
+#: the raw nlist spelling and this source spelling, so every manifest contract
+#: uses the source spelling and never bakes Mach-O's extra underscore into an
+#: Objective-C runtime name.
 _RUNTIME_PERSONALITIES = {
     "apple": "__objc_personality_v0",
 }
@@ -260,25 +260,25 @@ _THROWING_PROBES: tuple[str, ...] = (
 #: thing identifying a stripped artifact as this program rather than another.
 PROBE_CLASS_NAME = "ObjCEhProbeError"
 
-#: Runtime entry points an exception-carrying artifact must reference.  These
-#: are imports, so unlike a function name they survive a strip: a stripped
-#: Apple artifact still names its personality and both of its catch-type
-#: descriptors, because the dynamic linker has to bind them.
+#: Runtime entry points an exception-carrying artifact must reference. These
+#: are source spellings, not Mach-O nlist spellings: the object reader removes
+#: the container's one leading underscore. They survive a strip because the
+#: dynamic linker still has to bind them.
 _EXCEPTION_IMPORTS: tuple[str, ...] = (
-    "_OBJC_EHTYPE_$_NSException",
-    "_OBJC_EHTYPE_id",
-    "_objc_begin_catch",
-    "_objc_end_catch",
-    "_objc_exception_rethrow",
-    "_objc_exception_throw",
-    "_objc_sync_enter",
-    "_objc_sync_exit",
+    "OBJC_EHTYPE_$_NSException",
+    "OBJC_EHTYPE_id",
+    "objc_begin_catch",
+    "objc_end_catch",
+    "objc_exception_rethrow",
+    "objc_exception_throw",
+    "objc_sync_enter",
+    "objc_sync_exit",
 )
 
 #: The ARC entry point an optimized Apple build actually reaches.  It is the
 #: caller half of the return-value handshake, and no hand-written code contains
 #: it -- which is the whole reason it can stand for "this image is ARC".
-_ARC_IMPORT = "_objc_retainAutoreleasedReturnValue"
+_ARC_IMPORT = "objc_retainAutoreleasedReturnValue"
 
 
 @dataclass(frozen=True, order=True)
@@ -408,10 +408,9 @@ class MatrixCell:
 
     @property
     def personality_symbol(self) -> str:
-        """The routine's name as this container spells it."""
+        """The normalized name exposed by the repository's object reader."""
 
-        prefix = "_" if self.object_format == "macho" else ""
-        return prefix + self.personality
+        return self.personality
 
     @property
     def xcode_path(self) -> str:
@@ -504,17 +503,15 @@ def probe_symbols(program: str) -> tuple[str, ...]:
     except KeyError as error:
         raise MatrixError(f"unsupported program: {program}") from error
     names = _QUIET_PROBES + (_THROWING_PROBES if exceptions == "on" else ())
-    # Mach-O prefixes every C symbol with an underscore, and the corpus asserts
-    # the name the image actually carries rather than the one the source wrote.
-    return tuple(sorted(f"_{name}" for name in names))
+    return tuple(sorted(names))
 
 
 def quiet_probe_symbols() -> tuple[str, ...]:
-    return tuple(sorted(f"_{name}" for name in _QUIET_PROBES))
+    return tuple(sorted(_QUIET_PROBES))
 
 
 def throwing_probe_symbols() -> tuple[str, ...]:
-    return tuple(sorted(f"_{name}" for name in _THROWING_PROBES))
+    return tuple(sorted(_THROWING_PROBES))
 
 
 def validate_cell(runtime: str, target: str) -> MatrixCell:
@@ -676,6 +673,8 @@ def required_sections(cell: MatrixCell, variant: Variant) -> tuple[str, ...]:
     """
 
     names = ["__TEXT,__text", "__TEXT,__unwind_info"]
+    if eh_frame_present(cell, variant):
+        names.append("__TEXT,__eh_frame")
     if variant.exceptions == "on":
         names += ["__TEXT,__gcc_except_tab", "__objc_classlist"]
     return tuple(names)
@@ -726,7 +725,7 @@ def forbidden_symbols(cell: MatrixCell, variant: Variant) -> tuple[str, ...]:
 
     names = []
     if variant.exceptions == "off":
-        names += [cell.personality_symbol, "_objc_exception_throw"]
+        names += [cell.personality_symbol, "objc_exception_throw"]
     if variant.arc == "off":
         names.append(_ARC_IMPORT)
     return tuple(sorted(names))
@@ -748,20 +747,21 @@ def required_strings(cell: MatrixCell, variant: Variant) -> tuple[str, ...]:
 def eh_frame_present(cell: MatrixCell, variant: Variant) -> bool:
     """True when the artifact must carry a well-formed DWARF frame chain.
 
-    Never, on these targets.  An Apple Objective-C executable describes every
-    frame in `__unwind_info` and carries no `__eh_frame` at all, so asserting
-    one would fail on every artifact the matrix produces.
+    This is architecture-specific under the pinned Apple toolchain. arm64
+    Objective-C executables keep a DWARF chain beside compact unwind (including
+    the exception-free control), while the x86_64 slices encode every frame in
+    `__unwind_info` and carry no `__eh_frame`.
     """
 
-    return False
+    return cell.architecture == "aarch64"
 
 
 def require_unwind_tables(cell: MatrixCell, variant: Variant) -> bool:
     """Whether the format's own unwind table check applies.
 
-    It always does here: `__unwind_info` is the only unwind metadata these
-    artifacts have, and the control is built with
-    `-fasynchronous-unwind-tables` precisely so that it has one too.
+    It always does here: every artifact has `__unwind_info`, and arm64 may
+    additionally carry `__eh_frame`. The control is built with
+    `-fasynchronous-unwind-tables` precisely so that it has metadata too.
     """
 
     return True

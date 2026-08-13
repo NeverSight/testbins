@@ -31,3 +31,8 @@ corpus/go-eh/*/*/*/*/*/*/** binary
 # name and the notice at the root of the tree stays diffable text.
 corpus/cxx-itanium-eh/*/*/*/*/exe/** binary
 corpus/cxx-itanium-eh/*/*/*/*/shared/** binary
+
+# Objective-C artifacts are extensionless Mach-O executables. The schema
+# enforces corpus/objc-eh/<runtime>/<target>/<optimization>/<symbols>/<file>,
+# so this depth excludes the generated-tree notice at the product-line root.
+corpus/objc-eh/*/*/*/*/** binary
