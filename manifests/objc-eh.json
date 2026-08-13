@@ -1,0 +1,1261 @@
+{
+  "artifacts": [
+    {
+      "arc": "on",
+      "architecture": "aarch64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "arm64",
+          "-std=c11",
+          "-O0",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": "strip"
+      },
+      "evidence": {
+        "eh_frame_present": true,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__eh_frame",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "passed",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "path": "corpus/objc-eh/apple/arm64-apple-darwin/o0/stripped/objc_eh_probe-apple-arm64-apple-darwin-o0-stripped",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "e935d4d719e54d1dcb5ecb25913f1f3122be330b3869f1e45963791a77ec1a6d",
+      "size": 52320,
+      "stripped": true,
+      "target": "arm64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "aarch64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "arm64",
+          "-std=c11",
+          "-O0",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": true,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__eh_frame",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_eh_probe_autoreleasepool",
+          "objc_eh_probe_catch_class",
+          "objc_eh_probe_catch_ellipsis",
+          "objc_eh_probe_catch_framework_class",
+          "objc_eh_probe_catch_id",
+          "objc_eh_probe_catch_ladder",
+          "objc_eh_probe_cleanup_only",
+          "objc_eh_probe_finally",
+          "objc_eh_probe_held_local",
+          "objc_eh_probe_nested_try",
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_eh_probe_raise",
+          "objc_eh_probe_rethrow",
+          "objc_eh_probe_synchronized",
+          "objc_eh_probe_synchronized_throwing",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "passed",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "path": "corpus/objc-eh/apple/arm64-apple-darwin/o0/symtab/objc_eh_probe-apple-arm64-apple-darwin-o0-symtab",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "a1d4011656976ec1781e8ebc837888741e0140de5da827e7d3a3072fd972e410",
+      "size": 54208,
+      "stripped": false,
+      "target": "arm64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "aarch64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "arm64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": "strip"
+      },
+      "evidence": {
+        "eh_frame_present": true,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__eh_frame",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "passed",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/arm64-apple-darwin/o2/stripped/objc_eh_probe-apple-arm64-apple-darwin-o2-stripped",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "7b989d903f28c560c5e1c1a0089668280c65e2e26d56c7cc182902852fa63008",
+      "size": 52240,
+      "stripped": true,
+      "target": "arm64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "aarch64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "arm64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": true,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__eh_frame",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_eh_probe_autoreleasepool",
+          "objc_eh_probe_catch_class",
+          "objc_eh_probe_catch_ellipsis",
+          "objc_eh_probe_catch_framework_class",
+          "objc_eh_probe_catch_id",
+          "objc_eh_probe_catch_ladder",
+          "objc_eh_probe_cleanup_only",
+          "objc_eh_probe_finally",
+          "objc_eh_probe_held_local",
+          "objc_eh_probe_nested_try",
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_eh_probe_raise",
+          "objc_eh_probe_rethrow",
+          "objc_eh_probe_synchronized",
+          "objc_eh_probe_synchronized_throwing",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "passed",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/arm64-apple-darwin/o2/symtab/objc_eh_probe-apple-arm64-apple-darwin-o2-symtab",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "4c71c243fdcbfca26bf5b3b59f3c0e846e061a1af993d401334dc4ef77786ae8",
+      "size": 54064,
+      "stripped": false,
+      "target": "arm64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "off",
+      "architecture": "aarch64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "arm64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fno-objc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": true,
+        "forbidden_sections": [],
+        "forbidden_symbols": [
+          "objc_retainAutoreleasedReturnValue"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__eh_frame",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_eh_probe_autoreleasepool",
+          "objc_eh_probe_catch_class",
+          "objc_eh_probe_catch_ellipsis",
+          "objc_eh_probe_catch_framework_class",
+          "objc_eh_probe_catch_id",
+          "objc_eh_probe_catch_ladder",
+          "objc_eh_probe_cleanup_only",
+          "objc_eh_probe_finally",
+          "objc_eh_probe_held_local",
+          "objc_eh_probe_nested_try",
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_eh_probe_raise",
+          "objc_eh_probe_rethrow",
+          "objc_eh_probe_synchronized",
+          "objc_eh_probe_synchronized_throwing",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "passed",
+      "neverd": {
+        "expect_arc": false,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/arm64-apple-darwin/o2/symtab/objc_eh_probe_mrr-apple-arm64-apple-darwin-o2-symtab",
+      "program": "objc_eh_probe_mrr",
+      "runtime": "apple",
+      "sha256": "bbe7482c4abc0eccf6a690160259104c3a93199fc91515d4e5916a898176885a",
+      "size": 53816,
+      "stripped": false,
+      "target": "arm64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "aarch64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "arm64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fno-objc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": true,
+        "forbidden_sections": [
+          "__TEXT,__gcc_except_tab"
+        ],
+        "forbidden_symbols": [
+          "__objc_personality_v0",
+          "objc_exception_throw"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__eh_frame"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_retainAutoreleasedReturnValue"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "off",
+      "execution": "passed",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": true,
+        "expect_runtime_proven_by_personality": false,
+        "min_any_object_clauses": 0,
+        "min_catch_all_clauses": 0,
+        "min_catch_clauses": 0,
+        "min_catch_frames": 0,
+        "min_class_clauses": 0,
+        "min_cleanup_frames": 0,
+        "min_exception_functions": 0,
+        "min_landing_pads": 0,
+        "min_synchronized_frames": 0,
+        "min_throw_sites": 0,
+        "objc_runtime": "apple",
+        "personalities_any": [],
+        "required_class_names": [],
+        "validation_level": "cfi-only"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/arm64-apple-darwin/o2/symtab/objc_eh_probe_noexc-apple-arm64-apple-darwin-o2-symtab",
+      "program": "objc_eh_probe_noexc",
+      "runtime": "apple",
+      "sha256": "63b731eee5923504c4f814daf0141b439974519e3d37982195423beb1f4bc6f8",
+      "size": 50968,
+      "stripped": false,
+      "target": "arm64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "x86_64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "x86_64",
+          "-std=c11",
+          "-O0",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": "strip"
+      },
+      "evidence": {
+        "eh_frame_present": false,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "path": "corpus/objc-eh/apple/x86_64-apple-darwin/o0/stripped/objc_eh_probe-apple-x86_64-apple-darwin-o0-stripped",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "3d895d3d6d108b54e4a403dfd611e1df5712d371c2fcb9327150b778326bbc47",
+      "size": 18976,
+      "stripped": true,
+      "target": "x86_64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "x86_64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "x86_64",
+          "-std=c11",
+          "-O0",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": false,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_eh_probe_autoreleasepool",
+          "objc_eh_probe_catch_class",
+          "objc_eh_probe_catch_ellipsis",
+          "objc_eh_probe_catch_framework_class",
+          "objc_eh_probe_catch_id",
+          "objc_eh_probe_catch_ladder",
+          "objc_eh_probe_cleanup_only",
+          "objc_eh_probe_finally",
+          "objc_eh_probe_held_local",
+          "objc_eh_probe_nested_try",
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_eh_probe_raise",
+          "objc_eh_probe_rethrow",
+          "objc_eh_probe_synchronized",
+          "objc_eh_probe_synchronized_throwing",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o0",
+      "path": "corpus/objc-eh/apple/x86_64-apple-darwin/o0/symtab/objc_eh_probe-apple-x86_64-apple-darwin-o0-symtab",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "72a09f80756251a98de3eabb349c63318c5a9b0f69ccf52006bcf72d4418714c",
+      "size": 20528,
+      "stripped": false,
+      "target": "x86_64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "x86_64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "x86_64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": "strip"
+      },
+      "evidence": {
+        "eh_frame_present": false,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/x86_64-apple-darwin/o2/stripped/objc_eh_probe-apple-x86_64-apple-darwin-o2-stripped",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "34eaa634785e1dcacc4dea33219da4f737bedf32fac13ac8c857b282b10c7632",
+      "size": 18896,
+      "stripped": true,
+      "target": "x86_64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "x86_64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "x86_64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": false,
+        "forbidden_sections": [],
+        "forbidden_symbols": [],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_eh_probe_autoreleasepool",
+          "objc_eh_probe_catch_class",
+          "objc_eh_probe_catch_ellipsis",
+          "objc_eh_probe_catch_framework_class",
+          "objc_eh_probe_catch_id",
+          "objc_eh_probe_catch_ladder",
+          "objc_eh_probe_cleanup_only",
+          "objc_eh_probe_finally",
+          "objc_eh_probe_held_local",
+          "objc_eh_probe_nested_try",
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_eh_probe_raise",
+          "objc_eh_probe_rethrow",
+          "objc_eh_probe_synchronized",
+          "objc_eh_probe_synchronized_throwing",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_retainAutoreleasedReturnValue",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/x86_64-apple-darwin/o2/symtab/objc_eh_probe-apple-x86_64-apple-darwin-o2-symtab",
+      "program": "objc_eh_probe",
+      "runtime": "apple",
+      "sha256": "84181760f02512d7e216387d33c74dc9406633117a58e636c67284415d74bc29",
+      "size": 20384,
+      "stripped": false,
+      "target": "x86_64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "off",
+      "architecture": "x86_64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "x86_64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fno-objc-arc",
+          "-fobjc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": false,
+        "forbidden_sections": [],
+        "forbidden_symbols": [
+          "objc_retainAutoreleasedReturnValue"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info",
+          "__TEXT,__gcc_except_tab",
+          "__objc_classlist"
+        ],
+        "required_strings": [
+          "ObjCEhProbeError"
+        ],
+        "required_symbols": [
+          "OBJC_EHTYPE_$_NSException",
+          "OBJC_EHTYPE_id",
+          "__objc_personality_v0",
+          "objc_begin_catch",
+          "objc_eh_probe_autoreleasepool",
+          "objc_eh_probe_catch_class",
+          "objc_eh_probe_catch_ellipsis",
+          "objc_eh_probe_catch_framework_class",
+          "objc_eh_probe_catch_id",
+          "objc_eh_probe_catch_ladder",
+          "objc_eh_probe_cleanup_only",
+          "objc_eh_probe_finally",
+          "objc_eh_probe_held_local",
+          "objc_eh_probe_nested_try",
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_eh_probe_raise",
+          "objc_eh_probe_rethrow",
+          "objc_eh_probe_synchronized",
+          "objc_eh_probe_synchronized_throwing",
+          "objc_end_catch",
+          "objc_exception_rethrow",
+          "objc_exception_throw",
+          "objc_sync_enter",
+          "objc_sync_exit"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "on",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "expect_arc": false,
+        "expect_no_lsda": false,
+        "expect_runtime_proven_by_personality": true,
+        "min_any_object_clauses": 1,
+        "min_catch_all_clauses": 1,
+        "min_catch_clauses": 12,
+        "min_catch_frames": 10,
+        "min_class_clauses": 2,
+        "min_cleanup_frames": 2,
+        "min_exception_functions": 10,
+        "min_landing_pads": 10,
+        "min_synchronized_frames": 2,
+        "min_throw_sites": 1,
+        "objc_runtime": "apple",
+        "personalities_any": [
+          "__objc_personality_v0"
+        ],
+        "required_class_names": [
+          "ObjCEhProbeError",
+          "NSException"
+        ],
+        "validation_level": "objc-graph"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/x86_64-apple-darwin/o2/symtab/objc_eh_probe_mrr-apple-x86_64-apple-darwin-o2-symtab",
+      "program": "objc_eh_probe_mrr",
+      "runtime": "apple",
+      "sha256": "e312997e016c140bfc72b42f171fead88fe0967b4d105adf3d877b14575d2ba4",
+      "size": 20112,
+      "stripped": false,
+      "target": "x86_64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    },
+    {
+      "arc": "on",
+      "architecture": "x86_64",
+      "build": {
+        "compiler": "clang",
+        "compiler_flags": [
+          "-arch",
+          "x86_64",
+          "-std=c11",
+          "-O2",
+          "-g0",
+          "-fobjc-runtime=macosx",
+          "-fobjc-arc",
+          "-fno-objc-exceptions",
+          "-fasynchronous-unwind-tables",
+          "-ffile-prefix-map=/Users/runner/work/testbins/testbins=/testbins",
+          "-framework",
+          "Foundation"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1735689600",
+          "TZ": "UTC"
+        },
+        "linked_artifacts": [],
+        "runner_arch": "arm64",
+        "runner_image": "macos15-20260727.0256.1",
+        "runner_os": "macos",
+        "strip_tool": ""
+      },
+      "evidence": {
+        "eh_frame_present": false,
+        "forbidden_sections": [
+          "__TEXT,__gcc_except_tab"
+        ],
+        "forbidden_symbols": [
+          "__objc_personality_v0",
+          "objc_exception_throw"
+        ],
+        "require_unwind_tables": true,
+        "required_sections": [
+          "__TEXT,__text",
+          "__TEXT,__unwind_info"
+        ],
+        "required_strings": [],
+        "required_symbols": [
+          "objc_eh_probe_quiet_message",
+          "objc_eh_probe_quiet_pool",
+          "objc_eh_probe_quiet_sum",
+          "objc_retainAutoreleasedReturnValue"
+        ],
+        "symbol_names_expected": true
+      },
+      "exceptions": "off",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "expect_arc": true,
+        "expect_no_lsda": true,
+        "expect_runtime_proven_by_personality": false,
+        "min_any_object_clauses": 0,
+        "min_catch_all_clauses": 0,
+        "min_catch_clauses": 0,
+        "min_catch_frames": 0,
+        "min_class_clauses": 0,
+        "min_cleanup_frames": 0,
+        "min_exception_functions": 0,
+        "min_landing_pads": 0,
+        "min_synchronized_frames": 0,
+        "min_throw_sites": 0,
+        "objc_runtime": "apple",
+        "personalities_any": [],
+        "required_class_names": [],
+        "validation_level": "cfi-only"
+      },
+      "object_format": "macho",
+      "optimization": "o2",
+      "path": "corpus/objc-eh/apple/x86_64-apple-darwin/o2/symtab/objc_eh_probe_noexc-apple-x86_64-apple-darwin-o2-symtab",
+      "program": "objc_eh_probe_noexc",
+      "runtime": "apple",
+      "sha256": "9c5a77e40ed853a1bde4b75eed25b09e892419bf41704c1723bba5281815edde",
+      "size": 13328,
+      "stripped": false,
+      "target": "x86_64-apple-darwin",
+      "toolchain_version": "17.0.0"
+    }
+  ],
+  "corpus": "objc-eh",
+  "producer": {
+    "repository_revision": "1e6fddff98dedf1bb769e74a2b06de1947ea8b3c",
+    "toolchains": [
+      {
+        "cell": "apple-arm64-apple-darwin",
+        "driver": "clang",
+        "runtime": "apple",
+        "strip_tool": "strip",
+        "target": "arm64-apple-darwin",
+        "version": "17.0.0",
+        "version_prefix": "17.",
+        "version_string": "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+      },
+      {
+        "cell": "apple-x86_64-apple-darwin",
+        "driver": "clang",
+        "runtime": "apple",
+        "strip_tool": "strip",
+        "target": "x86_64-apple-darwin",
+        "version": "17.0.0",
+        "version_prefix": "17.",
+        "version_string": "Apple clang version 17.0.0 (clang-1700.0.13.5)"
+      }
+    ]
+  },
+  "schema_version": 1
+}
