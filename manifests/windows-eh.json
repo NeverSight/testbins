@@ -13067,7 +13067,7 @@
   ],
   "corpus": "windows-eh",
   "producer": {
-    "repository_revision": "1e6fddff98dedf1bb769e74a2b06de1947ea8b3c",
+    "repository_revision": "b5ce473c054908112de557e7ddbcd7b0fe687345",
     "runner_arch": "x64",
     "runner_image": "win22-20260802.262.1"
   },
