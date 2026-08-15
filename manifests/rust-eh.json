@@ -722,7 +722,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -822,7 +822,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -914,7 +914,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1014,7 +1014,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1106,7 +1106,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1193,7 +1193,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1276,7 +1276,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -1363,7 +1363,7 @@
         "edition": "2024",
         "linker": "aarch64-linux-gnu-gcc",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -2236,7 +2236,7 @@
       "optimization": "o0",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o0.exe",
-      "sha256": "f9444a2299b486d5f64350fbd4156fec6d0b930a321833715b2526ed8b27ad66",
+      "sha256": "5db05f72c64c745998a68941f5d8ad8cb0d47b56fda06987862d817c90ef142c",
       "size": 139264,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2324,7 +2324,7 @@
       "optimization": "o0",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o0.dll",
-      "sha256": "ec42a19f2b142f2a6e92577c166528256be0ff2da1cc68343d58a6b0f8dc6c92",
+      "sha256": "7624253583948b430c8b8bf5e133ea4891dbe6dec6303e5bece607778fac9df8",
       "size": 112128,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2408,7 +2408,7 @@
       "optimization": "o2",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-abort-o2.exe",
-      "sha256": "d1f50bcbf7871d6b9896022611d6331fcdd351408eef5452d00607ddfb24b54c",
+      "sha256": "28707fd4a93f7022d4a7a3a0a96ce8db4956c963b2702dbcfba7542e816139cf",
       "size": 129536,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2496,7 +2496,7 @@
       "optimization": "o2",
       "panic_strategy": "abort",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/abort/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-abort-o2.dll",
-      "sha256": "32b5af8077c7d4ae34df5a28f383f7c556fd935ed4284e13f4a0b556822cc320",
+      "sha256": "0eee102697b606da2fee2b2a8c5a048bef9eb98e114c0ef2bef25aa4b1e7fb16",
       "size": 107008,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2569,7 +2569,7 @@
       "optimization": "o0",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o0.exe",
-      "sha256": "d3cf989fdf1811dc2c583e6200741dc083d9de45b6c09fee262b1862aa4d0b61",
+      "sha256": "d5c61dde9fdab78452b3d311e27efee62b905817d278511b2d4fd32f80ca7728",
       "size": 160768,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2650,7 +2650,7 @@
       "optimization": "o0",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o0/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o0.dll",
-      "sha256": "52033b448874dd4e11f3f3a50fb7d0b264ac7c988eaae111237436e821e4d5b8",
+      "sha256": "1b14fe52b8f91eca3f686c9decbab8087e1783843507abdb8bd9d1c87b7151b6",
       "size": 118272,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2723,7 +2723,7 @@
       "optimization": "o2",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/bin/rust_eh_probe-x86_64-pc-windows-msvc-unwind-o2.exe",
-      "sha256": "8cc4cc2d41491ce3aaacb75a21d7819f6904b448121dd848c9fbbf1fe1238887",
+      "sha256": "9de090581f23b0917e3c84b739f7f3553463181fcd994295156188502d91f0a1",
       "size": 144384,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2804,7 +2804,7 @@
       "optimization": "o2",
       "panic_strategy": "unwind",
       "path": "corpus/rust-eh/x86_64-pc-windows-msvc/unwind/o2/cdylib/rust_eh_cdylib-x86_64-pc-windows-msvc-unwind-o2.dll",
-      "sha256": "b1d3d11020f82f851e10b06a0274f42fbf4d7de9d93512f8a48aa3353c5e0f63",
+      "sha256": "47d74aaaa6367411abcd0baacf232f846759b4cf20b9545c89b0f0f0d5ffbf32",
       "size": 111616,
       "target_triple": "x86_64-pc-windows-msvc"
     },
@@ -2814,7 +2814,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -2912,7 +2912,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3002,7 +3002,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3100,7 +3100,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3190,7 +3190,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3275,7 +3275,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3356,7 +3356,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3441,7 +3441,7 @@
         "edition": "2024",
         "linker": "rustc-default",
         "runner_arch": "x64",
-        "runner_image": "ubuntu24-20260720.247.2",
+        "runner_image": "ubuntu24-20260810.271.1",
         "runner_os": "linux",
         "rustc_flags": [
           "--edition",
@@ -3519,7 +3519,7 @@
   ],
   "corpus": "rust-eh",
   "producer": {
-    "repository_revision": "1e6fddff98dedf1bb769e74a2b06de1947ea8b3c",
+    "repository_revision": "0198c60dcfba35b9b39914710f15074a263dab03",
     "rustc": {
       "commit_date": "2026-07-14",
       "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
