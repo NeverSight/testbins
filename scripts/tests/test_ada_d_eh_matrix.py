@@ -123,7 +123,16 @@ class AdaDEHMatrixTests(unittest.TestCase):
         self.assertEqual(flags[0], "-q")
         self.assertIn("-cargs", flags)
         self.assertGreater(flags.index("-cargs"), flags.index("-gnat2022"))
-        self.assertGreater(flags.index("-fexceptions"), flags.index("-cargs"))
+        self.assertGreater(flags.index("-cargs"), flags.index("-O0"))
+        self.assertEqual(
+            flags[flags.index("-cargs") :],
+            (
+                "-cargs",
+                "-fexceptions",
+                "-g0",
+                "-ffile-prefix-map=/checkout=/testbins",
+            ),
+        )
 
 
 class CommandTests(unittest.TestCase):

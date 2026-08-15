@@ -249,14 +249,16 @@ def compiler_flags(
 ) -> tuple[str, ...]:
     mapped = f"-ffile-prefix-map={checkout_prefix}=/testbins"
     if cell.toolchain == "gnat":
+        # -cargs is a one-way door: gnatmake hands every later argv token to
+        # gcc, including the source file and -o if they follow it.
         return (
             "-q",
             "-gnat2022",
+            f"-O{variant.optimization[-1]}",
             "-cargs",
             "-fexceptions",
             "-g0",
             mapped,
-            f"-O{variant.optimization[-1]}",
         )
     if cell.toolchain == "gdc":
         return (

@@ -12,6 +12,7 @@ if str(SCRIPTS_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_ROOT))
 
 import ada_d_eh_matrix as matrix  # noqa: E402
+import build_language_eh_corpus as builder  # noqa: E402
 
 BUILD_SCRIPT = SCRIPTS_ROOT / "build_language_eh_corpus.py"
 
@@ -62,6 +63,28 @@ class BuildScriptConfigurationTests(unittest.TestCase):
                     )
                     self.assertEqual(entry["evidence"], matrix.evidence_contract(cell))
                     self.assertEqual(entry["neverd"], matrix.neverd_contract(cell))
+
+
+class GnatmakeCommandTests(unittest.TestCase):
+    def test_places_source_and_output_before_cargs(self) -> None:
+        cell = matrix.validate_cell("gnat", "x86_64-linux-gnu")
+        flags = list(
+            matrix.compiler_flags(cell, matrix.validate_variant("o0"), "/checkout")
+        )
+        command = builder.gnatmake_command(
+            "gnatmake-13",
+            flags,
+            "/checkout/sources/ada-d-eh/ada_eh_probe.adb",
+            "/out/ada_eh_probe",
+        )
+
+        self.assertLess(
+            command.index("/checkout/sources/ada-d-eh/ada_eh_probe.adb"),
+            command.index("-cargs"),
+        )
+        self.assertLess(command.index("-o"), command.index("-cargs"))
+        self.assertLess(command.index("/out/ada_eh_probe"), command.index("-cargs"))
+        self.assertEqual(command[command.index("-cargs") + 1], "-fexceptions")
 
 
 if __name__ == "__main__":
