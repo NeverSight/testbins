@@ -16,8 +16,9 @@ Nothing is uploaded from a developer's machine.
 | `rust-eh` | ELF, PE, Mach-O | `manifests/rust-eh.json` | `schema/rust-eh-manifest.schema.json` | `build-rust-eh.yml` |
 | `cxx-itanium-eh` | ELF, Mach-O, PE | `manifests/cxx-itanium-eh.json` | `schema/cxx-itanium-eh-manifest.schema.json` | `build-cxx-itanium-eh.yml` |
 | `objc-eh` | Mach-O | `manifests/objc-eh.json` | `schema/objc-eh-manifest.schema.json` | `build-objc-eh.yml` |
+| `ada-d-eh` | ELF | `manifests/ada-d-eh.json` | `schema/ada-d-eh-manifest.schema.json` | `build-ada-d-eh.yml` |
 
-All four follow the same shape: sources pinned in the repository, a matrix
+Each line follows the same shape: sources pinned in the repository, a matrix
 script, a per-cell build script, a fragment merge, a strict JSON Schema, a
 verifier that re-derives every claim from the bytes on disk, and a four-stage
 workflow where only the publish job on a `main` push or manual `main` dispatch
@@ -372,6 +373,63 @@ corpus/objc-eh/apple/x86_64-apple-darwin/o2/symtab/
 The executables have no extension, so `.gitattributes` marks only the generated
 artifact depth as binary and leaves `corpus/objc-eh/README.md` diffable.
 
+## Ada and D exception corpus
+
+Ada and D reuse the Itanium call-site/action/type-table container, but their
+type-table slots are not C++ `std::type_info`. GNAT stores `Exception_Id`
+descriptors; DMD, GDC, and LDC store `ClassInfo` descriptors. The producer
+therefore records three independent claims and refuses to treat personality
+recognition as complete support:
+
+| Claim | What it means |
+|---|---|
+| parseable LSDA | `.eh_frame` plus `.gcc_except_table` decode into a call-site graph |
+| native reconstruction | the language personality is preserved and type-table slots stay address-valued opaque descriptors |
+| corpus-proven | a real GNAT, GDC, DMD, or LDC artifact exists for that claim |
+
+The matrix is six (toolchain, target) cells, each at `-O0` and `-O2`, for a
+canonical total of 12 ELF executables:
+
+| Toolchain | Target | Personality | Descriptor ABI | Runner | Executables run? |
+|---|---|---|---|---|---|
+| gnat-13 | `x86_64-linux-gnu` | `__gnat_personality_v0` | `gnat-exception-id` | `ubuntu-24.04` | yes |
+| gnat-13 | `aarch64-linux-gnu` | `__gnat_personality_v0` | `gnat-exception-id` | `ubuntu-24.04` | cross-built |
+| gdc-13 | `x86_64-linux-gnu` | `__gdc_personality_v0` | `d-classinfo` | `ubuntu-24.04` | yes |
+| gdc-13 | `aarch64-linux-gnu` | `__gdc_personality_v0` | `d-classinfo` | `ubuntu-24.04` | cross-built |
+| dmd-2.112.1 | `x86_64-linux-gnu` | `__dmd_personality_v0` | `d-classinfo` | `ubuntu-24.04` | yes |
+| ldc-1.42.0 | `x86_64-linux-gnu` | `_d_eh_personality` | `d-classinfo` | `ubuntu-24.04` | yes |
+
+GNAT and GDC install from versioned apt packages. DMD and LDC install from a
+pinned `dlang-community/setup-dlang` revision. GCC-family cells pass
+`-ffile-prefix-map` and `-g0`; DMD and LDC compile a relative source path
+without debug info. The verifier fails if the checkout path is still findable
+in a published binary.
+
+### Test inputs
+
+Two sources under `sources/ada-d-eh/`:
+
+- `ada_eh_probe.adb` raises `Constraint_Error` plus two user exceptions, catches
+  each by name, and has an `others` handler.
+- `d_eh_probe.d` throws three `Exception` subclasses, catches each by class,
+  has a `Throwable` fallback, and uses `scope (exit)` so the D cells must
+  produce a cleanup pad.
+
+Both print `ada-d-eh probe passed` on the default success path. Native cells
+must print that marker before their fragment can be uploaded.
+
+### Artifact names
+
+Both the directory and the filename repeat every build axis:
+
+```text
+corpus/ada-d-eh/ada/gnat/x86_64-linux-gnu/o2/
+  ada_eh_probe-gnat-x86_64-linux-gnu-o2
+
+corpus/ada-d-eh/d/ldc/x86_64-linux-gnu/o0/
+  d_eh_probe-ldc-x86_64-linux-gnu-o0
+```
+
 ## Repository layout
 
 ```text
@@ -380,6 +438,7 @@ corpus/windows-eh/        Committed generated PE files
 corpus/rust-eh/           Committed generated ELF, PE, and Mach-O files
 corpus/cxx-itanium-eh/    Committed generated ELF, Mach-O, and PE files
 corpus/objc-eh/            Committed generated Mach-O files
+corpus/ada-d-eh/           Committed generated Ada and D ELF files
 manifests/                Canonical machine-readable contracts
 schema/                   Manifest schemas
 scripts/                  Matrices, builders, mergers, verifiers, and tests
@@ -387,6 +446,7 @@ sources/msvc-exceptions/  Focused ABI probes
 sources/rust-eh/          Rust panic and unwinding probes
 sources/cxx-itanium-eh/   C++ and C Itanium exception probes
 sources/objc-eh/           Objective-C runtime and exception probe
+sources/ada-d-eh/          Ada and D Itanium exception probes
 sources/windows-seh-tests Pinned official source snapshot
 rust-toolchain.toml       The exact rustc release the Rust corpus is built with
 LICENSES/                 Third-party license notices
@@ -415,15 +475,21 @@ python3 -m py_compile \
   scripts/objc_matrix.py \
   scripts/verify_objc_corpus.py \
   scripts/merge_objc_corpus.py \
-  scripts/build_objc_corpus.py
+  scripts/build_objc_corpus.py \
+  scripts/ada_d_eh_matrix.py \
+  scripts/verify_ada_d_eh_corpus.py \
+  scripts/merge_ada_d_eh_corpus.py \
+  scripts/build_language_eh_corpus.py
 python3 -m json.tool schema/windows-eh-manifest.schema.json >/dev/null
 python3 -m json.tool schema/rust-eh-manifest.schema.json >/dev/null
 python3 -m json.tool schema/cxx-itanium-eh-manifest.schema.json >/dev/null
 python3 -m json.tool schema/objc-eh-manifest.schema.json >/dev/null
+python3 -m json.tool schema/ada-d-eh-manifest.schema.json >/dev/null
 python3 scripts/windows_matrix.py --json
 python3 scripts/rust_matrix.py --json
 python3 scripts/cxx_itanium_matrix.py --json
 python3 scripts/objc_matrix.py --json
+python3 scripts/ada_d_eh_matrix.py --json
 ```
 
 On Windows with the required Visual Studio target tools and LLVM components,
@@ -511,22 +577,43 @@ python3 scripts/verify_objc_corpus.py \
   --require-complete-matrix
 ```
 
+One Ada or D cell can be built anywhere the cell's compiler is on `PATH` and
+reports the pinned release:
+
+```bash
+python3 scripts/build_language_eh_corpus.py \
+  --toolchain gnat \
+  --target x86_64-linux-gnu \
+  --output-root ./staging
+```
+
+`--describe-only` resolves the same cell without a compiler.
+`scripts/ada_d_eh_matrix.py --plan` prints all 12 contracts.
+
+```bash
+python3 scripts/verify_ada_d_eh_corpus.py \
+  manifests/ada-d-eh.json \
+  --root . \
+  --require-complete-matrix
+```
+
 ## CI publication
 
 **Build and publish Windows EH corpus**, **Build and publish Rust EH corpus**,
-**Build and publish C++ Itanium EH corpus**, and **Build and publish Objective-C
-EH corpus** each run their complete matrix when their producer source, schema,
-scripts, or workflow changes. They are independent, and each publishes only its
-own tree.
+**Build and publish C++ Itanium EH corpus**, **Build and publish Objective-C
+EH corpus**, and **Build and publish Ada/D EH corpus** each run their complete
+matrix when their producer source, schema, scripts, or workflow changes. They
+are independent, and each publishes only its own tree.
 
 - Pull requests build and validate with read-only repository permissions.
 - A successful producer change on `main` assembles and re-verifies the complete
   corpus, then a dedicated job receives `contents: write`.
 - Each publish job synchronizes only its own generated files: `corpus/windows-eh`
   and `manifests/windows-eh.json`, `corpus/rust-eh` and `manifests/rust-eh.json`,
-  `corpus/cxx-itanium-eh` and `manifests/cxx-itanium-eh.json`, or
-  `corpus/objc-eh` and `manifests/objc-eh.json`. Each creates a bot commit only
-  when its own files changed, and pushes it to `main`.
+  `corpus/cxx-itanium-eh` and `manifests/cxx-itanium-eh.json`,
+  `corpus/objc-eh` and `manifests/objc-eh.json`, or `corpus/ada-d-eh` and
+  `manifests/ada-d-eh.json`. Each creates a bot commit only when its own files
+  changed, and pushes it to `main`.
 - Generated-only paths do not trigger any producer workflow, and each workflow's
   path filters name its own files rather than `scripts/**`, so one line's change
   does not rebuild another's matrix. Concurrency and trigger-revision checks

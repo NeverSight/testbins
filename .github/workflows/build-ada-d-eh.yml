@@ -1,0 +1,296 @@
+name: Build and publish Ada/D EH corpus
+
+# One matrix cell is one (toolchain, target) pair.  GNAT and GDC install from
+# apt; DMD and LDC install from the pinned setup-dlang revision.  Every cell
+# builds from one ubuntu x64 host, and only the native x86_64 cells execute
+# their probes.
+#
+# The paths filters name this product line's files individually rather than
+# `scripts/**`, so a change to another corpus does not rebuild six language
+# toolchains.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/build-ada-d-eh.yml"
+      - "schema/ada-d-eh-manifest.schema.json"
+      - "scripts/ada_d_eh_matrix.py"
+      - "scripts/build_language_eh_corpus.py"
+      - "scripts/merge_ada_d_eh_corpus.py"
+      - "scripts/verify_ada_d_eh_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/object_readers.py"
+      - "scripts/tests/*ada_d_eh*.py"
+      - "scripts/tests/test_build_language_eh_corpus.py"
+      - "scripts/tests/test_object_readers.py"
+      - "scripts/tests/synthetic_objects.py"
+      - "sources/ada-d-eh/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-ada-d-eh.yml"
+      - "schema/ada-d-eh-manifest.schema.json"
+      - "scripts/ada_d_eh_matrix.py"
+      - "scripts/build_language_eh_corpus.py"
+      - "scripts/merge_ada_d_eh_corpus.py"
+      - "scripts/verify_ada_d_eh_corpus.py"
+      - "scripts/json_schema_check.py"
+      - "scripts/object_readers.py"
+      - "scripts/tests/*ada_d_eh*.py"
+      - "scripts/tests/test_build_language_eh_corpus.py"
+      - "scripts/tests/test_object_readers.py"
+      - "scripts/tests/synthetic_objects.py"
+      - "sources/ada-d-eh/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ada-d-eh-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-producer:
+    name: Verify producer and prepare matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run producer unit tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/tests -p "*ada_d_eh*.py" -v
+          python3 -m unittest discover -s scripts/tests -p "test_build_language_eh_corpus.py" -v
+          python3 -m unittest discover -s scripts/tests -p "test_object_readers.py" -v
+
+      - name: Compile-check Python scripts
+        run: >-
+          python3 -m py_compile
+          scripts/ada_d_eh_matrix.py
+          scripts/object_readers.py
+          scripts/json_schema_check.py
+          scripts/verify_ada_d_eh_corpus.py
+          scripts/merge_ada_d_eh_corpus.py
+          scripts/build_language_eh_corpus.py
+
+      - name: Parse manifest schema
+        run: >-
+          python3 -m json.tool
+          schema/ada-d-eh-manifest.schema.json
+          > /dev/null
+
+      - name: Reject a schema the verifier cannot enforce in full
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          sys.path.insert(0, "scripts")
+          import json_schema_check
+
+          with open(
+              "schema/ada-d-eh-manifest.schema.json", encoding="utf-8"
+          ) as stream:
+              json_schema_check.check_schema(json.load(stream))
+          print("every schema keyword is enforced by the verifier")
+          PY
+
+      - name: Print the artifact plan
+        run: python3 scripts/ada_d_eh_matrix.py --plan
+
+      - name: Generate supported build matrix
+        id: matrix
+        run: >-
+          python3 scripts/ada_d_eh_matrix.py
+          --github-output "$GITHUB_OUTPUT"
+
+  build-cell:
+    name: ${{ matrix.cell_name }}
+    needs: verify-producer
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install the apt toolchain this cell needs
+        if: matrix.apt_packages != ''
+        shell: bash
+        env:
+          APT_PACKAGES: ${{ matrix.apt_packages }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes $APT_PACKAGES
+
+      - name: Install the pinned D compiler
+        if: matrix.dlang_compiler != ''
+        uses: dlang-community/setup-dlang@d7d85fcde7c4cd5f9a6618fce1bccc316e1e910b # v2
+        with:
+          compiler: ${{ matrix.dlang_compiler }}
+
+      - name: Build, run when native, and validate cell
+        shell: bash
+        env:
+          CELL_TOOLCHAIN: ${{ matrix.toolchain }}
+          CELL_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          python3 scripts/build_language_eh_corpus.py \
+            --toolchain "$CELL_TOOLCHAIN" \
+            --target "$CELL_TARGET" \
+            --output-root "$RUNNER_TEMP/ada-d-eh"
+
+      - name: Upload validated cell
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ada-d-eh-${{ matrix.cell_name }}
+          path: ${{ runner.temp }}/ada-d-eh
+          if-no-files-found: error
+          retention-days: 14
+
+  assemble-corpus:
+    name: Assemble canonical corpus
+    needs: build-cell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out producer sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download all validated cells
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: ada-d-eh-*
+          path: ${{ runner.temp }}/ada-d-eh
+          merge-multiple: true
+
+      - name: Merge and validate the complete matrix
+        run: >-
+          python3 scripts/merge_ada_d_eh_corpus.py
+          --root "${{ runner.temp }}/ada-d-eh"
+          --fragments "${{ runner.temp }}/ada-d-eh/fragments"
+          --output "${{ runner.temp }}/ada-d-eh/manifests/ada-d-eh.json"
+          --require-complete-matrix
+
+      - name: Preserve generated-tree notice
+        run: >-
+          cp corpus/ada-d-eh/README.md
+          "${{ runner.temp }}/ada-d-eh/corpus/ada-d-eh/README.md"
+
+      - name: Re-verify canonical manifest
+        run: >-
+          python3 scripts/verify_ada_d_eh_corpus.py
+          "${{ runner.temp }}/ada-d-eh/manifests/ada-d-eh.json"
+          --root "${{ runner.temp }}/ada-d-eh"
+          --require-complete-matrix
+
+      - name: Report the committed size
+        shell: bash
+        run: |
+          set -euo pipefail
+          du -sh "$RUNNER_TEMP/ada-d-eh/corpus/ada-d-eh"
+          find "$RUNNER_TEMP/ada-d-eh/corpus/ada-d-eh" \
+            -type f -printf '%10s  %P\n' | sort -k2
+
+      - name: Upload canonical corpus
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ada-d-eh-canonical-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ada-d-eh/corpus/ada-d-eh
+            ${{ runner.temp }}/ada-d-eh/manifests/ada-d-eh.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-corpus:
+    name: Commit generated corpus to main
+    needs: assemble-corpus
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out triggering main revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download canonical corpus
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ada-d-eh-canonical-${{ github.run_id }}
+          path: ${{ runner.temp }}/ada-d-eh-canonical
+
+      - name: Verify downloaded corpus before publication
+        run: >-
+          python3 scripts/verify_ada_d_eh_corpus.py
+          "${{ runner.temp }}/ada-d-eh-canonical/manifests/ada-d-eh.json"
+          --root "${{ runner.temp }}/ada-d-eh-canonical"
+          --require-complete-matrix
+
+      - name: Confirm source revision is still current and sync generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          if ! git diff --quiet "$GITHUB_SHA" origin/main -- . \
+               ':(exclude)corpus' ':(exclude)manifests'; then
+            echo "the producer changed after this run started; refusing stale publication" >&2
+            exit 1
+          fi
+          git reset --hard --quiet origin/main
+          mkdir -p corpus/ada-d-eh manifests
+          rsync --archive --delete \
+            "$RUNNER_TEMP/ada-d-eh-canonical/corpus/ada-d-eh/" \
+            corpus/ada-d-eh/
+          cp \
+            "$RUNNER_TEMP/ada-d-eh-canonical/manifests/ada-d-eh.json" \
+            manifests/ada-d-eh.json
+
+      - name: Re-verify repository tree
+        run: >-
+          python3 scripts/verify_ada_d_eh_corpus.py
+          manifests/ada-d-eh.json
+          --root .
+          --require-complete-matrix
+
+      - name: Commit and fast-forward push generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- corpus/ada-d-eh manifests/ada-d-eh.json
+          if git diff --cached --quiet; then
+            echo "generated corpus is already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "test(corpus): refresh Ada/D EH binaries [skip ci]"
+          for Attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git fetch --no-tags origin main
+            if ! git diff --quiet "$GITHUB_SHA" origin/main -- . \
+                 ':(exclude)corpus' ':(exclude)manifests'; then
+              echo "the producer changed during publication; refusing stale push" >&2
+              exit 1
+            fi
+            git rebase origin/main
+          done
+          echo "could not publish after three attempts" >&2
+          exit 1
