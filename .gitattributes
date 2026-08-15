@@ -36,3 +36,8 @@ corpus/cxx-itanium-eh/*/*/*/*/shared/** binary
 # enforces corpus/objc-eh/<runtime>/<target>/<optimization>/<symbols>/<file>,
 # so this depth excludes the generated-tree notice at the product-line root.
 corpus/objc-eh/*/*/*/*/** binary
+
+# Ada/D ELF executables have no extension. The schema enforces
+# corpus/ada-d-eh/<language>/<toolchain>/<target>/<optimization>/<file>,
+# so this depth leaves the generated-tree notice a diffable text file.
+corpus/ada-d-eh/*/*/*/*/** binary

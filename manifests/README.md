@@ -84,3 +84,19 @@ path absence. The `neverd` block is then compared exactly with
 `objc_matrix.neverd_contract`; an exception-free control can claim only
 `cfi-only`, while exception-enabled artifacts require an Apple Objective-C
 exception graph and its class-clause categories.
+
+## `ada-d-eh.json`
+
+Generated only after all six (toolchain, target) cells have built and passed
+validation. It inventories 12 committed ELF artifacts and conforms to
+`../schema/ada-d-eh-manifest.schema.json`.
+
+Its `producer` block holds the repository revision plus one record per cell,
+because GNAT, GDC, DMD, and LDC are four different compilers. Each record names
+the driver, the release series the cell is pinned to, the apt packages or
+`setup-dlang` compiler string, and the release the runner actually reported.
+
+The `neverd` block separates three claims: a parseable Itanium LSDA graph,
+address-preserving native reconstruction of opaque Ada `Exception_Id` or D
+`ClassInfo` descriptors, and proof by a real corpus artifact. Personality
+recognition alone is not recorded as complete support.
