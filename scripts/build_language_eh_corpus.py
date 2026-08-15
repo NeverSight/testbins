@@ -100,6 +100,16 @@ def runner_image() -> str:
     return f"local-{platform.system().lower()}-{platform.machine().lower()}"
 
 
+def gnatmake_command(
+    compiler: str, flags: list[str], source: str, output: str
+) -> list[str]:
+    """Keep the source and -o on gnatmake's side of -cargs."""
+    if "-cargs" in flags:
+        index = flags.index("-cargs")
+        return [compiler, *flags[:index], source, "-o", output, *flags[index:]]
+    return [compiler, *flags, source, "-o", output]
+
+
 def build_artifact(
     cell: matrix.MatrixCell,
     variant: matrix.Variant,
@@ -114,7 +124,7 @@ def build_artifact(
 
     if cell.toolchain == "gnat":
         with tempfile.TemporaryDirectory(prefix="ada-eh-") as temporary:
-            command = [compiler, *flags, str(source), "-o", str(output)]
+            command = gnatmake_command(compiler, flags, str(source), str(output))
             run(command, cwd=Path(temporary), environment=environment)
     elif cell.toolchain == "gdc":
         command = [compiler, *flags, cell.source_path, "-o", str(output)]
