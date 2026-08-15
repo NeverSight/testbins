@@ -1,0 +1,914 @@
+{
+  "artifacts": [
+    {
+      "architecture": "aarch64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "aarch64-linux-gnu-gnatmake-13",
+        "compiler_flags": [
+          "-q",
+          "-gnat2022",
+          "-O0",
+          "-cargs",
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/ada_eh_probe.adb",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gnat_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "gnat-exception-id",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 0,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gnat_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "path": "corpus/ada-d-eh/ada/gnat/aarch64-linux-gnu/o0/ada_eh_probe-gnat-aarch64-linux-gnu-o0",
+      "sha256": "bbe628d9bdbb71cf33028feae70884becbd7df9b6d5f3f465496f71e7d7f7088",
+      "size": 83904,
+      "source_language": "ada",
+      "target": "aarch64-linux-gnu",
+      "toolchain": "gnat",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "aarch64-linux-gnu-gnatmake-13",
+        "compiler_flags": [
+          "-q",
+          "-gnat2022",
+          "-O2",
+          "-cargs",
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/ada_eh_probe.adb",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gnat_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "gnat-exception-id",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 0,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gnat_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "path": "corpus/ada-d-eh/ada/gnat/aarch64-linux-gnu/o2/ada_eh_probe-gnat-aarch64-linux-gnu-o2",
+      "sha256": "6e0529872d1de96a73b09e7b96ee2dd1fbe837f76dedfda7393b69fa06028247",
+      "size": 83736,
+      "source_language": "ada",
+      "target": "aarch64-linux-gnu",
+      "toolchain": "gnat",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "gnatmake-13",
+        "compiler_flags": [
+          "-q",
+          "-gnat2022",
+          "-O0",
+          "-cargs",
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/ada_eh_probe.adb",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gnat_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "gnat-exception-id",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 0,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gnat_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "path": "corpus/ada-d-eh/ada/gnat/x86_64-linux-gnu/o0/ada_eh_probe-gnat-x86_64-linux-gnu-o0",
+      "sha256": "1fd47fa5258889c3e54140851f74c6f026172887b7a581f604c29fd70d6d86d7",
+      "size": 36952,
+      "source_language": "ada",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "gnat",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "gnatmake-13",
+        "compiler_flags": [
+          "-q",
+          "-gnat2022",
+          "-O2",
+          "-cargs",
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/ada_eh_probe.adb",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gnat_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "gnat-exception-id",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 0,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gnat_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "path": "corpus/ada-d-eh/ada/gnat/x86_64-linux-gnu/o2/ada_eh_probe-gnat-x86_64-linux-gnu-o2",
+      "sha256": "5af8311e69d0626e4bd7e4cc6391c56811cb3590dbbb69f03a81d6b6c83cb5d9",
+      "size": 36800,
+      "source_language": "ada",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "gnat",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "dmd",
+        "compiler_flags": [
+          "-m64",
+          "-fPIE"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "relative-source-no-debug",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__dmd_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__dmd_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "path": "corpus/ada-d-eh/d/dmd/x86_64-linux-gnu/o0/d_eh_probe-dmd-x86_64-linux-gnu-o0",
+      "sha256": "8b719ef10449e4a504ed05b74ffe571fe90ffb4877d3f0da843892b4af61a8fe",
+      "size": 917640,
+      "source_language": "d",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "dmd",
+      "toolchain_version": "2.112.1"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "dmd",
+        "compiler_flags": [
+          "-m64",
+          "-fPIE",
+          "-O",
+          "-release",
+          "-inline"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "relative-source-no-debug",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__dmd_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__dmd_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "path": "corpus/ada-d-eh/d/dmd/x86_64-linux-gnu/o2/d_eh_probe-dmd-x86_64-linux-gnu-o2",
+      "sha256": "d315f8c359258de672f9bccfcb749510287de3b493ebfff3ae8ca0824521625d",
+      "size": 917608,
+      "source_language": "d",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "dmd",
+      "toolchain_version": "2.112.1"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "aarch64-linux-gnu-gdc-13",
+        "compiler_flags": [
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins",
+          "-O0"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gdc_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gdc_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "path": "corpus/ada-d-eh/d/gdc/aarch64-linux-gnu/o0/d_eh_probe-gdc-aarch64-linux-gnu-o0",
+      "sha256": "5eaebaa41b835923190dae78222847125a3d79a1587f56e994f7cf093d01a3ef",
+      "size": 75048,
+      "source_language": "d",
+      "target": "aarch64-linux-gnu",
+      "toolchain": "gdc",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "aarch64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "aarch64-linux-gnu-gdc-13",
+        "compiler_flags": [
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins",
+          "-O2"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gdc_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "not-run-cross-target",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gdc_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "path": "corpus/ada-d-eh/d/gdc/aarch64-linux-gnu/o2/d_eh_probe-gdc-aarch64-linux-gnu-o2",
+      "sha256": "3ad15af55000be9367378c8132b7912321da6dd73600f951544a84cae34cb938",
+      "size": 75248,
+      "source_language": "d",
+      "target": "aarch64-linux-gnu",
+      "toolchain": "gdc",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "gdc-13",
+        "compiler_flags": [
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins",
+          "-O0"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gdc_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gdc_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "path": "corpus/ada-d-eh/d/gdc/x86_64-linux-gnu/o0/d_eh_probe-gdc-x86_64-linux-gnu-o0",
+      "sha256": "91718146599b740f0872eb22fb41f79ef33fc6fc82cb5c5fcf3b13f69562c2d2",
+      "size": 24352,
+      "source_language": "d",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "gdc",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "gdc-13",
+        "compiler_flags": [
+          "-fexceptions",
+          "-g0",
+          "-ffile-prefix-map=/home/runner/work/testbins/testbins=/testbins",
+          "-O2"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "compiler-prefix-map",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "__gdc_personality_v0"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "__gdc_personality_v0"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "path": "corpus/ada-d-eh/d/gdc/x86_64-linux-gnu/o2/d_eh_probe-gdc-x86_64-linux-gnu-o2",
+      "sha256": "3ad071496c45d6626905b3a4f4a4e9f4e52d54f5e13974146309c216d924db01",
+      "size": 24504,
+      "source_language": "d",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "gdc",
+      "toolchain_version": "13.3.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "ldc2",
+        "compiler_flags": [
+          "-m64",
+          "-O0",
+          "-relocation-model=pic"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "relative-source-no-debug",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "_d_eh_personality"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "_d_eh_personality"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o0",
+      "path": "corpus/ada-d-eh/d/ldc/x86_64-linux-gnu/o0/d_eh_probe-ldc-x86_64-linux-gnu-o0",
+      "sha256": "04bc1dedc53a0d90d7e76d66107ccf45b8d9d11e8072045c8048aaa8fe024819",
+      "size": 643936,
+      "source_language": "d",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "ldc",
+      "toolchain_version": "1.42.0"
+    },
+    {
+      "architecture": "x86_64",
+      "build": {
+        "checkout_prefix": "/home/runner/work/testbins/testbins",
+        "compiler": "ldc2",
+        "compiler_flags": [
+          "-m64",
+          "-O2",
+          "-relocation-model=pic"
+        ],
+        "environment": {
+          "LC_ALL": "C",
+          "SOURCE_DATE_EPOCH": "1704067200",
+          "TZ": "UTC"
+        },
+        "path_strategy": "relative-source-no-debug",
+        "runner_arch": "x64",
+        "runner_image": "ubuntu24-20260810.271.1",
+        "runner_os": "linux",
+        "source": "sources/ada-d-eh/d_eh_probe.d",
+        "working_directory": "/testbins"
+      },
+      "evidence": {
+        "checkout_path_absent": true,
+        "eh_frame_present": true,
+        "require_unwind_tables": true,
+        "required_sections": [
+          ".eh_frame",
+          ".gcc_except_table"
+        ],
+        "required_strings": [
+          "ada-d-eh probe passed",
+          "constraint",
+          "decode",
+          "secondary"
+        ],
+        "required_symbols": [
+          "_d_eh_personality"
+        ]
+      },
+      "exception_model": "itanium-dwarf",
+      "execution": "passed",
+      "neverd": {
+        "corpus_proven": true,
+        "descriptor_abi": "d-classinfo",
+        "min_call_sites": 1,
+        "min_catch_clauses": 3,
+        "min_cleanup_pads": 1,
+        "min_landing_pads": 1,
+        "min_type_table_entries": 3,
+        "native_reconstruction": "address-clauses",
+        "personalities_any": [
+          "_d_eh_personality"
+        ],
+        "type_table_interpretation": "opaque-descriptor",
+        "validation_level": "lsda-graph"
+      },
+      "object_format": "elf",
+      "optimization": "o2",
+      "path": "corpus/ada-d-eh/d/ldc/x86_64-linux-gnu/o2/d_eh_probe-ldc-x86_64-linux-gnu-o2",
+      "sha256": "6a1fd971584defba7e3a5a25aed49c4a0fba3f5f35be799c8a2aa7a7d85213ef",
+      "size": 643896,
+      "source_language": "d",
+      "target": "x86_64-linux-gnu",
+      "toolchain": "ldc",
+      "toolchain_version": "1.42.0"
+    }
+  ],
+  "corpus": "ada-d-eh",
+  "producer": {
+    "repository_revision": "0198c60dcfba35b9b39914710f15074a263dab03",
+    "toolchains": [
+      {
+        "apt_packages": [],
+        "cell": "dmd-x86_64-linux-gnu",
+        "compiler": "dmd",
+        "dlang_compiler": "dmd-2.112.1",
+        "target": "x86_64-linux-gnu",
+        "toolchain": "dmd",
+        "version": "2.112.1",
+        "version_prefix": "2.112.1",
+        "version_string": "DMD64 D Compiler v2.112.1"
+      },
+      {
+        "apt_packages": [
+          "gdc-13-aarch64-linux-gnu",
+          "libc6-dev-arm64-cross",
+          "libgphobos-13-dev-arm64-cross"
+        ],
+        "cell": "gdc-aarch64-linux-gnu",
+        "compiler": "aarch64-linux-gnu-gdc-13",
+        "dlang_compiler": "",
+        "target": "aarch64-linux-gnu",
+        "toolchain": "gdc",
+        "version": "13.3.0",
+        "version_prefix": "13.",
+        "version_string": "aarch64-linux-gnu-gdc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+      },
+      {
+        "apt_packages": [
+          "gdc-13"
+        ],
+        "cell": "gdc-x86_64-linux-gnu",
+        "compiler": "gdc-13",
+        "dlang_compiler": "",
+        "target": "x86_64-linux-gnu",
+        "toolchain": "gdc",
+        "version": "13.3.0",
+        "version_prefix": "13.",
+        "version_string": "gdc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+      },
+      {
+        "apt_packages": [
+          "gnat-13-aarch64-linux-gnu",
+          "libc6-dev-arm64-cross",
+          "libgnat-13-arm64-cross"
+        ],
+        "cell": "gnat-aarch64-linux-gnu",
+        "compiler": "aarch64-linux-gnu-gnatmake-13",
+        "dlang_compiler": "",
+        "target": "aarch64-linux-gnu",
+        "toolchain": "gnat",
+        "version": "13.3.0",
+        "version_prefix": "13.",
+        "version_string": "GNATMAKE 13.3.0"
+      },
+      {
+        "apt_packages": [
+          "gnat-13"
+        ],
+        "cell": "gnat-x86_64-linux-gnu",
+        "compiler": "gnatmake-13",
+        "dlang_compiler": "",
+        "target": "x86_64-linux-gnu",
+        "toolchain": "gnat",
+        "version": "13.3.0",
+        "version_prefix": "13.",
+        "version_string": "GNATMAKE 13.3.0"
+      },
+      {
+        "apt_packages": [],
+        "cell": "ldc-x86_64-linux-gnu",
+        "compiler": "ldc2",
+        "dlang_compiler": "ldc-1.42.0",
+        "target": "x86_64-linux-gnu",
+        "toolchain": "ldc",
+        "version": "1.42.0",
+        "version_prefix": "1.42.0",
+        "version_string": "LDC - the LLVM D compiler (1.42.0):"
+      }
+    ]
+  },
+  "schema_version": 1
+}
