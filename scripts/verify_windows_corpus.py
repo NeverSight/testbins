@@ -517,8 +517,57 @@ def _validate_source_and_producer(manifest: dict[str, Any]) -> None:
     producer_revision = _require_string(producer, "repository_revision", "producer")
     if not _REVISION_RE.fullmatch(producer_revision):
         raise VerificationError("producer.repository_revision must be a full SHA")
-    _require_string(producer, "runner_image", "producer")
+    _require_runner_images(producer)
     _require_string(producer, "runner_arch", "producer")
+
+
+def _require_runner_images(producer: dict[str, Any]) -> list[str]:
+    """Accept one host image or the union written by a multi-host merge."""
+
+    value = producer.get("runner_image")
+    if isinstance(value, str) and value:
+        return [value]
+    if isinstance(value, list):
+        if not value:
+            raise VerificationError("producer.runner_image must not be empty")
+        images: list[str] = []
+        seen: set[str] = set()
+        for index, entry in enumerate(value):
+            if not isinstance(entry, str) or not entry:
+                raise VerificationError(
+                    f"producer.runner_image[{index}] must be a non-empty string"
+                )
+            if entry in seen:
+                raise VerificationError(
+                    "producer.runner_image items must be unique"
+                )
+            seen.add(entry)
+            images.append(entry)
+        return images
+    raise VerificationError(
+        "producer.runner_image must be a non-empty string or array of strings"
+    )
+
+
+def _envelope_identity(fragment: dict[str, Any]) -> dict[str, Any]:
+    producer = _require_object(fragment.get("producer"), "producer")
+    return {
+        "schema_version": fragment["schema_version"],
+        "corpus": fragment["corpus"],
+        "source": fragment["source"],
+        "producer": {
+            key: value
+            for key, value in producer.items()
+            if key != "runner_image"
+        },
+    }
+
+
+def _merged_runner_image(images: list[str]) -> str | list[str]:
+    unique = sorted(set(images))
+    if len(unique) == 1:
+        return unique[0]
+    return unique
 
 
 def _validate_tool_identity(value: Any, context: str, *, expected_name: str) -> None:
@@ -963,20 +1012,29 @@ def verify_complete_matrix(path: Path) -> None:
 def merge_manifests(
     fragment_paths: list[Path], output_path: Path, root: Path
 ) -> VerificationResult:
+    """Validate fragments and write one manifest.
+
+    Cells on different hosted images (VS 2022 on windows-2022, VS 2026 on
+    windows-2025, or two windows-2022 jobs during an image rollout) disagree
+    about producer.runner_image. That is a fact about the pool, not a sign
+    they came from different producer runs. Schema, corpus, source, and the
+    rest of producer must still match.
+    """
+
     if not fragment_paths:
         raise VerificationError("no manifest fragments were found")
     envelopes: list[dict[str, Any]] = []
     artifacts: list[dict[str, Any]] = []
+    runner_images: list[str] = []
     for fragment_path in sorted(fragment_paths, key=lambda item: item.as_posix()):
         verify_manifest(fragment_path, root)
         fragment = _load_manifest(fragment_path)
-        envelope = {
-            "schema_version": fragment["schema_version"],
-            "corpus": fragment["corpus"],
-            "source": fragment["source"],
-            "producer": fragment["producer"],
-        }
-        envelopes.append(envelope)
+        envelopes.append(_envelope_identity(fragment))
+        runner_images.extend(
+            _require_runner_images(
+                _require_object(fragment.get("producer"), "producer")
+            )
+        )
         artifacts.extend(_require_array(fragment.get("artifacts"), "artifacts"))
     first = envelopes[0]
     for envelope in envelopes[1:]:
@@ -985,6 +1043,8 @@ def merge_manifests(
 
     artifacts.sort(key=lambda artifact: str(artifact.get("path", "")))
     merged = dict(first)
+    merged["producer"] = dict(first["producer"])
+    merged["producer"]["runner_image"] = _merged_runner_image(runner_images)
     merged["artifacts"] = artifacts
     output_path.parent.mkdir(parents=True, exist_ok=True)
     file_descriptor, temporary_name = tempfile.mkstemp(

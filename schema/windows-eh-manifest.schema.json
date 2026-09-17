@@ -113,7 +113,19 @@
           "$ref": "#/$defs/gitRevision"
         },
         "runner_image": {
-          "$ref": "#/$defs/nonEmptyString"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          ]
         },
         "runner_arch": {
           "const": "x64"

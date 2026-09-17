@@ -254,6 +254,8 @@ def _valid_manifest(
     optimization: str = "o0",
     name: str = "cxx_eh_probe",
     vs_year: int = 2022,
+    runner_image: str = "windows-2022",
+    repository_revision: str = "1" * 40,
 ) -> dict:
     payload = artifact.read_bytes()
     is_x64 = architecture == "x86_64"
@@ -297,8 +299,8 @@ def _valid_manifest(
             }
         },
         "producer": {
-            "repository_revision": "1" * 40,
-            "runner_image": "windows-2022",
+            "repository_revision": repository_revision,
+            "runner_image": runner_image,
             "runner_arch": "x64",
         },
         "artifacts": [
@@ -943,6 +945,116 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
                 {entry["build"]["toolchain"] for entry in merged["artifacts"]},
                 {"msvc", "clang-cl"},
             )
+            self.assertEqual(merged["producer"]["runner_image"], "windows-2022")
+
+    def test_merges_fragments_built_on_different_runner_images(self) -> None:
+        """VS 2022 cells run on windows-2022 and VS 2026 cells on windows-2025.
+        GitHub also does not promise two jobs of one workflow land on the same
+        image version. That is a fact about the pool, not a sign the fragments
+        came from different producer runs, so the merge has to accept it and
+        keep both images on record.
+        """
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            fragments = []
+            cells = (
+                (2022, "fh3", "__CxxFrameHandler3", "win22-20260802.262.1"),
+                (2026, "fh4", "__CxxFrameHandler4", "win25-20260917.1.1"),
+            )
+            for vs_year, cxx_format, personality, runner_image in cells:
+                artifact = _artifact_path(
+                    root,
+                    toolchain="msvc",
+                    architecture="x86_64",
+                    cxx_format=cxx_format,
+                    security_cookie=False,
+                    optimization="o0",
+                    vs_year=vs_year,
+                )
+                _write_minimal_pe(artifact, import_names=(personality,))
+                manifest = _valid_manifest(
+                    root,
+                    artifact,
+                    cxx_format=cxx_format,
+                    vs_year=vs_year,
+                    runner_image=runner_image,
+                )
+                fragment = root / "fragments" / f"msvc-vs{vs_year}.json"
+                fragment.parent.mkdir(parents=True, exist_ok=True)
+                fragment.write_text(json.dumps(manifest), encoding="utf-8")
+                fragments.append(fragment)
+
+            output = root / "manifests/windows-eh.json"
+            result = VERIFY.merge_manifests(fragments, output, root)
+
+            self.assertEqual(result.artifact_count, 2)
+            merged = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(
+                merged["producer"]["runner_image"],
+                ["win22-20260802.262.1", "win25-20260917.1.1"],
+            )
+            self.assertEqual(
+                {
+                    entry["build"]["visual_studio_year"]
+                    for entry in merged["artifacts"]
+                },
+                {2022, 2026},
+            )
+
+    def test_rejects_fragments_from_different_producer_runs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            fragments = []
+            for index, toolchain in enumerate(("msvc", "clang-cl")):
+                artifact = _artifact_path(
+                    root,
+                    toolchain=toolchain,
+                    architecture="x86_64",
+                    cxx_format="fh3",
+                    security_cookie=False,
+                    optimization="o0",
+                )
+                _write_minimal_pe(artifact, import_names=("__CxxFrameHandler3",))
+                manifest = _valid_manifest(
+                    root,
+                    artifact,
+                    toolchain=toolchain,
+                    repository_revision=str(index + 1) * 40,
+                )
+                fragment = root / "fragments" / f"{toolchain}.json"
+                fragment.parent.mkdir(parents=True, exist_ok=True)
+                fragment.write_text(json.dumps(manifest), encoding="utf-8")
+                fragments.append(fragment)
+
+            output = root / "manifests/windows-eh.json"
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError, "inconsistent envelopes"
+            ):
+                VERIFY.merge_manifests(fragments, output, root)
+
+    def test_accepts_unioned_runner_image_array(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86_64",
+                cxx_format="fh3",
+                security_cookie=False,
+                optimization="o0",
+            )
+            _write_minimal_pe(artifact, import_names=("__CxxFrameHandler3",))
+            manifest = _valid_manifest(root, artifact)
+            manifest["producer"]["runner_image"] = [
+                "win22-20260802.262.1",
+                "win25-20260917.1.1",
+            ]
+            manifest_path = _write_manifest(root, manifest)
+
+            result = VERIFY.verify_manifest(manifest_path, root)
+
+            self.assertEqual(result.artifact_count, 1)
 
 
 if __name__ == "__main__":
