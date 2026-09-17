@@ -60,10 +60,11 @@ jobs:
   build-cell:
     name: ${{ matrix.cell_name }}
     needs: verify-producer
-    runs-on: windows-2022
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
     steps:
       - name: Check out producer sources
@@ -78,6 +79,7 @@ jobs:
           -Optimization "${{ matrix.optimization }}"
           -SecurityCookie "${{ matrix.security_cookie }}"
           -CxxFormat "${{ matrix.cxx_format }}"
+          -VsYear "${{ matrix.vs_year }}"
           -OutputRoot "${{ runner.temp }}/windows-eh"
 
       - name: Upload validated cell

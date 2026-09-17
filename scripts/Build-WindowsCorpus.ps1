@@ -23,6 +23,10 @@ param(
   [ValidateSet("native", "fh3", "fh4")]
   [string] $CxxFormat,
 
+  [Parameter(Mandatory = $false)]
+  [ValidateSet("2022", "2026")]
+  [string] $VsYear = "2022",
+
   [Parameter(Mandatory = $true)]
   [string] $OutputRoot,
 
@@ -78,7 +82,16 @@ if ($CxxFormat -notin $SupportedFormats) {
 }
 
 $CookieLabel = if ($SecurityCookie -eq "on") { "gs" } else { "no-gs" }
-$CellName = "$Toolchain-$Architecture-$CxxFormat-$CookieLabel-$Optimization"
+$ToolchainKey = if ($Toolchain -eq "msvc" -and $VsYear -ne "2022") {
+  "msvc-vs$VsYear"
+} else {
+  $Toolchain
+}
+$CellName = "$ToolchainKey-$Architecture-$CxxFormat-$CookieLabel-$Optimization"
+$VsWhereVersion = switch ($VsYear) {
+  "2026" { "[18.0,19.0)" }
+  default { "[17.0,18.0)" }
+}
 $Compiler = if ($Toolchain -eq "msvc") { "cl.exe" } else { "clang-cl.exe" }
 $Linker = if ($Toolchain -eq "msvc") { "link.exe" } else { "lld-link.exe" }
 $OptimizationFlag = if ($Optimization -eq "o2") { "/O2" } else { "/Od" }
@@ -176,6 +189,8 @@ if ($ValidateConfigurationOnly) {
   [ordered]@{
     cell_name = $CellName
     toolchain = $Toolchain
+    vs_year = [int]$VsYear
+    vswhere_version = $VsWhereVersion
     architecture = $Architecture
     target_triple = $Target.target_triple
     vs_arch = $Target.vs_arch
@@ -200,7 +215,11 @@ $SourceRoot = Join-Path $RepositoryRoot "sources"
 $OfficialSourceRoot = Join-Path $SourceRoot "windows-seh-tests/src"
 $ProbeSourceRoot = Join-Path $SourceRoot "msvc-exceptions"
 $OutputRoot = [IO.Path]::GetFullPath($OutputRoot)
-$CellRelativeRoot = "corpus/windows-eh/$Toolchain/$Architecture/$CxxFormat/$CookieLabel/$Optimization"
+$CellRelativeRoot = if ($Toolchain -eq "msvc" -and $VsYear -ne "2022") {
+  "corpus/windows-eh/$Toolchain/vs$VsYear/$Architecture/$CxxFormat/$CookieLabel/$Optimization"
+} else {
+  "corpus/windows-eh/$Toolchain/$Architecture/$CxxFormat/$CookieLabel/$Optimization"
+}
 $CellOutputRoot = Join-Path $OutputRoot $CellRelativeRoot
 $OfficialOutputRoot = Join-Path $CellOutputRoot "windows-seh-tests"
 $ProbeOutputRoot = Join-Path $CellOutputRoot "abi-probe"
@@ -226,6 +245,9 @@ function Import-VisualStudioEnvironment {
     "-requires", $Target.component,
     "-property", "installationPath"
   )
+  if ($Toolchain -eq "msvc" -and $VsWhereVersion) {
+    $VsWhereArguments += @("-version", $VsWhereVersion)
+  }
   $Installation = (& $VsWhere @VsWhereArguments | Select-Object -First 1)
   if (-not $Installation) {
     throw "a Visual Studio installation with $($Target.component) was not found"
@@ -546,6 +568,7 @@ function New-ArtifactRecord(
       execution = if ($Target.execute) { "passed" } else { "not-run-cross-target" }
       compiler_flags = @($script:CommonCompilerFlags + $AdditionalCompilerFlags)
       linker_flags = @($script:CommonLinkerFlags + $AdditionalLinkerFlags)
+      visual_studio_year = [int]$VsYear
     }
     evidence = Get-Evidence $Name $Kind
     neverd = Get-NeverDExpectation $Name $Kind

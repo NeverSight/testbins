@@ -50,6 +50,37 @@ _ARCHITECTURE_ALIASES = {
 _TOOLCHAINS = ("msvc", "clang-cl")
 _OPTIMIZATIONS = ("o0", "o2")
 _SECURITY_COOKIE_MODES = ("off", "on")
+# Hosted-image MSVC product years the producer can actually drive.  VS 2022
+# keeps the historical cell key/path so existing artifacts stay valid.
+_MSVC_VS_YEARS = (2022, 2026)
+_MSVC_VS_YEAR_RUNNERS = {
+    2022: {
+        "runner": "windows-2022",
+        "vswhere_version": "[17.0,18.0)",
+    },
+    2026: {
+        "runner": "windows-2025",
+        "vswhere_version": "[18.0,19.0)",
+    },
+}
+# Requested 2010–2026 coverage.  Years the hosted runner cannot install are
+# explicit skips, not silent cells.
+_MSVC_VS_YEAR_SKIPS = {
+    2010: "VS 2010 Build Tools cannot be installed on current GitHub-hosted Windows images",
+    2012: "VS 2012 Build Tools cannot be installed on current GitHub-hosted Windows images",
+    2013: "VS 2013 Build Tools cannot be installed on current GitHub-hosted Windows images",
+    2015: "VS 2015 Build Tools cannot be installed on current GitHub-hosted Windows images",
+    2017: "VS 2017 Build Tools cannot be installed on current GitHub-hosted Windows images",
+    2019: "VS 2019 Build Tools are not preinstalled on windows-2022/windows-2025 and are not part of the hosted-image contract",
+    2025: "There is no Visual Studio 2025 product; MSVC 14.4x ships as Visual Studio 2022",
+}
+# Year is installable, but this target component is not on the hosted image.
+_MSVC_CELL_SKIPS = {
+    (2026, "arm"): (
+        "VS 2026 on windows-2025 does not include "
+        "Microsoft.VisualStudio.Component.VC.Tools.ARM"
+    ),
+}
 _FULL_ARTIFACT_INVENTORY = (
     "xcpt4",
     "nested_collided",
@@ -87,6 +118,7 @@ class MatrixCell:
     cxx_format: str
     security_cookie: str
     optimization: str
+    vs_year: int = 2022
 
     @property
     def target_triple(self) -> str:
@@ -122,9 +154,12 @@ class MatrixCell:
 
     @property
     def key(self) -> str:
+        toolchain = self.toolchain
+        if self.toolchain == "msvc" and self.vs_year != 2022:
+            toolchain = f"msvc-vs{self.vs_year}"
         return "-".join(
             (
-                self.toolchain,
+                toolchain,
                 self.architecture,
                 self.cxx_format,
                 self.cookie_label,
@@ -132,8 +167,31 @@ class MatrixCell:
             )
         )
 
-    def to_actions_entry(self) -> dict[str, str | bool]:
-        return {
+    @property
+    def corpus_toolchain_parts(self) -> tuple[str, ...]:
+        """Directory parts under corpus/windows-eh for this cell.
+
+        VS 2022 keeps the historical `msvc/...` layout. Later MSVC years add
+        `msvc/vsYYYY/` so those artifacts do not overwrite the 2022 set.
+        """
+        if self.toolchain == "msvc" and self.vs_year != 2022:
+            return (self.toolchain, f"vs{self.vs_year}")
+        return (self.toolchain,)
+
+    @property
+    def runner(self) -> str:
+        if self.toolchain != "msvc":
+            return "windows-2022"
+        return str(_MSVC_VS_YEAR_RUNNERS[self.vs_year]["runner"])
+
+    @property
+    def vswhere_version(self) -> str:
+        if self.toolchain != "msvc":
+            return ""
+        return str(_MSVC_VS_YEAR_RUNNERS[self.vs_year]["vswhere_version"])
+
+    def to_actions_entry(self) -> dict[str, str | bool | int]:
+        entry: dict[str, str | bool | int] = {
             "toolchain": self.toolchain,
             "architecture": self.architecture,
             "cxx_format": self.cxx_format,
@@ -144,7 +202,24 @@ class MatrixCell:
             "linker_machine": self.linker_machine,
             "execute": self.execute,
             "cell_name": self.key,
+            "runner": self.runner,
+            "vs_year": self.vs_year,
         }
+        if self.vswhere_version:
+            entry["vswhere_version"] = self.vswhere_version
+        return entry
+
+
+def skipped_vs_years() -> dict[int, str]:
+    """Return Visual Studio years that are requested but not installable."""
+
+    return dict(_MSVC_VS_YEAR_SKIPS)
+
+
+def skipped_msvc_cells() -> dict[tuple[int, str], str]:
+    """Return (year, architecture) cells a hosted image cannot build."""
+
+    return dict(_MSVC_CELL_SKIPS)
 
 
 def validate_cell(
@@ -153,6 +228,7 @@ def validate_cell(
     cxx_format: str,
     optimization: str,
     security_cookie: str,
+    vs_year: int = 2022,
 ) -> MatrixCell:
     """Validate and canonicalize one producer cell."""
 
@@ -175,12 +251,33 @@ def validate_cell(
     normalized_cookie = security_cookie.strip().lower()
     if normalized_cookie not in _SECURITY_COOKIE_MODES:
         raise ValueError(f"unsupported security-cookie mode: {security_cookie}")
+    if not isinstance(vs_year, int):
+        raise ValueError(f"unsupported Visual Studio year: {vs_year}")
+    if normalized_toolchain == "msvc":
+        if vs_year in _MSVC_VS_YEAR_SKIPS:
+            raise ValueError(
+                f"Visual Studio {vs_year} is an explicit skip: "
+                f"{_MSVC_VS_YEAR_SKIPS[vs_year]}"
+            )
+        if vs_year not in _MSVC_VS_YEARS:
+            raise ValueError(f"unsupported Visual Studio year: {vs_year}")
+        cell_skip = _MSVC_CELL_SKIPS.get((vs_year, normalized_architecture))
+        if cell_skip:
+            raise ValueError(
+                f"Visual Studio {vs_year} {normalized_architecture} is an "
+                f"explicit skip: {cell_skip}"
+            )
+    elif vs_year != 2022:
+        raise ValueError(
+            f"Visual Studio year {vs_year} is only valid for the msvc toolchain"
+        )
     return MatrixCell(
         normalized_toolchain,
         normalized_architecture,
         normalized_format,
         normalized_cookie,
         normalized_optimization,
+        vs_year,
     )
 
 
@@ -189,19 +286,24 @@ def expected_cells() -> tuple[MatrixCell, ...]:
 
     cells: list[MatrixCell] = []
     for toolchain in _TOOLCHAINS:
-        for architecture in _ARCHITECTURES:
-            for cxx_format in _supported_formats(toolchain, architecture):
-                for security_cookie in _SECURITY_COOKIE_MODES:
-                    for optimization in _OPTIMIZATIONS:
-                        cells.append(
-                            validate_cell(
-                                toolchain,
-                                architecture,
-                                cxx_format,
-                                optimization,
-                                security_cookie,
+        vs_years = _MSVC_VS_YEARS if toolchain == "msvc" else (2022,)
+        for vs_year in vs_years:
+            for architecture in _ARCHITECTURES:
+                if toolchain == "msvc" and (vs_year, architecture) in _MSVC_CELL_SKIPS:
+                    continue
+                for cxx_format in _supported_formats(toolchain, architecture):
+                    for security_cookie in _SECURITY_COOKIE_MODES:
+                        for optimization in _OPTIMIZATIONS:
+                            cells.append(
+                                validate_cell(
+                                    toolchain,
+                                    architecture,
+                                    cxx_format,
+                                    optimization,
+                                    security_cookie,
+                                    vs_year,
+                                )
                             )
-                        )
     return tuple(cells)
 
 
@@ -211,12 +313,19 @@ def artifact_cell_key(build: dict[str, object], architecture: str) -> str:
     security_cookie = build.get("security_cookie")
     if not isinstance(security_cookie, bool):
         raise ValueError("security_cookie must be boolean")
+    vs_year = 2022
+    raw_year = build.get("visual_studio_year")
+    if raw_year is not None:
+        if not isinstance(raw_year, int):
+            raise ValueError("visual_studio_year must be an integer")
+        vs_year = raw_year
     cell = validate_cell(
         str(build.get("toolchain", "")),
         architecture,
         str(build.get("cxx_format", "")),
         str(build.get("optimization", "")),
         "on" if security_cookie else "off",
+        vs_year,
     )
     return cell.key
 
