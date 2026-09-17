@@ -554,12 +554,15 @@ def _expected_personalities(
 
 def _validate_build(
     build: dict[str, Any], architecture: str, context: str, *, uses_cxx: bool
-) -> tuple[str, str, bool, str, str]:
+) -> tuple[str, str, bool, str, str, int]:
     toolchain = _require_string(build, "toolchain", context)
     cxx_format = _require_string(build, "cxx_format", context)
     optimization = _require_string(build, "optimization", context)
     security_cookie = _require_bool(build, "security_cookie", context)
     execution = _require_string(build, "execution", context)
+    vs_year = 2022
+    if "visual_studio_year" in build:
+        vs_year = _require_nonnegative_int(build, "visual_studio_year", context)
     try:
         cell = validate_cell(
             toolchain,
@@ -567,6 +570,7 @@ def _validate_build(
             cxx_format,
             optimization,
             "on" if security_cookie else "off",
+            vs_year,
         )
     except ValueError as error:
         raise VerificationError(str(error)) from error
@@ -622,7 +626,14 @@ def _validate_build(
         if target_flag not in compiler_flags:
             raise VerificationError(f"{context}.compiler_flags omit {target_flag}")
 
-    return toolchain, cxx_format, security_cookie, optimization, cell.cookie_label
+    return (
+        toolchain,
+        cxx_format,
+        security_cookie,
+        optimization,
+        cell.cookie_label,
+        cell.vs_year,
+    )
 
 
 def _validate_neverd(
@@ -772,13 +783,18 @@ def _validate_artifact(
         raise VerificationError(f"{context} artifact identity is inconsistent")
 
     build = _require_object(artifact.get("build"), f"{context}.build")
-    toolchain, cxx_format, security_cookie, optimization, cookie_label = (
-        _validate_build(
-            build,
-            architecture,
-            f"{context}.build",
-            uses_cxx=kind in ("cxx", "mixed"),
-        )
+    (
+        toolchain,
+        cxx_format,
+        security_cookie,
+        optimization,
+        cookie_label,
+        vs_year,
+    ) = _validate_build(
+        build,
+        architecture,
+        f"{context}.build",
+        uses_cxx=kind in ("cxx", "mixed"),
     )
     expected_filename = (
         "-".join(
@@ -793,10 +809,18 @@ def _validate_artifact(
         )
         + extension
     )
+    cell = validate_cell(
+        toolchain,
+        architecture,
+        cxx_format,
+        optimization,
+        "on" if security_cookie else "off",
+        vs_year,
+    )
     expected_path = PurePosixPath(
         "corpus",
         "windows-eh",
-        toolchain,
+        *cell.corpus_toolchain_parts,
         architecture,
         cxx_format,
         cookie_label,

@@ -64,6 +64,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.verify-producer.outputs.matrix) }}
     steps:
       - name: Check out producer sources

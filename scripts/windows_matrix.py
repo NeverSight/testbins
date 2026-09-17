@@ -161,6 +161,17 @@ class MatrixCell:
         )
 
     @property
+    def corpus_toolchain_parts(self) -> tuple[str, ...]:
+        """Directory parts under corpus/windows-eh for this cell.
+
+        VS 2022 keeps the historical `msvc/...` layout. Later MSVC years add
+        `msvc/vsYYYY/` so those artifacts do not overwrite the 2022 set.
+        """
+        if self.toolchain == "msvc" and self.vs_year != 2022:
+            return (self.toolchain, f"vs{self.vs_year}")
+        return (self.toolchain,)
+
+    @property
     def runner(self) -> str:
         if self.toolchain != "msvc":
             return "windows-2022"

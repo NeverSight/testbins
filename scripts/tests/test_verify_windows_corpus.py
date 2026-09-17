@@ -253,6 +253,7 @@ def _valid_manifest(
     security_cookie: bool = False,
     optimization: str = "o0",
     name: str = "cxx_eh_probe",
+    vs_year: int = 2022,
 ) -> dict:
     payload = artifact.read_bytes()
     is_x64 = architecture == "x86_64"
@@ -327,6 +328,7 @@ def _valid_manifest(
                     "optimization": optimization,
                     "security_cookie": security_cookie,
                     "cxx_format": cxx_format,
+                    "visual_studio_year": vs_year,
                     "execution": execution,
                     "compiler_flags": compiler_flags,
                     "linker_flags": [
@@ -413,6 +415,30 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
 
             self.assertEqual(result.artifact_count, 1)
             self.assertEqual(result.total_bytes, artifact.stat().st_size)
+
+    def test_accepts_vs2026_msvc_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root,
+                toolchain="msvc",
+                architecture="x86_64",
+                cxx_format="fh4",
+                security_cookie=False,
+                optimization="o0",
+                vs_year=2026,
+            )
+            _write_minimal_pe(artifact, import_names=("__CxxFrameHandler4",))
+            manifest = _valid_manifest(
+                root, artifact, cxx_format="fh4", vs_year=2026
+            )
+            self.assertIn("/msvc/vs2026/", manifest["artifacts"][0]["path"])
+            self.assertNotIn("vs2026", Path(manifest["artifacts"][0]["path"]).name)
+            manifest_path = _write_manifest(root, manifest)
+
+            result = VERIFY.verify_manifest(manifest_path, root)
+
+            self.assertEqual(result.artifact_count, 1)
 
     def test_accepts_all_four_pe_machine_targets(self) -> None:
         combinations = (

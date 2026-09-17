@@ -156,6 +156,14 @@ class WindowsMatrixTests(unittest.TestCase):
             )
         )
 
+    def test_non_2022_msvc_cells_use_vs_year_directory(self) -> None:
+        cells = {cell.key: cell for cell in self.matrix.expected_cells()}
+        self.assertEqual(cells["msvc-x86_64-fh4-gs-o0"].corpus_toolchain_parts, ("msvc",))
+        self.assertEqual(
+            cells["msvc-vs2026-x86_64-fh4-gs-o0"].corpus_toolchain_parts,
+            ("msvc", "vs2026"),
+        )
+
     def test_skipped_vs_years_are_explicit(self) -> None:
         skips = self.matrix.skipped_vs_years()
         self.assertEqual(
