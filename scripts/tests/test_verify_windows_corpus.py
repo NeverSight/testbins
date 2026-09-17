@@ -883,13 +883,13 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             with self.assertRaisesRegex(VERIFY.VerificationError, "SHA-256 mismatch"):
                 VERIFY.verify_manifest(manifest_path, root)
 
-    def test_complete_matrix_accepts_52_cells_and_288_capability_artifacts(
+    def test_complete_matrix_accepts_48_cells_and_264_capability_artifacts(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             manifest = _complete_inventory()
-            self.assertEqual(len(manifest["artifacts"]), 288)
+            self.assertEqual(len(manifest["artifacts"]), 264)
             manifest_path = _write_manifest(root, manifest)
 
             VERIFY.verify_complete_matrix(manifest_path)

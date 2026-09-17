@@ -74,6 +74,13 @@ _MSVC_VS_YEAR_SKIPS = {
     2019: "VS 2019 Build Tools are not preinstalled on windows-2022/windows-2025 and are not part of the hosted-image contract",
     2025: "There is no Visual Studio 2025 product; MSVC 14.4x ships as Visual Studio 2022",
 }
+# Year is installable, but this target component is not on the hosted image.
+_MSVC_CELL_SKIPS = {
+    (2026, "arm"): (
+        "VS 2026 on windows-2025 does not include "
+        "Microsoft.VisualStudio.Component.VC.Tools.ARM"
+    ),
+}
 _FULL_ARTIFACT_INVENTORY = (
     "xcpt4",
     "nested_collided",
@@ -209,6 +216,12 @@ def skipped_vs_years() -> dict[int, str]:
     return dict(_MSVC_VS_YEAR_SKIPS)
 
 
+def skipped_msvc_cells() -> dict[tuple[int, str], str]:
+    """Return (year, architecture) cells a hosted image cannot build."""
+
+    return dict(_MSVC_CELL_SKIPS)
+
+
 def validate_cell(
     toolchain: str,
     architecture: str,
@@ -248,6 +261,12 @@ def validate_cell(
             )
         if vs_year not in _MSVC_VS_YEARS:
             raise ValueError(f"unsupported Visual Studio year: {vs_year}")
+        cell_skip = _MSVC_CELL_SKIPS.get((vs_year, normalized_architecture))
+        if cell_skip:
+            raise ValueError(
+                f"Visual Studio {vs_year} {normalized_architecture} is an "
+                f"explicit skip: {cell_skip}"
+            )
     elif vs_year != 2022:
         raise ValueError(
             f"Visual Studio year {vs_year} is only valid for the msvc toolchain"
@@ -270,6 +289,8 @@ def expected_cells() -> tuple[MatrixCell, ...]:
         vs_years = _MSVC_VS_YEARS if toolchain == "msvc" else (2022,)
         for vs_year in vs_years:
             for architecture in _ARCHITECTURES:
+                if toolchain == "msvc" and (vs_year, architecture) in _MSVC_CELL_SKIPS:
+                    continue
                 for cxx_format in _supported_formats(toolchain, architecture):
                     for security_cookie in _SECURITY_COOKIE_MODES:
                         for optimization in _OPTIMIZATIONS:
