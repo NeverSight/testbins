@@ -42,6 +42,8 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
                     cell.security_cookie,
                     "-CxxFormat",
                     cell.cxx_format,
+                    "-VsYear",
+                    str(cell.vs_year),
                     "-OutputRoot",
                     temp_dir,
                     "-ValidateConfigurationOnly",

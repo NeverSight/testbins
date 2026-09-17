@@ -209,10 +209,14 @@ def _artifact_path(
     security_cookie: bool,
     optimization: str,
     name: str = "cxx_eh_probe",
+    vs_year: int = 2022,
 ) -> Path:
     suite = "abi-probe" if name.endswith("_probe") else "windows-seh-tests"
     extension = ".dll" if name == "xframe_eh_dll" else ".exe"
     cookie_label = "gs" if security_cookie else "no-gs"
+    toolchain_dir = toolchain
+    if toolchain == "msvc" and vs_year != 2022:
+        toolchain_dir = f"{toolchain}/vs{vs_year}"
     filename = (
         "-".join(
             (
@@ -229,7 +233,7 @@ def _artifact_path(
     return (
         root
         / "corpus/windows-eh"
-        / toolchain
+        / toolchain_dir
         / architecture
         / cxx_format
         / cookie_label
@@ -374,6 +378,7 @@ def _complete_inventory() -> dict:
                         security_cookie=security_cookie,
                         optimization=cell.optimization,
                         name=name,
+                        vs_year=cell.vs_year,
                     ).as_posix(),
                     "architecture": cell.architecture,
                     "name": name,
@@ -382,6 +387,7 @@ def _complete_inventory() -> dict:
                         "optimization": cell.optimization,
                         "security_cookie": security_cookie,
                         "cxx_format": cell.cxx_format,
+                        "visual_studio_year": cell.vs_year,
                     },
                 }
             )
@@ -851,13 +857,13 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             with self.assertRaisesRegex(VERIFY.VerificationError, "SHA-256 mismatch"):
                 VERIFY.verify_manifest(manifest_path, root)
 
-    def test_complete_matrix_accepts_32_cells_and_168_capability_artifacts(
+    def test_complete_matrix_accepts_52_cells_and_288_capability_artifacts(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             manifest = _complete_inventory()
-            self.assertEqual(len(manifest["artifacts"]), 168)
+            self.assertEqual(len(manifest["artifacts"]), 288)
             manifest_path = _write_manifest(root, manifest)
 
             VERIFY.verify_complete_matrix(manifest_path)

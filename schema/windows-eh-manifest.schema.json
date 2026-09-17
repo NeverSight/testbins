@@ -183,6 +183,10 @@
         },
         "linker_flags": {
           "$ref": "#/$defs/stringArray"
+        },
+        "visual_studio_year": {
+          "type": "integer",
+          "enum": [2022, 2026]
         }
       },
       "allOf": [

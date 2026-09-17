@@ -32,15 +32,19 @@ class WindowsMatrixTests(unittest.TestCase):
     def test_matrix_contains_exact_supported_capabilities(self) -> None:
         cells = self.matrix.expected_cells()
 
-        self.assertEqual(len(cells), 32)
-        self.assertEqual(len({cell.key for cell in cells}), 32)
+        self.assertEqual(len(cells), 52)
+        self.assertEqual(len({cell.key for cell in cells}), 52)
         self.assertEqual(
             Counter(cell.toolchain for cell in cells),
-            Counter({"msvc": 20, "clang-cl": 12}),
+            Counter({"msvc": 40, "clang-cl": 12}),
+        )
+        self.assertEqual(
+            Counter(cell.vs_year for cell in cells if cell.toolchain == "msvc"),
+            Counter({2022: 20, 2026: 20}),
         )
         self.assertEqual(
             Counter(cell.architecture for cell in cells),
-            Counter({"x86": 8, "x86_64": 12, "arm": 4, "aarch64": 8}),
+            Counter({"x86": 12, "x86_64": 20, "arm": 8, "aarch64": 12}),
         )
 
         msvc_x64 = {
@@ -136,8 +140,12 @@ class WindowsMatrixTests(unittest.TestCase):
         name, payload = line.split("=", 1)
         self.assertEqual(name, "matrix")
         matrix = json.loads(payload)
-        self.assertEqual(len(matrix["include"]), 32)
-        self.assertEqual(len({entry["cell_name"] for entry in matrix["include"]}), 32)
+        self.assertEqual(len(matrix["include"]), 52)
+        self.assertEqual(len({entry["cell_name"] for entry in matrix["include"]}), 52)
+        self.assertTrue(any(entry.get("vs_year") == 2026 for entry in matrix["include"]))
+        self.assertTrue(
+            any(entry.get("runner") == "windows-2025" for entry in matrix["include"])
+        )
         self.assertTrue(
             all(entry["architecture"] != "i386" for entry in matrix["include"])
         )
@@ -147,6 +155,20 @@ class WindowsMatrixTests(unittest.TestCase):
                 for entry in matrix["include"]
             )
         )
+
+    def test_skipped_vs_years_are_explicit(self) -> None:
+        skips = self.matrix.skipped_vs_years()
+        self.assertEqual(
+            set(skips),
+            {2010, 2012, 2013, 2015, 2017, 2019, 2025},
+        )
+        for year, reason in skips.items():
+            with self.subTest(year=year):
+                self.assertTrue(reason)
+                with self.assertRaises(ValueError):
+                    self.matrix.validate_cell(
+                        "msvc", "x86_64", "fh4", "o0", "off", year
+                    )
 
 
 if __name__ == "__main__":
