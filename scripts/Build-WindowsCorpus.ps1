@@ -97,6 +97,11 @@ $VcvarsVersion = if ($Toolchain -eq "msvc" -and $VsYear -eq "2019") {
 } else {
   $null
 }
+$WindowsSdkVersion = if ($Toolchain -eq "msvc" -and $VsYear -eq "2019" -and $Architecture -eq "aarch64") {
+  "10.0.19041.0"
+} else {
+  $null
+}
 $Compiler = if ($Toolchain -eq "msvc") { "cl.exe" } else { "clang-cl.exe" }
 $Linker = if ($Toolchain -eq "msvc") { "link.exe" } else { "lld-link.exe" }
 $OptimizationFlag = if ($Optimization -eq "o2") { "/O2" } else { "/Od" }
@@ -197,6 +202,7 @@ if ($ValidateConfigurationOnly) {
     vs_year = [int]$VsYear
     vswhere_version = $VsWhereVersion
     vcvars_version = $VcvarsVersion
+    windows_sdk_version = $WindowsSdkVersion
     architecture = $Architecture
     target_triple = $Target.target_triple
     vs_arch = $Target.vs_arch
@@ -290,6 +296,16 @@ function Import-VisualStudioEnvironment {
       (Join-Path $ArmSdk.FullName "um/arm")
     )
   }
+  if ($WindowsSdkVersion) {
+    $KitsRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits/10"
+    $SdkRoot = Join-Path $KitsRoot "Lib/$WindowsSdkVersion"
+    foreach ($RelativePath in @("um/arm64/kernel32.lib", "ucrt/arm64/libucrt.lib")) {
+      if (-not (Test-Path -LiteralPath (Join-Path $SdkRoot $RelativePath) -PathType Leaf)) {
+        throw "Windows SDK $WindowsSdkVersion does not contain $RelativePath"
+      }
+    }
+    $VsDevCmdArguments += "-winsdk=$WindowsSdkVersion"
+  }
 
   $EnvironmentCommand = "`"$VsDevCmd`" $($VsDevCmdArguments -join ' ') && set"
   $EnvironmentLines = & $env:ComSpec /s /c $EnvironmentCommand
@@ -307,6 +323,9 @@ function Import-VisualStudioEnvironment {
   }
   if ($env:VSCMD_ARG_TGT_ARCH -ne $Target.vs_arch) {
     throw "Visual Studio target architecture is '$env:VSCMD_ARG_TGT_ARCH', expected '$($Target.vs_arch)'"
+  }
+  if ($WindowsSdkVersion -and (($env:WindowsSDKVersion -replace '[\\/]$', '') -ne $WindowsSdkVersion)) {
+    throw "Visual Studio selected Windows SDK '$env:WindowsSDKVersion', expected '$WindowsSdkVersion'"
   }
   [void](Get-Command $Compiler -CommandType Application -ErrorAction Stop)
   [void](Get-Command $Linker -CommandType Application -ErrorAction Stop)

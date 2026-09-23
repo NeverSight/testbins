@@ -83,6 +83,10 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
                 self.assertEqual(configuration["vswhere_version"], "[17.0,18.0)")
                 self.assertEqual(configuration["vcvars_version"], "14.29")
                 self.assertEqual(configuration["compiler"], "cl.exe")
+                self.assertEqual(
+                    configuration["windows_sdk_version"],
+                    "10.0.19041.0" if architecture == "aarch64" else None,
+                )
 
     def test_clang_cl_uses_explicit_target_and_lld_link(self) -> None:
         cell = MATRIX.validate_cell("clang-cl", "aarch64", "native", "o2", "on")
