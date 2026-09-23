@@ -644,7 +644,9 @@ def _validate_build(
     )
     if toolchain == "msvc" and vs_year == 2019:
         compiler_version = compiler_identity["file_version"]
-        if not re.fullmatch(r"19\.29\.\d+(?:\.\d+)*", compiler_version):
+        if not re.fullmatch(
+            r"19\.29\.\d+(?:\.\d+)*(?: built by: [^\r\n]+)?", compiler_version
+        ):
             raise VerificationError(
                 f"{context}.compiler.file_version must identify MSVC 19.29 for VS 2019"
             )

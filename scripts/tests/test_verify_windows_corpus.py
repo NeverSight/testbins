@@ -464,6 +464,12 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             result = VERIFY.verify_manifest(_write_manifest(root, manifest), root)
             self.assertEqual(result.artifact_count, 1)
 
+            manifest["artifacts"][0]["build"]["compiler"]["file_version"] = (
+                "19.29.30159.0 built by: cloudtest"
+            )
+            result = VERIFY.verify_manifest(_write_manifest(root, manifest), root)
+            self.assertEqual(result.artifact_count, 1)
+
     def test_rejects_vs2019_claim_with_newer_compiler_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

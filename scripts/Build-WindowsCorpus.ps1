@@ -601,7 +601,7 @@ try {
   $script:CompilerIdentity = Get-ToolIdentity $script:Compiler
   $script:LinkerIdentity = Get-ToolIdentity $script:Linker
   if ($Toolchain -eq "msvc" -and $VsYear -eq "2019") {
-    if ($script:CompilerIdentity.file_version -notmatch '^19\.29\.\d+(\.\d+)*$') {
+    if ($script:CompilerIdentity.file_version -notmatch '^19\.29\.\d+(?:\.\d+)*(?: built by: [^\r\n]+)?$') {
       throw "VS 2019 cell selected cl.exe $($script:CompilerIdentity.file_version), expected 19.29"
     }
     foreach ($ToolPath in @($script:Compiler, $script:Linker)) {
