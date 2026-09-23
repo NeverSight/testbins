@@ -319,7 +319,9 @@ def _valid_manifest(
                     "compiler": {
                         "name": compiler_name,
                         "product_version": "test-compiler",
-                        "file_version": "test-compiler",
+                        "file_version": "19.29.30159.0"
+                        if vs_year == 2019 and toolchain == "msvc"
+                        else "test-compiler",
                     },
                     "linker": {
                         "name": linker_name,
@@ -441,6 +443,42 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             result = VERIFY.verify_manifest(manifest_path, root)
 
             self.assertEqual(result.artifact_count, 1)
+
+    def test_accepts_vs2019_v142_msvc_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root, toolchain="msvc", architecture="x86_64",
+                cxx_format="fh4", security_cookie=False,
+                optimization="o0", vs_year=2019,
+            )
+            _write_minimal_pe(artifact, import_names=("__CxxFrameHandler4",))
+            manifest = _valid_manifest(
+                root, artifact, cxx_format="fh4", vs_year=2019
+            )
+            self.assertIn("/msvc/vs2019/", manifest["artifacts"][0]["path"])
+            self.assertEqual(
+                manifest["artifacts"][0]["build"]["compiler"]["file_version"],
+                "19.29.30159.0",
+            )
+            result = VERIFY.verify_manifest(_write_manifest(root, manifest), root)
+            self.assertEqual(result.artifact_count, 1)
+
+    def test_rejects_vs2019_claim_with_newer_compiler_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            artifact = _artifact_path(
+                root, toolchain="msvc", architecture="x86_64",
+                cxx_format="fh3", security_cookie=False,
+                optimization="o0", vs_year=2019,
+            )
+            _write_minimal_pe(artifact, import_names=("__CxxFrameHandler3",))
+            manifest = _valid_manifest(root, artifact, vs_year=2019)
+            manifest["artifacts"][0]["build"]["compiler"]["file_version"] = (
+                "19.44.35228.0"
+            )
+            with self.assertRaisesRegex(VERIFY.VerificationError, "MSVC 19.29"):
+                VERIFY.verify_manifest(_write_manifest(root, manifest), root)
 
     def test_accepts_all_four_pe_machine_targets(self) -> None:
         combinations = (
@@ -885,13 +923,13 @@ class VerifyWindowsCorpusTests(unittest.TestCase):
             with self.assertRaisesRegex(VERIFY.VerificationError, "SHA-256 mismatch"):
                 VERIFY.verify_manifest(manifest_path, root)
 
-    def test_complete_matrix_accepts_48_cells_and_264_capability_artifacts(
+    def test_complete_matrix_accepts_68_cells_and_384_capability_artifacts(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             manifest = _complete_inventory()
-            self.assertEqual(len(manifest["artifacts"]), 264)
+            self.assertEqual(len(manifest["artifacts"]), 384)
             manifest_path = _write_manifest(root, manifest)
 
             VERIFY.verify_complete_matrix(manifest_path)

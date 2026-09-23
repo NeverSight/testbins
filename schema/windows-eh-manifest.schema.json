@@ -198,7 +198,7 @@
         },
         "visual_studio_year": {
           "type": "integer",
-          "enum": [2022, 2026]
+          "enum": [2019, 2022, 2026]
         }
       },
       "allOf": [
@@ -387,7 +387,7 @@
       "properties": {
         "path": {
           "type": "string",
-          "pattern": "^corpus/windows-eh/(msvc|clang-cl)/(x86|x86_64|arm|aarch64)/(native|fh3|fh4)/(no-gs|gs)/(o0|o2)/(windows-seh-tests|abi-probe)/[A-Za-z0-9_.-]+\\.(exe|dll)$"
+          "pattern": "^corpus/windows-eh/(msvc(/vs(2019|2026))?|clang-cl)/(x86|x86_64|arm|aarch64)/(native|fh3|fh4)/(no-gs|gs)/(o0|o2)/(windows-seh-tests|abi-probe)/[A-Za-z0-9_.-]+\\.(exe|dll)$"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"

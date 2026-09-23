@@ -50,10 +50,14 @@ _ARCHITECTURE_ALIASES = {
 _TOOLCHAINS = ("msvc", "clang-cl")
 _OPTIMIZATIONS = ("o0", "o2")
 _SECURITY_COOKIE_MODES = ("off", "on")
-# Hosted-image MSVC product years the producer can actually drive.  VS 2022
-# keeps the historical cell key/path so existing artifacts stay valid.
-_MSVC_VS_YEARS = (2022, 2026)
+# Hosted-image MSVC toolsets the producer can actually drive. VS 2019 v142
+# runs inside the VS 2022 installation. VS 2022 keeps its historical key/path.
+_MSVC_VS_YEARS = (2019, 2022, 2026)
 _MSVC_VS_YEAR_RUNNERS = {
+    2019: {
+        "runner": "windows-2022",
+        "vswhere_version": "[17.0,18.0)",
+    },
     2022: {
         "runner": "windows-2022",
         "vswhere_version": "[17.0,18.0)",
@@ -71,7 +75,6 @@ _MSVC_VS_YEAR_SKIPS = {
     2013: "VS 2013 Build Tools cannot be installed on current GitHub-hosted Windows images",
     2015: "VS 2015 Build Tools cannot be installed on current GitHub-hosted Windows images",
     2017: "VS 2017 Build Tools cannot be installed on current GitHub-hosted Windows images",
-    2019: "VS 2019 Build Tools are not preinstalled on windows-2022/windows-2025 and are not part of the hosted-image contract",
     2025: "There is no Visual Studio 2025 product; MSVC 14.4x ships as Visual Studio 2022",
 }
 # Year is installable, but this target component is not on the hosted image.
@@ -171,8 +174,8 @@ class MatrixCell:
     def corpus_toolchain_parts(self) -> tuple[str, ...]:
         """Directory parts under corpus/windows-eh for this cell.
 
-        VS 2022 keeps the historical `msvc/...` layout. Later MSVC years add
-        `msvc/vsYYYY/` so those artifacts do not overwrite the 2022 set.
+        VS 2022 keeps the historical `msvc/...` layout. Other MSVC toolsets
+        add `msvc/vsYYYY/` so their artifacts do not overwrite the 2022 set.
         """
         if self.toolchain == "msvc" and self.vs_year != 2022:
             return (self.toolchain, f"vs{self.vs_year}")

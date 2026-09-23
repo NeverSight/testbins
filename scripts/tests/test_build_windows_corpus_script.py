@@ -71,6 +71,19 @@ class BuildWindowsCorpusScriptTests(unittest.TestCase):
             self.assertEqual(configuration["linker"], "link.exe")
             self.assertEqual(configuration["cxx_format_flag"], expected_flag)
 
+    def test_vs2019_cells_select_v142_inside_vs2022(self) -> None:
+        for architecture in ("x86", "x86_64", "arm", "aarch64"):
+            with self.subTest(architecture=architecture):
+                cell = MATRIX.validate_cell(
+                    "msvc", architecture,
+                    "fh4" if architecture == "x86_64" else "native",
+                    "o0", "off", 2019,
+                )
+                configuration = self._configuration(cell)
+                self.assertEqual(configuration["vswhere_version"], "[17.0,18.0)")
+                self.assertEqual(configuration["vcvars_version"], "14.29")
+                self.assertEqual(configuration["compiler"], "cl.exe")
+
     def test_clang_cl_uses_explicit_target_and_lld_link(self) -> None:
         cell = MATRIX.validate_cell("clang-cl", "aarch64", "native", "o2", "on")
         configuration = self._configuration(cell)

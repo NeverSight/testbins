@@ -635,12 +635,19 @@ def _validate_build(
 
     compiler_name = "cl.exe" if toolchain == "msvc" else "clang-cl.exe"
     linker_name = "link.exe" if toolchain == "msvc" else "lld-link.exe"
+    compiler_identity = build.get("compiler")
     _validate_tool_identity(
-        build.get("compiler"), f"{context}.compiler", expected_name=compiler_name
+        compiler_identity, f"{context}.compiler", expected_name=compiler_name
     )
     _validate_tool_identity(
         build.get("linker"), f"{context}.linker", expected_name=linker_name
     )
+    if toolchain == "msvc" and vs_year == 2019:
+        compiler_version = compiler_identity["file_version"]
+        if not re.fullmatch(r"19\.29\.\d+(?:\.\d+)*", compiler_version):
+            raise VerificationError(
+                f"{context}.compiler.file_version must identify MSVC 19.29 for VS 2019"
+            )
     compiler_flags = _require_string_array(
         build, "compiler_flags", context, allow_empty=False
     )

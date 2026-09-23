@@ -24,7 +24,7 @@ param(
   [string] $CxxFormat,
 
   [Parameter(Mandatory = $false)]
-  [ValidateSet("2022", "2026")]
+  [ValidateSet("2019", "2022", "2026")]
   [string] $VsYear = "2022",
 
   [Parameter(Mandatory = $true)]
@@ -91,6 +91,11 @@ $CellName = "$ToolchainKey-$Architecture-$CxxFormat-$CookieLabel-$Optimization"
 $VsWhereVersion = switch ($VsYear) {
   "2026" { "[18.0,19.0)" }
   default { "[17.0,18.0)" }
+}
+$VcvarsVersion = if ($Toolchain -eq "msvc" -and $VsYear -eq "2019") {
+  "14.29"
+} else {
+  $null
 }
 $Compiler = if ($Toolchain -eq "msvc") { "cl.exe" } else { "clang-cl.exe" }
 $Linker = if ($Toolchain -eq "msvc") { "link.exe" } else { "lld-link.exe" }
@@ -191,6 +196,7 @@ if ($ValidateConfigurationOnly) {
     toolchain = $Toolchain
     vs_year = [int]$VsYear
     vswhere_version = $VsWhereVersion
+    vcvars_version = $VcvarsVersion
     architecture = $Architecture
     target_triple = $Target.target_triple
     vs_arch = $Target.vs_arch
@@ -262,6 +268,9 @@ function Import-VisualStudioEnvironment {
     "-arch=$($Target.vs_arch)",
     "-host_arch=x64"
   )
+  if ($VcvarsVersion) {
+    $VsDevCmdArguments += "-vcvars_ver=$VcvarsVersion"
+  }
   $SdkLibraryDirectories = @()
   if ($Architecture -eq "arm") {
     $KitsLibraryRoot = Join-Path ${env:ProgramFiles(x86)} "Windows Kits/10/Lib"
@@ -591,6 +600,16 @@ try {
 
   $script:CompilerIdentity = Get-ToolIdentity $script:Compiler
   $script:LinkerIdentity = Get-ToolIdentity $script:Linker
+  if ($Toolchain -eq "msvc" -and $VsYear -eq "2019") {
+    if ($script:CompilerIdentity.file_version -notmatch '^19\.29\.\d+(\.\d+)*$') {
+      throw "VS 2019 cell selected cl.exe $($script:CompilerIdentity.file_version), expected 19.29"
+    }
+    foreach ($ToolPath in @($script:Compiler, $script:Linker)) {
+      if ($ToolPath -notmatch '[\\/]VC[\\/]Tools[\\/]MSVC[\\/]14\.29\.') {
+        throw "VS 2019 cell selected a tool outside the v142 14.29 directory: $ToolPath"
+      }
+    }
+  }
   $Artifacts = [Collections.Generic.List[object]]::new()
   $CxxControlFlags = if ($null -ne $CxxFormatFlag) { @($CxxFormatFlag) } else { @() }
   $BuildXcpt4 = $ArtifactNames -contains "xcpt4"
