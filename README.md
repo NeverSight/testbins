@@ -14,6 +14,7 @@ Nothing is uploaded from a developer's machine.
 |---|---|---|---|---|
 | `windows-eh` | PE | `manifests/windows-eh.json` | `schema/windows-eh-manifest.schema.json` | `build-windows-eh.yml` |
 | `rust-eh` | ELF, PE, Mach-O | `manifests/rust-eh.json` | `schema/rust-eh-manifest.schema.json` | `build-rust-eh.yml` |
+| `go-eh` | ELF, PE, Mach-O | `manifests/go-eh.json` | `schema/go-eh-manifest.schema.json` | `build-go-eh.yml` |
 | `cxx-itanium-eh` | ELF, Mach-O, PE | `manifests/cxx-itanium-eh.json` | `schema/cxx-itanium-eh-manifest.schema.json` | `build-cxx-itanium-eh.yml` |
 | `objc-eh` | Mach-O | `manifests/objc-eh.json` | `schema/objc-eh-manifest.schema.json` | `build-objc-eh.yml` |
 | `ada-d-eh` | ELF | `manifests/ada-d-eh.json` | `schema/ada-d-eh-manifest.schema.json` | `build-ada-d-eh.yml` |
@@ -29,16 +30,21 @@ is granted `contents: write`.
 The Windows producer covers Microsoft SEH and C++ exception metadata across
 two toolchains and four canonical PE architectures:
 
-| Toolchain | Architecture | C++ EH format | Cookie | Optimization | Cells |
+| Toolchain/version | Architecture | C++ EH format | Cookie | Optimization | Cells |
 |---|---|---|---|---|---:|
-| MSVC | x86-64 | EH3, EH4 | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
+| MSVC VS 2019 v142 and VS 2022 | x86-64 | EH3, EH4 | `/GS-`, `/GS` | `/Od`, `/O2` | 16 |
+| MSVC VS 2019 v142 and VS 2022 | x86, ARM32, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 24 |
+| MSVC VS 2026 | x86-64 | EH3, EH4 | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
+| MSVC VS 2026 | x86, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
 | clang-cl | x86-64 | EH3 | `/GS-`, `/GS` | `/Od`, `/O2` | 4 |
-| MSVC | x86, ARM32, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 12 |
 | clang-cl | x86, ARM64 | native | `/GS-`, `/GS` | `/Od`, `/O2` | 8 |
 
-The complete matrix contains 32 cells. Twenty-four full-capability cells contain
-six PE files each. The eight host-native clang-cl x86/x86-64 cells contain three
-PE files each, for a canonical total of 168 artifacts.
+The complete matrix contains 68 cells: 20 VS 2019 v142 cells hosted by VS 2022
+on `windows-2022`, 20 VS 2022 cells, 16 VS 2026 cells, and 12 clang-cl cells.
+Sixty full-capability cells contain six PE files each. The eight host-native
+clang-cl x86/x86-64 cells contain three PE files each, for a canonical total of
+384 artifacts. The VS 2026 image lacks the ARM32 compiler component, so those
+four otherwise expected cells are explicitly skipped.
 
 `x86` is the canonical name for the 32-bit i386 target; the corpus does not
 duplicate it under two names. EH4 is the compressed Microsoft x64 C++ EH
@@ -533,6 +539,16 @@ python3 scripts/verify_rust_corpus.py \
   --require-complete-matrix
 ```
 
+The Go runtime-metadata corpus is checked against its complete pinned matrix
+the same way:
+
+```bash
+python3 scripts/verify_go_corpus.py \
+  manifests/go-eh.json \
+  --root . \
+  --require-complete-matrix
+```
+
 One C++ Itanium cell can be built anywhere the cell's drivers are on `PATH` and
 report the pinned release series:
 
@@ -600,16 +616,18 @@ python3 scripts/verify_ada_d_eh_corpus.py \
 ## CI publication
 
 **Build and publish Windows EH corpus**, **Build and publish Rust EH corpus**,
-**Build and publish C++ Itanium EH corpus**, **Build and publish Objective-C
-EH corpus**, and **Build and publish Ada/D EH corpus** each run their complete
-matrix when their producer source, schema, scripts, or workflow changes. They
-are independent, and each publishes only its own tree.
+**Build and publish Go EH corpus**, **Build and publish C++ Itanium EH corpus**,
+**Build and publish Objective-C EH corpus**, and
+**Build and publish Ada/D EH corpus** each run their complete matrix when their
+producer source, schema, scripts, or workflow changes. They are independent,
+and each publishes only its own tree.
 
 - Pull requests build and validate with read-only repository permissions.
 - A successful producer change on `main` assembles and re-verifies the complete
   corpus, then a dedicated job receives `contents: write`.
 - Each publish job synchronizes only its own generated files: `corpus/windows-eh`
   and `manifests/windows-eh.json`, `corpus/rust-eh` and `manifests/rust-eh.json`,
+  `corpus/go-eh` and `manifests/go-eh.json`,
   `corpus/cxx-itanium-eh` and `manifests/cxx-itanium-eh.json`,
   `corpus/objc-eh` and `manifests/objc-eh.json`, or `corpus/ada-d-eh` and
   `manifests/ada-d-eh.json`. Each creates a bot commit only when its own files
